@@ -1,0 +1,27 @@
+{
+  "name": "jsii-release",
+  "version": "0.1.0",
+  "description": "Release jsii modules to multiple package managers",
+  "bin": {
+    "jsii-release-maven": "bin/jsii-release-maven",
+    "jsii-release-npm": "bin/jsii-release-npm",
+    "jsii-release-nuget": "bin/jsii-release-nuget",
+    "jsii-release-pypi": "bin/jsii-release-pypi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eladb/jsii-release.git"
+  },
+  "keywords": [
+    "jsii"
+  ],
+  "author": {
+    "name": "Elad Ben-Israel",
+    "email": "elad.benisrael@gmail.com",
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/eladb/jsii-release/issues"
+  },
+  "homepage": "https://github.com/eladb/jsii-release#readme"
+}
