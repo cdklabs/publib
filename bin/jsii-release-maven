@@ -57,8 +57,6 @@ cd $1
 if [[ -n "${MAVEN_DRYRUN:-}" ]]; then
     echo "==========================================="
     echo "            🏜️ DRY-RUN MODE 🏜️"
-    echo
-    echo "Set FOR_REAL=true to do actual publishing!"
     echo "==========================================="
     mvn="echo mvn"
     dry_run=true
