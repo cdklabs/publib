@@ -6,7 +6,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # Publishes all *.nupkg to NuGet
 #
-# Usage: ./jsii-release-maven [DIR]
+# Usage: ./jsii-release-nuget [DIR]
 #
 # NUGET_API_KEY (required): API key for nuget
 #
