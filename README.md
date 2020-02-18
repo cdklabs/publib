@@ -24,7 +24,7 @@ Publishes all `*.tgz` files from `DIR` to [npmjs](npmjs.com) or [GitHub Packages
 **Usage:**
 
 ```shell
-jsii-release-npm DIR
+npx jsii-release-npm DIR
 ```
 
 **Options (environment variables):**
@@ -41,7 +41,7 @@ Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven
 **Usage:**
 
 ```shell
-jsii-release-maven DIR
+npx jsii-release-maven DIR
 ```
 
 **Options (environment variables):**
@@ -102,7 +102,7 @@ Publishes all `*.nupkg` to the [NuGet Gallery](https://www.nuget.org/).
 **Usage:**
 
 ```shell
-jsii-release-nuget DIR
+npx jsii-release-nuget DIR
 ```
 
 **Options (environment variables):**
@@ -118,7 +118,7 @@ Publishes all `*.whl` files to [PyPI](https://pypi.org/).
 **Usage:**
 
 ```shell
-jsii-release-pypi DIR
+npx jsii-release-pypi DIR
 ```
 
 **Options (environment variables):**
