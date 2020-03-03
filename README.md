@@ -75,15 +75,48 @@ npx jsii-release-maven [DIR]
 
 `DIR` is a directory with a local maven layout. Default is `dist/java`.
 
-
 **Options (environment variables):**
 
 |Option|Required|Description|
 |------|--------|-----------|
 |`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for Maven Central obtained from Sonatype. You will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134)|
-|`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes|GPG private key (or file that includes it) where newlines are encoded as `\n`. This is used to sign your Maven packages. Create a GPG key pair and publish it's public key to a well-known server such as https://keyserver.ubuntu.com|
+|`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
 |`MAVEN_STAGING_PROFILE_ID`|Yes|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org (e.g. `https://oss.sonatype.org/#stagingProfiles;11a33451234521`|
 |`MAVEN_DRYRUN`|No|Set to "true" for a dry run|
+
+**How to create a GPG key?**
+
+Install [GnuPG](https://gnupg.org/).
+
+Generate your key (use RSA, 4096, passphrase):
+
+```console
+$ gpg --gen-key
+```
+
+Your selected passphrase goes to `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`.
+
+Export and publish the public key:
+
+```console
+$ gpg -a --export > public.pem
+```
+
+Go to https://keyserver.ubuntu.com/ and submit the public key
+
+Export and the private key:
+
+```console
+$ gpg -a --export-secret-keys <fingerprint> > private.pem
+```
+
+Now, either set `MAVEN_GPG_PRIVATE_KEY_FILE` to point to `private.pem` or
+export the private key to a single line where newlines are encoded as `\n` 
+and then assign it to `MAVEN_GPG_PRIVATE_KEY`:
+
+```console
+$ echo $(cat -e private.pem) | sed 's/\$ /\\n/g' | sed 's/\$$//'
+```
 
 ## NuGet
 
