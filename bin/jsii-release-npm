@@ -26,7 +26,7 @@ echo "//${NPM_REGISTRY}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 
 # this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
 # which requires `yarn login`. but since we are logging in through ~/.npmrc, we must make sure we publish directly to npm.
-export NPM_CONFIG_REGISTRY="${NPM_REGISTRY}"
+export NPM_CONFIG_REGISTRY="https://${NPM_REGISTRY}"
 
 log=$(mktemp -d)/npmlog.txt
 
