@@ -8,11 +8,13 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # Usage: ./jsii-release-nuget [DIR]
 #
+# DIR is a directory with *.nupkg files (default is 'dist/dotnet')
+#
 # NUGET_API_KEY (required): API key for nuget
 #
 ###
 
-[ -n "${1:-}" ] && cd $1
+cd "${1:-"dist/dotnet"}"
 
 if [ -z "${NUGET_API_KEY:-}" ]; then
     echo "NUGET_API_KEY is required"

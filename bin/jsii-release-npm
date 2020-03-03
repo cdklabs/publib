@@ -7,24 +7,26 @@ set -eu
 #
 # Usage: ./jsii-release-npm [DIR]
 #
+# DIR: directory where npm tarballs are found (default is `dist/js`).
+#
 # NPM_TOKEN (required): registry authentication token (either from npmjs or a GitHub personal access token)
 # NPM_REGISTRY (optional): the registry URL (defaults to "registry.npmjs.org")
 #
 ###
 
-dir="${1:-}"
+dir="${1:-"dist/js"}"
 
-[ -z "${dir:-}" ] && {
-  echo "Usage: $(basename $0) DIR"
+if [ -z "${NPM_TOKEN:-}" ]; then
+  echo "NPM_TOKEN is required"
   exit 1
-}
-
-# if NPM_TOKEN is specified, we rewrite ~/.npmrc to use it along with NPM_REGISTRY
-# otherwise we just use the current configuration.
-if [ -n "${NPM_TOKEN:-}" ]; then
-  NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
-  echo "//${NPM_REGISTRY}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 fi
+
+NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
+echo "//${NPM_REGISTRY}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+# this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
+# which requires `yarn login`. but since we are logging in through ~/.npmrc, we must make sure we publish directly to npm.
+export NPM_CONFIG_REGISTRY="${NPM_REGISTRY}"
 
 log=$(mktemp -d)/npmlog.txt
 

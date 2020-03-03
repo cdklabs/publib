@@ -5,7 +5,9 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # Publishes all maven modules in the specified directory to maven.
 #
-# Usage: ./jsii-release-maven DIR
+# Usage: ./jsii-release-maven [DIR]
+#
+# DIR is the root directory of a local maven repository (default `dist/java`).
 #
 # MAVEN_STAGING_PROFILE_ID         - Maven Central (sonatype) staging profile ID (e.g. 68a05363083174)
 # MAVEN_USERNAME                   - User name for Sonatype
@@ -39,12 +41,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 
 error() { echo "❌ $@"; exit 1; }
 
-[ -z "${1:-}" ] && {
-    echo "Usage: $(basename $0) DIR"
-    exit 1
-}
-
-cd $1
+cd "${1:-"dist/java"}"
 
 [ -z "${MAVEN_STAGING_PROFILE_ID:-}" ] && error "MAVEN_STAGING_PROFILE_ID is required"
 [ -z "${MAVEN_USERNAME:-}" ] && error "MAVEN_USERNAME is required"

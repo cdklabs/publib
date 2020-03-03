@@ -1,0 +1,33 @@
+#!/bin/bash
+# usage: jsii-release [DIR]
+#
+# DIR is the root directory of the distribution where we will look for `js`,
+# `java`, `python` and `dotnet` subdirectories (default is "dist")
+#
+set -euo pipefail
+scriptdir="$(cd $(dirname $0) && pwd)"
+
+dist="${1:-dist}"
+
+if [ ! -d "${dist}" ]; then
+  echo "ERROR: unable to find dist directory under ${dist}"
+  exit 1
+fi
+
+function release() {
+  local type=$1
+  local subdir=$2
+
+  local dist_subdir="${dist}/${subdir}"
+  if [ -d "${dist_subdir}" ]; then
+    echo "found ${type} artifacts under ${dist_subdir}"
+    ${scriptdir}/jsii-release-${type} "${dist_subdir}"
+  else
+    echo "${dist_subdir}: no ${type} artifacts"
+  fi
+}
+
+release maven java
+release nuget dotnet
+release npm js
+release pypi python

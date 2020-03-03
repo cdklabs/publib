@@ -1,8 +1,9 @@
 {
   "name": "jsii-release",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Release jsii modules to multiple package managers",
   "bin": {
+    "jsii-release": "bin/jsii-release",
     "jsii-release-maven": "bin/jsii-release-maven",
     "jsii-release-npm": "bin/jsii-release-npm",
     "jsii-release-nuget": "bin/jsii-release-nuget",

@@ -7,12 +7,14 @@ set -euo pipefail
 #
 # Usage: ./jsii-release-pypi [DIR]
 #
+# DIR is where *.whl files are looked up (default is "dist/python")
+#
 # TWINE_USERNAME (required)
 # TWINE_PASSWORD (required)
 #
 ###
 
-[ -n "${1:-}" ] && cd $1
+cd "${1:-"dist/python"}"
 
 [ -z "${TWINE_USERNAME:-}" ] && {
   echo "Missing TWINE_USERNAME"
