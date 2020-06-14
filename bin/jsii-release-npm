@@ -22,7 +22,7 @@ if [ -z "${NPM_TOKEN:-}" ]; then
 fi
 
 NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
-echo "//${NPM_REGISTRY}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+echo "//${NPM_REGISTRY%%/}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 
 # this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
 # which requires `yarn login`. but since we are logging in through ~/.npmrc, we must make sure we publish directly to npm.
