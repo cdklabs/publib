@@ -127,7 +127,7 @@ echo " Preparing repository"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 # Sign and stage our artifacts into a local directory
-for pom in "${poms}"; do
+for pom in ${poms}; do
     $mvn --settings=${mvn_settings} gpg:sign-and-deploy-file                    \
         -Durl=file://${staging}                                                 \
         -DrepositoryId=maven-central                                            \
