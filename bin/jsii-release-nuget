@@ -34,7 +34,7 @@ nuget_symbol_source="https://nuget.smbsrc.net/"
 
 log=$(mktemp -d)/log.txt
 
-for package_dir in "${packages}"; do
+for package_dir in ${packages}; do
     echo "📦  Publishing ${package_dir} to NuGet"
     (
         cd $(dirname $package_dir)
