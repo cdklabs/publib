@@ -21,7 +21,7 @@ if [ -z "${NUGET_API_KEY:-}" ]; then
     exit 1
 fi
 
-packages=$(find . -name *.nupkg -not -iname *.symbols.nupkg)
+packages=$(find . -name '*.nupkg' -not -iname '*.symbols.nupkg')
 if [ -z "${packages}" ]; then
     echo "❌ No *.nupkg files found under $PWD. Nothing to publish"
     exit 1
