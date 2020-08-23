@@ -155,6 +155,7 @@ npx jsii-release-pypi [DIR]
 |------|--------|-----------|
 |`TWINE_USERNAME`|Required|PyPI username ([register](https://pypi.org/account/register/))|
 |`TWINE_PASSWORD`|Required|PyPI password|
+|`TWINE_REPOSITORY_URL`|Optional|The registry URL (defaults to Twine default)|
 
 
 ## Roadmap
