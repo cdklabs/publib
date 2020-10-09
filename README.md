@@ -80,9 +80,12 @@ npx jsii-release-maven [DIR]
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for Maven Central obtained from Sonatype. You will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134)|
-|`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
-|`MAVEN_STAGING_PROFILE_ID`|Yes|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org (e.g. `https://oss.sonatype.org/#stagingProfiles;11a33451234521`|
+|`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134)|
+|`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes for Maven Central|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
+|`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org (e.g. `https://oss.sonatype.org/#stagingProfiles;11a33451234521`|
+|`MAVEN_ENDPOINT`|No|URL of Nexus repository. Defaults to `https://oss.sonatype.org`|
+|`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup. Defaults to `ossrh`|
+|`MAVEN_REPOSITORY_URL`|No|Deployment repository when not deploying to Maven Central|
 |`MAVEN_DRYRUN`|No|Set to "true" for a dry run|
 
 **How to create a GPG key?**
@@ -117,6 +120,19 @@ and then assign it to `MAVEN_GPG_PRIVATE_KEY`:
 
 ```console
 $ echo $(cat -e private.pem) | sed 's/\$ /\\n/g' | sed 's/\$$//'
+```
+
+**Publish to GitHub Packages**
+
+An example GitHub Actions publish step:
+```yaml
+- name: Publish package
+  run: npx -p jsii-release jsii-release-maven
+  env:
+    MAVEN_SERVER_ID: github
+    MAVEN_USERNAME: ${{ github.actor }}
+    MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+    MAVEN_REPOSITORY_URL: "https://maven.pkg.github.com/${{ github.repository }}"
 ```
 
 ## NuGet
