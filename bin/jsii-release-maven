@@ -90,7 +90,7 @@ import_gpg_key() {
     export GPG_TTY=$(tty)
 
 
-    if [ -n "${MAVEN_GPG_PRIVATE_KEY}" ]; then
+    if [ -n "${MAVEN_GPG_PRIVATE_KEY-}" ]; then
         MAVEN_GPG_PRIVATE_KEY_FILE="${GNUPGHOME}/private.pem"
         echo -e "${MAVEN_GPG_PRIVATE_KEY}" > ${MAVEN_GPG_PRIVATE_KEY_FILE}
     fi
@@ -129,7 +129,7 @@ create_maven_settings() {
     </server>
     <server>
       <id>gpg.passphrase</id>
-      <passphrase>${env.MAVEN_GPG_PRIVATE_KEY_PASSPHRASE}</passphrase>
+      <passphrase>\${env.MAVEN_GPG_PRIVATE_KEY_PASSPHRASE}</passphrase>
     </server>
   </servers>
 </settings>
