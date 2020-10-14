@@ -42,6 +42,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 ###
 
 readonly CENTRAL_SERVER="ossrh"
+scriptdir="$(cd $(dirname $0) && pwd)"
 
 error() { echo "❌ $@"; exit 1; }
 
@@ -165,6 +166,7 @@ sign_artifacts() {
             -DrepositoryId=${server_id}                                             \
             -Dgpg.homedir=${GNUPGHOME}                                              \
             -Dgpg.keyname=0x${gpg_key_id}                                           \
+            -Dgpg.executable="${scriptdir}/gpg-workaround.sh"                       \
             -DpomFile=${pom}                                                        \
             -Dfile=${pom/.pom/.jar}                                                 \
             -Dsources=${pom/.pom/-sources.jar}                                      \
