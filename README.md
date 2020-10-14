@@ -84,7 +84,7 @@ npx jsii-release-maven [DIR]
 |`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes for Maven Central|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
 |`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org (e.g. `https://oss.sonatype.org/#stagingProfiles;11a33451234521`|
 |`MAVEN_ENDPOINT`|No|URL of Nexus repository. Defaults to `https://oss.sonatype.org`|
-|`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup. Defaults to `ossrh`|
+|`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup (e.g. use `github` when publishing to GitHub). Defaults to `ossrh` for Maven Central.|
 |`MAVEN_REPOSITORY_URL`|No|Deployment repository when not deploying to Maven Central|
 |`MAVEN_DRYRUN`|No|Set to "true" for a dry run|
 
