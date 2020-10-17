@@ -74,6 +74,10 @@ validate_parameters() {
         validate_non_central_parameters
     fi
 
+    if (${is_signed} && ! ${is_central}); then
+        error "Package signing is currently only supported for Maven Central"
+    fi
+
     if (${is_signed} || ${is_central}); then
         validate_signing_parameters
     fi
