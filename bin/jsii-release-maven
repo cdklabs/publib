@@ -68,13 +68,13 @@ validate_parameters() {
     [[ -z "${MAVEN_USERNAME:-}" ]] && error "MAVEN_USERNAME is required"
     [[ -z "${MAVEN_PASSWORD:-}" ]] && error "MAVEN_PASSWORD is required"
 
-    if [[ "${is_central}" == true ]]; then
+    if ${is_central}; then
         validate_central_parameters
     else
         validate_non_central_parameters
     fi
 
-    if [[ "${is_signed}" == true ]] || [[ "${is_central}" == true ]]; then
+    if (${is_signed} || ${is_central}); then
         validate_signing_parameters
     fi
 }
@@ -115,7 +115,7 @@ import_gpg_key() {
 create_maven_settings() {
     # Create a settings.xml file with the user+password for maven
     mvn_settings="${workdir}/mvn-settings.xml"
-    if [[ "${is_signed}" == true ]]; then
+    if ${is_signed}; then
         cat > ${mvn_settings} <<-EOF
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
@@ -296,7 +296,7 @@ main() {
         dry_run=false
     fi
 
-    if [[ "${is_signed}" == true ]]; then
+    if ${is_signed}; then
         import_gpg_key
     fi
 
@@ -305,7 +305,7 @@ main() {
         error "No JARS to publish: no .pom files found under $PWD"
     fi
 
-    if [[ "${is_central}" == true ]]; then
+    if ${is_central}; then
         echo "📦 Publishing to Maven Central"
     else
         echo "📦 Publishing to ${server_id}"
@@ -317,12 +317,12 @@ main() {
 
     create_maven_settings
 
-    if [[ "${is_signed}" == true ]]; then
+    if ${is_signed}; then
         # This currently only works with Maven Central
         sign_artifacts
     fi
 
-    if [[ "${is_central}" == true ]]; then
+    if ${is_central}; then
         deploy_central
     else
         deploy_non_central
