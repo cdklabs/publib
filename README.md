@@ -176,7 +176,8 @@ npx jsii-release-pypi [DIR]
 
 ## Roadmap
 
-- [ ] Support GitHub Packages for Maven & NuGet (npm is already supported)
+- [X] Support GitHub Maven
+- [ ] Support GitHub NuGet
 
 ## License
 
