@@ -176,8 +176,11 @@ npx jsii-release-pypi [DIR]
 
 ## Roadmap
 
-- [X] Support GitHub Maven
-- [ ] Support GitHub NuGet
+- [X] GitHub Support: Maven
+- [ ] GitHub Support: NuGet
+- [ ] CodeArtifact Support: Maven
+- [ ] CodeArtifact Support: NuGet
+- [ ] CodeArtifact Support: Python
 
 ## License
 
