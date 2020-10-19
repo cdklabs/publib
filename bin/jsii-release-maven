@@ -42,7 +42,19 @@ set -eu # we don't want "pipefail" to implement idempotency
 ###
 
 readonly CENTRAL_SERVER="ossrh"
-scriptdir="$(cd $(dirname $0) && pwd)"
+
+# -------------------------------------------------------------------------------------------------
+# we need this monstrosity because this script is installed as a symlink to node_modules/.bin
+# and we need a way to find it's real location so we can reference stuff that's not in .bin
+# https://stackoverflow.com/a/246128
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+scriptdir="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+# -------------------------------------------------------------------------------------------------
 
 error() { echo "❌ $@"; exit 1; }
 
