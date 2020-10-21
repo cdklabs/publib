@@ -182,7 +182,6 @@ sign_artifacts() {
             -DrepositoryId=${server_id}                                             \
             -Dgpg.homedir=${GNUPGHOME}                                              \
             -Dgpg.keyname=0x${gpg_key_id}                                           \
-            -Dgpg.executable="${scriptdir}/gpg-workaround.sh"                       \
             -DpomFile=${pom}                                                        \
             -Dfile=${pom/.pom/.jar}                                                 \
             -Dsources=${pom/.pom/-sources.jar}                                      \
