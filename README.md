@@ -63,6 +63,7 @@ npx jsii-release-npm [DIR]
 |`NPM_TOKEN`|Required|Registry authentication token (either [npm.js publishing token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens) or a [GitHub personal access token](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#authenticating-to-github-packages))|
 |`NPM_REGISTRY`|Optional|The registry URL (defaults to "registry.npmjs.org"). Use "npm.pkg.github.com" to publish to GitHub Packages|
 |`NPM_DIST_TAG`|Optional|Registers the published package with the given [dist-tag](https://docs.npmjs.com/cli/dist-tag) (e.g. `next`, default is `latest`)|
+|`NPM_PUBLISH_ARGS`|Optional|Add command line arguments to `npm publish` (e.g. `--access public` to publish to org scopes)|
 
 ## Maven
 

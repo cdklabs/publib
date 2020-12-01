@@ -38,7 +38,7 @@ fi
 log=$(mktemp -d)/npmlog.txt
 
 for file in ${dir}/**.tgz; do
-  npm publish ${tag} ${file} 2>&1 | tee ${log}
+  npm publish ${tag} "${NPM_PUBLISH_ARGS}" ${file} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
 
   if [ ${exit_code} -ne 0 ]; then
