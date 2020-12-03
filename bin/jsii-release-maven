@@ -175,13 +175,23 @@ sign_artifacts() {
     echo " Preparing repository"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
+    # newer versions of maven require setting --pinentry-mode to "loopback" and
+    # I couldn't find a way to do so via -Dgpg.gpgArguments or the settings
+    # file, so here we are.
+    local gpg_exec="/tmp/jsii-release-gpg.sh"
+    echo "#!/bin/bash" > $gpg_exec
+    echo "exec gpg --pinentry-mode loopback \"\$@\"" >> $gpg_exec
+    chmod +x $gpg_exec
+
     # Sign and stage our artifacts into a local directory
     for pom in ${poms}; do
         $mvn --settings=${mvn_settings} gpg:sign-and-deploy-file                    \
+            -X                                                                      \
             -Durl=file://${staging}                                                 \
             -DrepositoryId=${server_id}                                             \
             -Dgpg.homedir=${GNUPGHOME}                                              \
             -Dgpg.keyname=0x${gpg_key_id}                                           \
+            -Dgpg.executable=${gpg_exec}                                            \
             -DpomFile=${pom}                                                        \
             -Dfile=${pom/.pom/.jar}                                                 \
             -Dsources=${pom/.pom/-sources.jar}                                      \
