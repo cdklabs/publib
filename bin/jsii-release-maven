@@ -266,7 +266,13 @@ HERE
 deploy_non_central() {
     release_output="${workdir}/release-output.txt"
     for pom in ${poms}; do
-        $mvn --settings=${mvn_settings} deploy -f ${pom} -DaltDeploymentRepository=${server_id}::default::${MAVEN_REPOSITORY_URL} | tee ${release_output}
+        $mvn --settings=${mvn_settings} deploy:deploy-file          \
+            -Durl=${MAVEN_REPOSITORY_URL}                           \
+            -DrepositoryId=${server_id}                             \
+            -Dfile=${pom/.pom/.jar}                                 \
+            -DpomFile=${pom}                                        \
+            -Dsources=${pom/.pom/-sources.jar}                      \
+            -Djavadoc=${pom/.pom/-javadoc.jar} | tee ${release_output}
 
         # If release failed, check if this was caused because we are trying to publish
         # the same version again, which is not an error. The magic string "409 Conflict"
