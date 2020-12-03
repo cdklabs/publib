@@ -13,7 +13,18 @@
     "build": {
       "name": "build",
       "category": "00.build",
-      "description": "Full release build (test+compile)"
+      "description": "Full release build (test+compile)",
+      "steps": [
+        {
+          "exec": "yarn pack"
+        },
+        {
+          "exec": "mkdir -p dist/js"
+        },
+        {
+          "exec": "mv ./jsii-release-v*.tgz dist/js"
+        }
+      ]
     },
     "bump": {
       "name": "bump",

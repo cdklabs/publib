@@ -13,4 +13,9 @@ const project = new NodeProject({
   homepage: 'https://github.com/aws/jsii-release',
 });
 
+// create tarball and move to dist/js so release workflow can pick it up from there.
+project.buildTask.exec('yarn pack');
+project.buildTask.exec('mkdir -p dist/js');
+project.buildTask.exec(`mv ./jsii-release-v*.tgz dist/js`);
+
 project.synth();
