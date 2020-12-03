@@ -1,6 +1,6 @@
 {
   "name": "jsii-release",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Release jsii modules to multiple package managers",
   "bin": {
     "jsii-release": "bin/jsii-release",
