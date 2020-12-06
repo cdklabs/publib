@@ -106,7 +106,6 @@ import_gpg_key() {
     export GNUPGHOME=$(mktemp -d)
     export GPG_TTY=$(tty)
 
-
     if [ -n "${MAVEN_GPG_PRIVATE_KEY:-}" ]; then
         MAVEN_GPG_PRIVATE_KEY_FILE="${GNUPGHOME}/private.pem"
         echo -e "${MAVEN_GPG_PRIVATE_KEY}" > ${MAVEN_GPG_PRIVATE_KEY_FILE}
@@ -118,14 +117,6 @@ import_gpg_key() {
 
     gpg_key_id=$(gpg --list-keys --with-colons | grep pub | cut -d: -f5)
     echo "gpg_key_id=${gpg_key_id}"
-
-    GPG_PASSPHRASE_FROM_STDIN="--passphrase-fd 0"
-    if [[ "$(uname)" == "Darwin" ]]; then
-        # On Mac, we must pass this to disable a prompt for
-        # passphrase, but option is not recognized on Linux.
-        GPG_PASSPHRASE_FROM_STDIN="${GPG_PASSPHRASE_FROM_STDIN} --pinentry-mode loopback"
-    fi
-    export GPG_PASSPHRASE_FROM_STDIN
 }
 
 create_maven_settings() {
@@ -175,13 +166,15 @@ sign_artifacts() {
     echo " Preparing repository"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-    # newer versions of maven require setting --pinentry-mode to "loopback" and
-    # I couldn't find a way to do so via -Dgpg.gpgArguments or the settings
-    # file, so here we are.
-    local gpg_exec="/tmp/jsii-release-gpg.sh"
-    echo "#!/bin/bash" > $gpg_exec
-    echo "exec gpg --pinentry-mode loopback \"\$@\"" >> $gpg_exec
-    chmod +x $gpg_exec
+    # on a mac, --pinentry-mode to "loopback" are required and I couldn't find a
+    # way to do so via -Dgpg.gpgArguments or the settings file, so here we are.
+    local gpg_exec="gpg"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        gpg_exec="/tmp/jsii-release-gpg.sh"
+        echo "#!/bin/bash" > $gpg_exec
+        echo "exec gpg --pinentry-mode loopback \"\$@\"" >> $gpg_exec
+        chmod +x $gpg_exec
+    fi
 
     # Sign and stage our artifacts into a local directory
     for pom in ${poms}; do
