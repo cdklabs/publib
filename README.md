@@ -152,6 +152,13 @@ npx jsii-release-nuget [DIR]
 |Option|Required|Description|
 |------|--------|-----------|
 |`NUGET_API_KEY`|Required|[NuGet API Key](https://www.nuget.org/account/apikeys) with "Push" permissions|
+|`NUGET_SERVER`|Optional|NuGet Server URL (defaults to nuget.org)|
+
+**Publish to GitHub Packages**
+
+* Set `NUGET_SERVER` to `https://nuget.pkg.github.com/(`org or user`).
+* Set `NUGET_API_KEY` to a token with write packages permissions.
+* Make sure the repository url in the project file matches the org or user used for the server 
 
 ## PyPI
 
@@ -177,7 +184,7 @@ npx jsii-release-pypi [DIR]
 ## Roadmap
 
 - [X] GitHub Support: Maven
-- [ ] GitHub Support: NuGet
+- [X] GitHub Support: NuGet
 - [ ] CodeArtifact Support: Maven
 - [ ] CodeArtifact Support: NuGet
 - [ ] CodeArtifact Support: Python

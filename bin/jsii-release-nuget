@@ -29,7 +29,7 @@ fi
 
 echo "Publishing NuGet packages..."
 
-nuget_source="https://api.nuget.org/v3/index.json"
+nuget_source="${NUGET_SERVER:-"https://api.nuget.org/v3/index.json"}"
 nuget_symbol_source="https://nuget.smbsrc.net/"
 
 log=$(mktemp -d)/log.txt
@@ -44,7 +44,7 @@ for package_dir in ${packages}; do
         [ -f "${nuget_package_base}.snupkg" ] || echo "⚠️ No symbols package was found!"
 
         # The .snupkg will be published at the same time as the .nupkg if both are in the current folder (which is the case)
-        dotnet nuget push $nuget_package_name -k ${NUGET_API_KEY} -s ${nuget_source} | tee ${log}
+        dotnet nuget push $nuget_package_name -k ${NUGET_API_KEY} -s ${nuget_source} --skip-duplicate | tee ${log}
         exit_code="${PIPESTATUS[0]}"
 
         # If push failed, check if this was caused because we are trying to publish
