@@ -20,7 +20,6 @@
     "build": "npx projen build",
     "bump": "npx projen bump",
     "release": "npx projen release",
-    "bootstrap": "npx projen bootstrap",
     "projen:upgrade": "npx projen projen:upgrade"
   },
   "author": {
@@ -30,7 +29,7 @@
   },
   "homepage": "https://github.com/aws/jsii-release",
   "devDependencies": {
-    "projen": "^0.5.10",
+    "projen": "^0.6.17",
     "standard-version": "^9.0.0"
   },
   "peerDependencies": {},
