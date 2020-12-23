@@ -29,7 +29,7 @@ fi
 
 echo "Publishing NuGet packages..."
 
-nuget_source="https://api.nuget.org/v3/index.json"
+nuget_source="${NUGET_SERVER:-"https://api.nuget.org/v3/index.json"}"
 nuget_symbol_source="https://nuget.smbsrc.net/"
 
 log=$(mktemp -d)/log.txt
@@ -50,7 +50,7 @@ for package_dir in ${packages}; do
         # If push failed, check if this was caused because we are trying to publish
         # the same version again, which is not an error by searching for a magic string in the log
         # ugly, yes!
-        if cat ${log} | grep -q "already exists and cannot be modified"; then
+        if cat ${log} | grep -q -e "already exists and cannot be modified" -e "409 (Conflict)"; then
             echo "⚠️ Artifact already published. Skipping"
         elif [ "${exit_code}" -ne 0 ]; then
             echo "❌ Release failed"
