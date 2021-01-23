@@ -1,0 +1,64 @@
+#!/bin/bash
+set -eu
+
+###
+#
+# Pushes a golang module to a GitHub repository.
+#
+# Usage: ./jsii-release-golang [DIR]
+#
+# DIR: directory where the golang module is located (default is `dist/go`).
+#
+# GITHUB_TOKEN       (required): Authentication token that allows to push and tag the repository.
+# GITHUB_REPO        (required): GitHub repository to push to.
+# GIT_BRANCH         (optional): Branch to push to. Defaults to 'main'.
+# NO_TAG             (optional): Disable repository tagging by specifying a non-zero value.
+# VERSION            (optional): Module version. Will be used as the repository tag. Required unless NO_TAG is set to a non-zero value.
+# GIT_USER_NAME      (optional): Username to perform the commit with. Defaults to the current username (git config user.name)
+# GIT_USER_EMAIL     (optional): Email to perform the commit with. Defaults to the current email (git config user.email)
+# GIT_COMMIT_MESSAGE (optional): The commit message. Defaults to the last commit of the current repository.
+###
+
+dir=${1:-dist/go}
+GIT_BRANCH=${GIT_BRANCH:-main}
+GIT_USER_NAME=${GIT_USER_NAME:-$(git config user.name)}
+GIT_USER_EMAIL=${GIT_USER_EMAIL:-$(git config user.email)}
+GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-0}
+NO_TAG=${GIT_BRANCH:-$(git log -1 --format=%s)}
+
+if [ ! -f "${dir}/go.mod" ]; then
+  echo "cannot find go.mod file in ${dir}/go.mod"
+  exit 1
+fi
+
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  echo "GITHUB_TOKEN env variable is required"
+  exit 1
+fi
+
+if [ -z "${GITHUB_REPO:-}" ]; then
+  echo "GITHUB_REPO env variable is required (owner/repo)"
+  exit 1
+fi
+
+tempdir=$(mktemp -d)
+pushd ${tempdir}
+
+echo "Cloning target repository ${GITHUB_REPO}"
+git clone --branch ${GIT_BRANCH} https://${GITHUB_TOKEN}@${GITHUB_REPO} repo
+
+echo "Copying go module to repository root"
+cp -r ${DIR} repo
+
+git config user.name ${GIT_USER_NAME}
+git config user.email ${GIT_USER_EMAIL}
+
+git add .
+git commit --allow-empty -m ${GIT_COMMIT_MESSAGE}
+git push
+
+if [ ${NO_TAG} -eq 0 ]; then
+  git tag -a $VERSION -m "v$VERSION"
+  git push $VERSION
+fi
+popd
