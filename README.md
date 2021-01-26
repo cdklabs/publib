@@ -185,7 +185,7 @@ npx jsii-release-pypi [DIR]
 
 ## Golang
 
-Publishes a go module to its appropriate GitHub repository.
+Pushes a directory of golang modules to a GitHub repository.
 
 **Usage:**
 
@@ -193,7 +193,8 @@ Publishes a go module to its appropriate GitHub repository.
 npx jsii-release-golang [DIR]
 ```
 
-`DIR` is the directory where the golang module is located. Default is `dist/go`.
+`DIR` is a directory where the golang modules are located (default is `dist/go`). Each subdirectory inside it
+must be a go module and contain a go.mod file.
 
 **Options (environment variables):**
 

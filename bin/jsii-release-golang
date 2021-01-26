@@ -3,11 +3,12 @@ set -eu
 
 ###
 #
-# Pushes a golang module to a GitHub repository.
+# Pushes a directory of golang modules to a GitHub repository.
 #
 # Usage: ./jsii-release-golang [DIR]
 #
-# DIR: directory where the golang module is located (default is `dist/go`).
+# DIR: directory where the golang modules are located (default is `dist/go`).
+#      Each subdirectory inside it must be a go module and contain a go.mod file.
 #
 # GITHUB_TOKEN       (required): Authentication token that allows to push and tag the repository.
 # VERSION            (required): Module version. Will be used as the repository tag. Required unless NO_TAG is set to a non-zero value.
@@ -50,16 +51,21 @@ if [ -z "${VERSION:-}" ]; then
   error "VERSION env variable is required"
 fi
 
+go_mod=""
+
 # make sure each directory has a go.mod file
-subdirs=$(ls -d ${dir}/*)
-for subdir in $(ls -d ${dir}/*)
+for subdir in $(ls -d ${dir}/*/)
 do
   if [ ! -f ${subdir}/go.mod ]; then
-    error "expected to find go.mod in ${subdir}"
+    error "expected to find go.mod in ${subdir}. make sure you specify the root directory of all your modules."
   fi
   # pick one mod file to derive repository
   go_mod=${subdir}/go.mod
 done
+
+if [ ${go_mod} = "" ]; then
+  error "No go modules found in ${dir}"
+fi
 
 module_name=$(grep module ${go_mod} | cut -d ' ' -f 2)
 domain=$(echo ${module_name} | cut -d '/' -f 1)
