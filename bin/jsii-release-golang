@@ -10,12 +10,13 @@ set -eu
 # DIR: directory where the golang module is located (default is `dist/go`).
 #
 # GITHUB_TOKEN       (required): Authentication token that allows to push and tag the repository.
-# GITHUB_REPO        (required): GitHub repository to push to.
 # VERSION            (required): Module version. Will be used as the repository tag. Required unless NO_TAG is set to a non-zero value.
+# GITHUB_REPO        (optional): GitHub repository to push to. Default is derived from the module name.
 # GIT_BRANCH         (optional): Branch to push to. Defaults to 'main'.
 # GIT_USER_NAME      (optional): Username to perform the commit with. Defaults to the current username (git config user.name)
 # GIT_USER_EMAIL     (optional): Email to perform the commit with. Defaults to the current email (git config user.email)
 # GIT_COMMIT_MESSAGE (optional): The commit message. Defaults to the last commit of the current repository.
+# DRYRUN             (optional): Set to "true" for a dry run
 ###
 
 dir=${1:-dist/go}
@@ -29,6 +30,14 @@ dir="$(pwd)/${dir}"
 
 error() { echo "❌ $@"; exit 1; }
 
+dry_run=false
+if [[ -n "${DRYRUN:-}" ]]; then
+  echo "==========================================="
+  echo "            🏜️ DRY-RUN MODE 🏜️"
+  echo "==========================================="
+  dry_run=true
+fi
+
 if [ ! -f "${dir}/go.mod" ]; then
   error "cannot find go.mod file in ${dir}/go.mod"
 fi
@@ -37,12 +46,21 @@ if [ -z "${GITHUB_TOKEN:-}" ]; then
   error "GITHUB_TOKEN env variable is required"
 fi
 
-if [ -z "${GITHUB_REPO:-}" ]; then
-  error "GITHUB_REPO env variable is required (owner/repo)"
-fi
-
 if [ -z "${VERSION:-}" ]; then
   error "VERSION env variable is required"
+fi
+
+module_name=$(grep module ${dir}/go.mod | cut -d ' ' -f 2)
+domain=$(echo ${module_name} | cut -d '/' -f 1)
+
+if [ ${domain} != "github.com" ]; then
+  error "'${domain}' domain is not supported. Only GitHub repositories are allowed"
+fi
+
+if [ -z "${GITHUB_REPO:-}" ]; then
+  owner=$(echo ${module_name} | cut -d '/' -f 2)
+  repo=$(echo ${module_name} | cut -d '/' -f 3)
+  GITHUB_REPO=${owner}/${repo}
 fi
 
 target_repo_dir=$(mktemp -d)/repo
@@ -61,8 +79,19 @@ cp -r ${dir} .
 
 git add .
 git commit -m "\"${GIT_COMMIT_MESSAGE}\""
-git push origin ${GIT_BRANCH}
+
+if $dry_run; then
+  echo "Will push to branch: ${GIT_BRANCH}"
+else
+  git push origin ${GIT_BRANCH}
+fi
+
 git tag -a $VERSION -m $VERSION
-git push origin $VERSION
+
+if $dry_run; then
+  echo "Will create a tag: ${VERSION}"
+else
+  git push origin $VERSION
+fi
 
 popd
