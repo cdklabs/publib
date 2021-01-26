@@ -27,24 +27,22 @@ GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-$(git log -1 --format=%s)}
 # remember the full path since we might be changing dirs later on
 dir="$(pwd)/${dir}"
 
+error() { echo "❌ $@"; exit 1; }
+
 if [ ! -f "${dir}/go.mod" ]; then
-  echo "cannot find go.mod file in ${dir}/go.mod"
-  exit 1
+  error "cannot find go.mod file in ${dir}/go.mod"
 fi
 
 if [ -z "${GITHUB_TOKEN:-}" ]; then
-  echo "GITHUB_TOKEN env variable is required"
-  exit 1
+  error "GITHUB_TOKEN env variable is required"
 fi
 
 if [ -z "${GITHUB_REPO:-}" ]; then
-  echo "GITHUB_REPO env variable is required (owner/repo)"
-  exit 1
+  error "GITHUB_REPO env variable is required (owner/repo)"
 fi
 
 if [ -z "${VERSION:-}" ]; then
-  echo "VERSION env variable is required"
-  exit 1
+  error "VERSION env variable is required"
 fi
 
 target_repo_dir=$(mktemp -d)/repo
