@@ -38,8 +38,8 @@ if [[ -n "${DRYRUN:-}" ]]; then
   dry_run=true
 fi
 
-if [ ! -f "${dir}/go.mod" ]; then
-  error "cannot find go.mod file in ${dir}/go.mod"
+if [ ! -d ${dir} ]; then
+  error "${dir} either doesnt exist or is not a directory"
 fi
 
 if [ -z "${GITHUB_TOKEN:-}" ]; then
@@ -50,7 +50,18 @@ if [ -z "${VERSION:-}" ]; then
   error "VERSION env variable is required"
 fi
 
-module_name=$(grep module ${dir}/go.mod | cut -d ' ' -f 2)
+# make sure each directory has a go.mod file
+subdirs=$(ls -d ${dir}/*)
+for subdir in $(ls -d ${dir}/*)
+do
+  if [ ! -f ${subdir}/go.mod ]; then
+    error "expected to find go.mod in ${subdir}"
+  fi
+  # pick one mod file to derive repository
+  go_mod=${subdir}/go.mod
+done
+
+module_name=$(grep module ${go_mod} | cut -d ' ' -f 2)
 domain=$(echo ${module_name} | cut -d '/' -f 1)
 
 if [ ${domain} != "github.com" ]; then
@@ -76,7 +87,7 @@ git config user.email ${GIT_USER_EMAIL}
 git checkout ${GIT_BRANCH}
 
 echo "Copying go module to repository root"
-cp -r ${dir} .
+cp -r ${dir}/* .
 
 git add .
 git commit -m "\"${GIT_COMMIT_MESSAGE}\""
