@@ -21,6 +21,7 @@ structure is compatible with `jsii-pacmak`:
 - `dist/python/*.whl` - Python wheels
 - `dist/nuget/*.nupkg` - Nuget packages
 - `dist/java/**` - Maven artifacts in local repository structure
+- `dist/go/**` - Golang source code, including a .mod file.
 
 Each publisher needs a set of environment variables with credentials as
 described below (`NPM_TOKEN`, `TWINE_PASSWORD` etc).
@@ -43,6 +44,7 @@ You can also execute individual publishers:
 * `jsii-release-nuget`
 * `jsii-release-npm`
 * `jsii-release-pypi`
+* `jsii-release-golang`
 
 ## npm
 
@@ -115,7 +117,7 @@ $ gpg -a --export-secret-keys <fingerprint> > private.pem
 ```
 
 Now, either set `MAVEN_GPG_PRIVATE_KEY_FILE` to point to `private.pem` or
-export the private key to a single line where newlines are encoded as `\n` 
+export the private key to a single line where newlines are encoded as `\n`
 and then assign it to `MAVEN_GPG_PRIVATE_KEY`:
 
 ```console
@@ -158,7 +160,7 @@ npx jsii-release-nuget [DIR]
 
 * Set `NUGET_SERVER` to `https://nuget.pkg.github.com/(`org or user`).
 * Set `NUGET_API_KEY` to a token with write packages permissions.
-* Make sure the repository url in the project file matches the org or user used for the server 
+* Make sure the repository url in the project file matches the org or user used for the server
 
 ## PyPI
 
@@ -179,6 +181,31 @@ npx jsii-release-pypi [DIR]
 |`TWINE_USERNAME`|Required|PyPI username ([register](https://pypi.org/account/register/))|
 |`TWINE_PASSWORD`|Required|PyPI password|
 |`TWINE_REPOSITORY_URL`|Optional|The registry URL (defaults to Twine default)|
+
+
+## Golang
+
+Publishes a go module to its appropriate GitHub repository.
+
+**Usage:**
+
+```shell
+npx jsii-release-golang [DIR]
+```
+
+`DIR` is the directory where the golang module is located. Default is `dist/go`.
+
+**Options (environment variables):**
+
+|Option|Required|Description|
+|------|--------|-----------|
+|`GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
+|`GITHUB_REPO`|Optional|GitHub repository to push to. Default is derived from the module name.|
+|`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
+|`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the current username|
+|`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the current email|
+|`GIT_COMMIT_MESSAGE`|Optional|The commit message. Defaults to the last commit of the current repository.|
+|`DRYRUN`|Optional|Set to "true" for a dry run.|
 
 
 ## Roadmap

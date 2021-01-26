@@ -54,6 +54,7 @@ module_name=$(grep module ${dir}/go.mod | cut -d ' ' -f 2)
 domain=$(echo ${module_name} | cut -d '/' -f 1)
 
 if [ ${domain} != "github.com" ]; then
+  # the way we clone the repo with the token is a GitHub thing.
   error "'${domain}' domain is not supported. Only GitHub repositories are allowed"
 fi
 
