@@ -31,3 +31,4 @@ release maven java
 release nuget dotnet
 release npm js
 release pypi python
+release golang go
