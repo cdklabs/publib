@@ -21,7 +21,7 @@ structure is compatible with `jsii-pacmak`:
 - `dist/python/*.whl` - Python wheels
 - `dist/nuget/*.nupkg` - Nuget packages
 - `dist/java/**` - Maven artifacts in local repository structure
-- `dist/go/**` - Golang source code, including a .mod file.
+- `dist/go/**/go.mod` - Go modules. Each subdirectory should have its own go.mod file.
 
 Each publisher needs a set of environment variables with credentials as
 described below (`NPM_TOKEN`, `TWINE_PASSWORD` etc).
