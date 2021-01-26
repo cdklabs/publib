@@ -90,7 +90,8 @@ pushd ${target_repo_dir}
 git config user.name ${GIT_USER_NAME}
 git config user.email ${GIT_USER_EMAIL}
 
-git checkout ${GIT_BRANCH}
+# -B to create if it doesn't exist, reset otherwise
+git checkout -B ${GIT_BRANCH}
 
 echo "Copying go module to repository root"
 cp -r ${dir}/* .
