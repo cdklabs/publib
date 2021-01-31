@@ -140,20 +140,15 @@ cp -r ${dir}/* .
 git add .
 git commit -m "${GIT_COMMIT_MESSAGE}"
 
-if $dry_run; then
-  echo "Will push to branch: ${GIT_BRANCH}"
-else
-  git push origin ${GIT_BRANCH}
-fi
-
 tag_name=v${VERSION}
-
 git tag -a ${tag_name} -m $VERSION
 
 if $dry_run; then
   echo "Will create a tag: ${tag_name}"
+  echo "Will push to branch: ${GIT_BRANCH}"
 else
   git push origin ${tag_name}
+  git push origin ${GIT_BRANCH}
 fi
 
 popd
