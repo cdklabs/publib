@@ -80,8 +80,8 @@ if [ ${go_mod} = "" ]; then
   error "No go modules found in ${dir}"
 fi
 
-sorted_unique_versions=($(echo "${versions[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-count_unique_version=$(echo "${#sorted_unique_versions[@]}")
+unique_versions=($(echo "${versions[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+count_unique_version=$(echo "${#unique_versions[@]}")
 
 if [ ${count_unique_version} -gt 1 ]; then
   error "multiple versions are not supported. please use a single version across all your modules."
@@ -94,7 +94,7 @@ if [ -z "${VERSION:-}" ]; then
   fi
 
   # must be a single element at this point
-  VERSION=${sorted_unique_versions[0]}
+  VERSION=${unique_versions[0]}
 fi
 
 GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-"chore(release): ${VERSION}"}
