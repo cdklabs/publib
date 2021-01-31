@@ -1,0 +1,154 @@
+#!/bin/bash
+set -eu
+
+###
+#
+# Pushes a directory of golang modules to a GitHub repository.
+#
+# Usage: ./jsii-release-golang [DIR]
+#
+# DIR is a directory where the golang modules are located (default is `dist/go`). Each subdirectory inside it must be a
+#     go module and contain a go.mod file. This directory is pushed as is to the repository root, overriding existing files.
+#
+# GITHUB_TOKEN       (required): Authentication token that allows to push and tag the repository.
+# VERSION            (optional): Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.
+# GITHUB_REPO        (optional): GitHub repository to push to. Default is derived from the module name.
+# GIT_BRANCH         (optional): Branch to push to. Defaults to 'main'.
+# GIT_USER_NAME      (optional): Username to perform the commit with. Defaults to the global git user.name config. Fails it it doesn't exist.
+# GIT_USER_EMAIL     (optional): Email to perform the commit with. Defaults to the global git user.email config. Fails it it doesn't exist.
+# GIT_COMMIT_MESSAGE (optional): The commit message. Defaults to 'chore(release): $VERSION'.
+# DRYRUN             (optional): Set to "true" for a dry run
+###
+
+dir=${1:-dist/go}
+GIT_BRANCH=${GIT_BRANCH:-main}
+
+# remember the full path since we might be changing dirs later on
+dir="$(pwd)/${dir}"
+
+error() { echo "❌ $@"; exit 1; }
+
+if ! command -v git &> /dev/null; then
+  error "git must be available to run this script"
+fi
+
+if [ -z "${GIT_USER_NAME:-}" ]; then
+  GIT_USER_NAME=$(git config user.name) || error "Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable"
+fi
+
+if [ -z "${GIT_USER_EMAIL:-}" ]; then
+  GIT_USER_EMAIL=$(git config user.email) || error "Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable"
+fi
+
+dry_run=false
+if [[ ${DRYRUN:-"false"} = "true" ]]; then
+  echo "==========================================="
+  echo "            🏜️ DRY-RUN MODE 🏜️"
+  echo "==========================================="
+  dry_run=true
+fi
+
+if [ ! -d ${dir} ]; then
+  error "${dir} either doesnt exist or is not a directory"
+fi
+
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  error "GITHUB_TOKEN env variable is required"
+fi
+
+go_mod=""
+versions=("")
+
+# make sure each directory has a go.mod file
+for subdir in $(find ${dir} -mindepth 1 -maxdepth 1 -type d)
+do
+  if [ ! -f ${subdir}/go.mod ]; then
+    error "expected to find go.mod in ${subdir}. make sure you specify the root directory of all your modules."
+  fi
+  # pick one mod file to derive repository
+  go_mod=${subdir}/go.mod
+
+  # collect versions if they exist. used both for validation and for default value.
+  if [ -f ${subdir}/version ]; then
+    version=$(cat ${subdir}/version)
+    versions=(${versions[@]} ${version})
+  fi
+
+done
+
+if [ ${go_mod} = "" ]; then
+  error "No go modules found in ${dir}"
+fi
+
+unique_versions=($(echo "${versions[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+count_unique_version=$(echo "${#unique_versions[@]}")
+
+if [ ${count_unique_version} -gt 1 ]; then
+  error "multiple versions are not supported. please use a single version across all your modules."
+fi
+
+if [ -z "${VERSION:-}" ]; then
+
+  if [ ${count_unique_version} -eq 0 ]; then
+    error "No version files found. Please supply a version using the VERSION env variable."
+  fi
+
+  # must be a single element at this point
+  VERSION=${unique_versions[0]}
+fi
+
+GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-"chore(release): ${VERSION}"}
+
+module_name=$(grep module ${go_mod} | cut -d ' ' -f 2)
+domain=$(echo ${module_name} | cut -d '/' -f 1)
+
+if [ ${domain} != "github.com" ]; then
+  # the way we clone the repo with the token is a GitHub thing.
+  error "'${domain}' domain is not supported. Only GitHub repositories are allowed"
+fi
+
+if [ -z "${GITHUB_REPO:-}" ]; then
+  owner=$(echo ${module_name} | cut -d '/' -f 2)
+  repo=$(echo ${module_name} | cut -d '/' -f 3)
+  GITHUB_REPO=${owner}/${repo}
+fi
+
+target_repo_dir=$(mktemp -d)/repo
+
+echo "Cloning target repository ${GITHUB_REPO}"
+git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git ${target_repo_dir}
+
+pushd ${target_repo_dir}
+git config user.name ${GIT_USER_NAME}
+git config user.email ${GIT_USER_EMAIL}
+
+# checkout or create
+git checkout ${GIT_BRANCH} || git checkout -b ${GIT_BRANCH}
+
+for subdir in $(find $(pwd) -mindepth 1 -maxdepth 1 -type d)
+do
+  if [ -f ${subdir}/go.mod ]; then
+    # remove to account for deleted files or entire modules
+    echo "Removing ${subdir}"
+    rm -r ${subdir}
+  fi
+done
+
+echo "Copying go modules to repository root"
+cp -r ${dir}/* .
+
+git add .
+git commit -m "${GIT_COMMIT_MESSAGE}"
+
+tag_name=v${VERSION}
+git tag -a ${tag_name} -m $VERSION
+
+if $dry_run; then
+  echo "Will create a tag: ${tag_name}"
+  echo "Will push to branch: ${GIT_BRANCH}"
+else
+  git push origin ${tag_name}
+  git push origin ${GIT_BRANCH}
+fi
+
+popd
