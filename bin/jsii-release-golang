@@ -7,32 +7,41 @@ set -eu
 #
 # Usage: ./jsii-release-golang [DIR]
 #
-# DIR: directory where the golang modules are located (default is `dist/go`).
-#      Each subdirectory inside it must be a go module and contain a go.mod file.
+# DIR is a directory where the golang modules are located (default is `dist/go`). Each subdirectory inside it must be a
+#     go module and contain a go.mod file. This directory is pushed as is to the repository root, overriding existing files.
 #
 # GITHUB_TOKEN       (required): Authentication token that allows to push and tag the repository.
-# VERSION            (required): Module version. Will be used as the repository tag. Required unless NO_TAG is set to a non-zero value.
+# VERSION            (optional): Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.
 # GITHUB_REPO        (optional): GitHub repository to push to. Default is derived from the module name.
 # GIT_BRANCH         (optional): Branch to push to. Defaults to 'main'.
-# GIT_USER_NAME      (optional): Username to perform the commit with. Defaults to the current username (git config user.name)
-# GIT_USER_EMAIL     (optional): Email to perform the commit with. Defaults to the current email (git config user.email)
-# GIT_COMMIT_MESSAGE (optional): The commit message. Defaults to the last commit of the current repository.
+# GIT_USER_NAME      (optional): Username to perform the commit with. Defaults to the global git user.name config. Fails it it doesn't exist.
+# GIT_USER_EMAIL     (optional): Email to perform the commit with. Defaults to the global git user.email config. Fails it it doesn't exist.
+# GIT_COMMIT_MESSAGE (optional): The commit message. Defaults to 'chore(release): $VERSION'.
 # DRYRUN             (optional): Set to "true" for a dry run
 ###
 
 dir=${1:-dist/go}
 GIT_BRANCH=${GIT_BRANCH:-main}
-GIT_USER_NAME=${GIT_USER_NAME:-$(git config user.name)}
-GIT_USER_EMAIL=${GIT_USER_EMAIL:-$(git config user.email)}
-GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-$(git log -1 --format=%s)}
 
 # remember the full path since we might be changing dirs later on
 dir="$(pwd)/${dir}"
 
 error() { echo "❌ $@"; exit 1; }
 
+if ! command -v git &> /dev/null; then
+  error "git must be available to run this script"
+fi
+
+if [ -z "${GIT_USER_NAME:-}" ]; then
+  GIT_USER_NAME=$(git config user.name) || error "Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable"
+fi
+
+if [ -z "${GIT_USER_EMAIL:-}" ]; then
+  GIT_USER_EMAIL=$(git config user.email) || error "Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable"
+fi
+
 dry_run=false
-if [[ -n "${DRYRUN:-}" ]]; then
+if [[ ${DRYRUN:-"false"} = "true" ]]; then
   echo "==========================================="
   echo "            🏜️ DRY-RUN MODE 🏜️"
   echo "==========================================="
@@ -47,11 +56,8 @@ if [ -z "${GITHUB_TOKEN:-}" ]; then
   error "GITHUB_TOKEN env variable is required"
 fi
 
-if [ -z "${VERSION:-}" ]; then
-  error "VERSION env variable is required"
-fi
-
 go_mod=""
+versions=("")
 
 # make sure each directory has a go.mod file
 for subdir in $(ls -d ${dir}/*/)
@@ -61,11 +67,37 @@ do
   fi
   # pick one mod file to derive repository
   go_mod=${subdir}/go.mod
+
+  # collect versions if they exist. used both for validation and for default value.
+  if [ -f ${subdir}/version ]; then
+    version=$(cat ${subdir}/version)
+    versions=(${versions[@]} ${version})
+  fi
+
 done
 
 if [ ${go_mod} = "" ]; then
   error "No go modules found in ${dir}"
 fi
+
+sorted_unique_versions=($(echo "${versions[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+count_unique_version=$(echo "${#sorted_unique_versions[@]}")
+
+if [ ${count_unique_version} -gt 1 ]; then
+  error "multiple versions are not supported. please use a single version across all your modules."
+fi
+
+if [ -z "${VERSION:-}" ]; then
+
+  if [ ${count_unique_version} -eq 0 ]; then
+    error "No version files found. Please supply a version using the VERSION env variable."
+  fi
+
+  # must be a single element at this point
+  VERSION=${sorted_unique_versions[0]}
+fi
+
+GIT_COMMIT_MESSAGE=${GIT_COMMIT_MESSAGE:-"chore(release): ${VERSION}"}
 
 module_name=$(grep module ${go_mod} | cut -d ' ' -f 2)
 domain=$(echo ${module_name} | cut -d '/' -f 1)
@@ -97,7 +129,7 @@ echo "Copying go module to repository root"
 cp -r ${dir}/* .
 
 git add .
-git commit -m "\"${GIT_COMMIT_MESSAGE}\""
+git commit -m "${GIT_COMMIT_MESSAGE}"
 
 if $dry_run; then
   echo "Will push to branch: ${GIT_BRANCH}"
@@ -105,12 +137,14 @@ else
   git push origin ${GIT_BRANCH}
 fi
 
-git tag -a $VERSION -m $VERSION
+tag_name=v${VERSION}
+
+git tag -a ${tag_name} -m $VERSION
 
 if $dry_run; then
-  echo "Will create a tag: ${VERSION}"
+  echo "Will create a tag: ${tag_name}"
 else
-  git push origin $VERSION
+  git push origin ${tag_name}
 fi
 
 popd
