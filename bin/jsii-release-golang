@@ -60,7 +60,7 @@ go_mod=""
 versions=("")
 
 # make sure each directory has a go.mod file
-for subdir in $(ls -d ${dir}/*/)
+for subdir in $(find ${dir} -mindepth 1 -maxdepth 1 -type d)
 do
   if [ ! -f ${subdir}/go.mod ]; then
     error "expected to find go.mod in ${subdir}. make sure you specify the root directory of all your modules."
@@ -122,10 +122,19 @@ pushd ${target_repo_dir}
 git config user.name ${GIT_USER_NAME}
 git config user.email ${GIT_USER_EMAIL}
 
-# -B to create if it doesn't exist, reset otherwise
-git checkout -B ${GIT_BRANCH}
+# checkout or create
+git checkout ${GIT_BRANCH} || git checkout -b ${GIT_BRANCH}
 
-echo "Copying go module to repository root"
+for subdir in $(find $(pwd) -mindepth 1 -maxdepth 1 -type d)
+do
+  if [ -f ${subdir}/go.mod ]; then
+    # remove to account for deleted files or entire modules
+    echo "Removing ${subdir}"
+    rm -r ${subdir}
+  fi
+done
+
+echo "Copying go modules to repository root"
 cp -r ${dir}/* .
 
 git add .
