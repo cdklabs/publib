@@ -119,7 +119,7 @@ echo "Cloning target repository ${GITHUB_REPO}"
 git clone https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git ${target_repo_dir}
 
 pushd ${target_repo_dir}
-git config user.name ${GIT_USER_NAME}
+git config user.name "${GIT_USER_NAME}"
 git config user.email ${GIT_USER_EMAIL}
 
 # checkout or create
