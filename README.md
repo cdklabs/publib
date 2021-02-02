@@ -196,6 +196,15 @@ npx jsii-release-golang [DIR]
 `DIR` is a directory where the golang modules are located (default is `dist/go`). Each subdirectory inside it
 must be a go module and contain a go.mod file. This directory is pushed as is to the repository root, overriding existing files.
 
+Note that the repository tags will be prefixed with the module name. If a repository contains multiple modules,
+the repository will have multiple tags for each version, each corresponding to a different module. Consumers of the module will need to specify this prefix in their `require` directives. For example, for a module called `my-module`:
+
+```go
+require (
+	github.com/<owner>/<repo>/my-module my-module/v2.1.1
+)
+```
+
 **Options (environment variables):**
 
 |Option|Required|Description|
