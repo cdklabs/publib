@@ -58,6 +58,7 @@ fi
 
 go_mod=""
 versions=("")
+modules=("")
 
 # make sure each directory has a go.mod file
 for subdir in $(find ${dir} -mindepth 1 -maxdepth 1 -type d)
@@ -67,6 +68,9 @@ do
   fi
   # pick one mod file to derive repository
   go_mod=${subdir}/go.mod
+
+  # collect module names since we need them for tag prefixes.
+  modules=(${modules[@]} $(basename ${subdir}))
 
   # collect versions if they exist. used both for validation and for default value.
   if [ -f ${subdir}/version ]; then
@@ -140,14 +144,19 @@ cp -r ${dir}/* .
 git add .
 git commit -m "${GIT_COMMIT_MESSAGE}"
 
-tag_name=v${VERSION}
-git tag -a ${tag_name} -m $VERSION
+for module in "${modules[@]}"; do
+  tag_name=${module}/v${VERSION}
+  git tag -a ${tag_name} -m ${tag_name}
+  if $dry_run; then
+    echo "Will create tag: ${tag_name}"
+  else
+    git push origin ${tag_name}
+  fi
+done
 
 if $dry_run; then
-  echo "Will create a tag: ${tag_name}"
   echo "Will push to branch: ${GIT_BRANCH}"
 else
-  git push origin ${tag_name}
   git push origin ${GIT_BRANCH}
 fi
 
