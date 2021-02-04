@@ -142,6 +142,11 @@ echo "Copying go modules to repository root"
 cp -r ${dir}/* .
 
 git add .
+echo "Checking for changes"
+if git diff-index --exit-code HEAD --; then
+  echo "No changes. Skipping"
+  exit 0
+fi
 git commit -m "${GIT_COMMIT_MESSAGE}"
 
 for module in "${modules[@]}"; do
