@@ -143,7 +143,7 @@ cp -r ${dir}/* .
 
 git add .
 echo "Checking for changes"
-if git diff-index HEAD --; then
+if git diff-index --exit-code HEAD --; then
   echo "No changes. Skipping"
   exit 0
 fi
