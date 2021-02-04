@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.2.15 (2021-02-04)
+
+
+### Bug Fixes
+
+* **maven:** increase timeout to 30min ([de11c0a](https://github.com/aws/jsii-release/commit/de11c0a84923ce4fc211a62d69f811841d199c05))
+
 ### 0.2.14 (2021-02-04)
 
 
