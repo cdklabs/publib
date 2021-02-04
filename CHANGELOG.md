@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.2.14 (2021-02-04)
+
+
+### Bug Fixes
+
+* **maven:** maven central timeouts ([#30](https://github.com/aws/jsii-release/issues/30)) ([cd4a241](https://github.com/aws/jsii-release/commit/cd4a24179fdd45d9c503e8ff2b7294fc09dace46)), closes [#29](https://github.com/aws/jsii-release/issues/29)
+
 ### 0.2.13 (2021-02-02)
 
 
