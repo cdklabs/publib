@@ -204,6 +204,7 @@ deploy_central() {
         -DnexusUrl=${MAVEN_ENDPOINT:-https://oss.sonatype.org}                         \
         -DserverId=${server_id}                                                        \
         -DautoReleaseAfterClose=true                                                   \
+        -DstagingProgressTimeoutMinutes=10                                             \
         -DstagingProfileId=${MAVEN_STAGING_PROFILE_ID} | tee ${staging_output}
 
     # we need to consule PIPESTATUS sinec "tee" is the last command
@@ -251,6 +252,7 @@ HERE
         -DserverId=${server_id}                                       \
         -DnexusUrl=${MAVEN_ENDPOINT:-https://oss.sonatype.org}        \
         -DstagingProfileId=${MAVEN_STAGING_PROFILE_ID}                \
+        -DstagingProgressTimeoutMinutes=10                            \
         -DstagingRepositoryId=${repository_id} | tee ${release_output}
 
     # If release failed, check if this was caused because we are trying to publish
