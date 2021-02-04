@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.2.16 (2021-02-04)
+
+
+### Bug Fixes
+
+* **golang:** Release fails if no changes ([#32](https://github.com/aws/jsii-release/issues/32)) ([9f367d4](https://github.com/aws/jsii-release/commit/9f367d41659c6d7b5324b9d6f5f4d3eea796213f))
+
 ### 0.2.15 (2021-02-04)
 
 
