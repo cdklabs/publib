@@ -126,7 +126,6 @@ function extract_repo {
 # Otherwise, the module name is prefixed to it, e.g `my-module/v${module_version}`.
 function create_tag {
   module=$1
-  repo_name=$2
 
   module_name=$(basename ${module})
   module_version=$(extract_version ${module})
@@ -221,7 +220,7 @@ else
 fi
 
 for module in "${modules[@]}"; do
-  create_tag ${module} $(basename ${GITHUB_REPO})
+  create_tag ${module}
 done
 
 popd
