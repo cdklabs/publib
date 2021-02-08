@@ -52,6 +52,9 @@
     "ts-jest": "^26.5.0",
     "typescript": "^3.9.5"
   },
+  "dependencies": {
+    "shlex": "^2.0.2"
+  },
   "bundledDependencies": [],
   "keywords": [
     "jsii"
