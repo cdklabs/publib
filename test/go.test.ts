@@ -46,16 +46,16 @@ function mockCloner(options: ClonerOptions = {}) {
   };
 }
 
-// // a cloner that adds a file to the cloned repo. since this file is missing
-// // from the source, it simulates a deleted file.
-// const deletedFileCloner = (submodule?: string) => {
-//   return mockCloner({
-//     onTarget: (targetDir: string) => {
-//     // add a file so we have changes
-//       fs.writeFileSync(path.join(targetDir, submodule ?? '', 'file'), 'test');
-//     },
-//   });
-// };
+// a cloner that adds a file to the cloned repo. since this file is missing
+// from the source, it simulates a deleted file.
+const deletedFileCloner = (submodule?: string) => {
+  return mockCloner({
+    onTarget: (targetDir: string) => {
+    // add a file so we have changes
+      fs.writeFileSync(path.join(targetDir, submodule ?? '', 'file'), 'test');
+    },
+  });
+};
 
 // a cloner that adds a file to the source. since this file is missing
 // from the repo, it simulates an added file.
@@ -120,11 +120,27 @@ test('uses global version', () => {});
 
 test('throws is domain if module repo domain is not github.com', () => {});
 
-test('considers deleted files', () => {});
+test('considers deleted files', () => {
+
+  const releaser = new GoReleaser(`${__dirname}/__fixtures__/top-level`);
+  (releaser as any)._cloner = deletedFileCloner();
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['v1.1.0']);
+
+});
 
 test('considers deleted modules', () => {});
 
-test('considers added files', () => {});
+test('considers added files', () => {
+
+  const releaser = new GoReleaser(`${__dirname}/__fixtures__/top-level`);
+  (releaser as any)._cloner = addedFileCloner();
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['v1.1.0']);
+
+});
 
 test('considers added modules', () => {});
 
