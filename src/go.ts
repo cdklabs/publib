@@ -80,9 +80,9 @@ export class GoReleaser {
     this.cloner.clone(repo, repoDir);
 
     try {
-      shell.run('git', ['checkout', this.gitBranch]);
+      shell.run('git', ['checkout', this.gitBranch], { cwd: repoDir });
     } catch (err) {
-      shell.run('git', ['checkout', '-b', this.gitBranch], { shell: true });
+      shell.run('git', ['checkout', '-b', this.gitBranch], { cwd: repoDir, shell: true });
     }
 
     this.syncModules(repoDir);
