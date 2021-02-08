@@ -59,6 +59,10 @@
       "type": "build"
     },
     {
+      "name": "ts-jest",
+      "type": "build"
+    },
+    {
       "name": "typescript",
       "version": "^3.9.5",
       "type": "build"

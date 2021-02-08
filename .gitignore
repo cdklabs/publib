@@ -36,14 +36,14 @@ yarn-error.log*
 !/.mergify.yml
 !/.npmignore
 !/.projen/deps.json
-!/.projen/jest-snapshot-resolver.js
 !/.projen/tasks.json
 !/.projenrc.js
 !/.versionrc.json
 !/LICENSE
 !/package.json
 !/src
-!/src/__tests__
+!/test
 !/tsconfig.eslint.json
+!/tsconfig.jest.json
 !/tsconfig.json
 !version.json

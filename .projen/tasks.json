@@ -46,13 +46,21 @@
     "test:compile": {
       "name": "test:compile",
       "category": "10.test",
-      "description": "compiles the test code"
+      "description": "compiles the test code",
+      "steps": [
+        {
+          "exec": "tsc --noEmit --project tsconfig.jest.json"
+        }
+      ]
     },
     "test": {
       "name": "test",
       "category": "10.test",
       "description": "Run tests",
       "steps": [
+        {
+          "exec": "rm -fr lib/"
+        },
         {
           "spawn": "test:compile"
         },
@@ -70,10 +78,10 @@
       "description": "Full release build (test+compile)",
       "steps": [
         {
-          "spawn": "compile"
+          "spawn": "test"
         },
         {
-          "spawn": "test"
+          "spawn": "compile"
         },
         {
           "spawn": "package"
@@ -182,7 +190,7 @@
       "description": "Runs eslint against the codebase",
       "steps": [
         {
-          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src src/__tests__ build-tools .projenrc.js"
+          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test build-tools .projenrc.js"
         }
       ]
     }

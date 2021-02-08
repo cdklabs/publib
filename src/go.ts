@@ -16,10 +16,16 @@ export class GoRelease {
     console.log(`Will push to branch: ${this.branch}`);
     this.tags.forEach(t => console.log(`Will push tag: ${t}`));
   }
+
 }
 
-export class GoReleaseArtifacts {
-  
+export interface Cloner {
+  clone(repository: string, targetDir: string): void;
+}
+
+export interface GoReleaserProps {
+  readonly cloner?: Cloner;
+  readonly sourceDir: string;
 }
 
 export class GoReleaser {
@@ -31,34 +37,24 @@ export class GoReleaser {
   private readonly gitBranch: string;
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
-  private readonly gitCommitMessage: string;
-  private readonly gitHubToken: string;
+  private readonly cloner: Cloner;
 
-  private readonly modules: readonly string[];
 
-  constructor(dir: string) {
+  constructor(props: GoReleaserProps) {
 
     try {
       shell.which('git');
     } catch (err) {
-      throw new Error('git must be available to run this releaser');
+      throw new Error('git must be available to create this release');
     }
 
-    this.dir = dir;
-    this.modules = this.collectModules(this.dir);
-
+    this.dir = props.sourceDir;
+    this.cloner = props.cloner ?? { clone: this.cloneGitHub };
     this.dryRun = (process.env.DRY_RUN ?? 'false').toLowerCase() === 'true';
-    this.version = process.env.VERSION;
     this.gitBranch = process.env.GIT_BRANCH ?? 'main';
     this.gitUsername = process.env.GIT_USER_NAME ?? shell.run('git', ['config', 'user.name']);
     this.gitUseremail = process.env.GIT_USER_EMAIL ?? shell.run('git', ['config', 'user.email']);
-    this.gitCommitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.createReleaseMessage(this.modules);
-
-    const gitHubToken = process.env.GITHUB_TOKEN;
-
-    if (!gitHubToken) {
-      throw new Error('GITHUB_TOKEN env variable is required');
-    }
+    this.version = process.env.VERSION;
 
     if (this.gitUseremail === '') {
       throw new Error('Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable');
@@ -68,19 +64,20 @@ export class GoReleaser {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
 
-    this.gitHubToken = gitHubToken;
-
   }
 
   public release(): GoRelease {
 
-    const repo = this.extractRepo();
+    const modules = this.collectModules(this.dir);
+    console.log('Detected modules:');
+    modules.forEach(m => console.log(` - ${m}`));
+
+    const repo = this.extractRepo(modules);
+    console.log(`Repository is: ${repo}`);
 
     const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(repo));
 
-    shell.gitClone(repo, this.gitHubToken, repoDir);
-    shell.run('git', ['config', 'user.name', this.gitUsername], { cwd: repoDir });
-    shell.run('git', ['config', 'user.email', this.gitUseremail], { cwd: repoDir });
+    this.cloner.clone(repo, repoDir);
 
     try {
       shell.run('git', ['checkout', this.gitBranch]);
@@ -98,12 +95,14 @@ export class GoReleaser {
       // changes exist, thats ok.
     }
 
-    shell.run('git', ['commit', '-m', this.gitCommitMessage]);
+    shell.run('git', ['config', 'user.name', this.gitUsername], { cwd: repoDir });
+    shell.run('git', ['config', 'user.email', this.gitUseremail], { cwd: repoDir });
 
-    const tags = [];
-    for (const module of this.modules) {
-      tags.push(this.createTag(module));
-    }
+    const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.createReleaseMessage(modules);
+
+    shell.run('git', ['commit', '-m', commitMessage]);
+
+    const tags = modules.map(m => this.createTag(m, repoDir));
 
     const release = new GoRelease(this.gitBranch, tags, repoDir);
 
@@ -117,45 +116,35 @@ export class GoReleaser {
 
   }
 
+  private cloneGitHub(repository: string, targetDir: string) {
+
+    const gitHubToken = process.env.GITHUB_TOKEN;
+
+    if (!gitHubToken) {
+      throw new Error('GITHUB_TOKEN env variable is required');
+    }
+
+    shell.run('git', ['clone', `https://${gitHubToken}@github.com/${repository}.git`, targetDir]);
+  }
+
   private collectModules(dir: string): string[] {
 
     const modules = [];
 
-    for (const p of fs.readdirSync(dir)) {
-      const topLevel = path.join(dir, p);
-      const stats = fs.lstatSync(topLevel);
-      if (stats.isFile() && p == 'go.mod') {
-        modules.push(topLevel);
-      }
-      const submodule = path.join(topLevel, 'go.mod');
-      if (stats.isDirectory() && fs.existsSync(submodule)) {
-        modules.push(submodule);
-      }
+    // top level module
+    if (fs.existsSync(path.join(dir, 'go.mod'))) {
+      modules.push(dir);
     }
 
-    if (modules.length === 0) {
-      throw new Error(`No go modules detected in ${dir}`);
+    // submodules
+    for (const p of fs.readdirSync(dir)) {
+      const fullPath = path.join(dir, p);
+      if (fs.existsSync(path.join(fullPath, 'go.mod'))) {
+        modules.push(fullPath);
+      }
     }
 
     return modules;
-  }
-
-  private createTag(module: string): string {
-    const moduleName = path.basename(module);
-    const moduleVersion = this.extractVersion(module);
-
-    let tagName = undefined;
-
-    if (module === this.dir) {
-      // root module
-      tagName = `v${moduleVersion}`;
-    } else {
-      // sub module
-      tagName = `${moduleName}/v${moduleVersion}`;
-    }
-
-    shell.run('git', ['tag', '-a', tagName, '-m', tagName]);
-    return tagName;
   }
 
   private syncModules(repoDir: string) {
@@ -164,8 +153,8 @@ export class GoReleaser {
 
     if (fs.existsSync(topLevel)) {
       // with top level modules we sync the entire repository
-      fs.rmdirSync(repoDir);
-      fs.mkdirSync(repoDir);
+      // (some things are just easier in bash...)
+      shell.run('rm', ['-r', `${repoDir}/*`], { shell: true });
     } else {
       // otherwise, we selectively remove the submodules only.
       for (const p of fs.readdirSync(repoDir)) {
@@ -177,6 +166,35 @@ export class GoReleaser {
     }
 
     shell.run('cp', ['-r', `${this.dir}/*`, repoDir], { shell: true });
+  }
+
+  private extractRepo(modules: string[]): string {
+    const repos = new Set<string>();
+
+    function findModuleDeclaration(_modFile: string) {
+      for (const line of fs.readFileSync(_modFile).toString().split('\n')) {
+        if (line.startsWith('module ')) {
+          return line.split(' ')[1];
+        }
+      }
+      throw new Error(`No module declaration in file: ${_modFile}`);
+    }
+
+    for (const module of modules) {
+      const modFile = path.join(module, 'go.mod');
+      const fullModuleName = findModuleDeclaration(modFile).split('/');
+      const owner = fullModuleName[1];
+      const repo = fullModuleName[2];
+      repos.add(`${owner}/${repo}`);
+    }
+
+    if (repos.size === 0) {
+      throw new Error('Unable to detect repository from module files.');
+    }
+    if (repos.size > 1) {
+      throw new Error('Multiple repositories found in module files');
+    }
+    return repos.values().next().value;
   }
 
   private createReleaseMessage(modules: readonly string[]) {
@@ -196,6 +214,24 @@ export class GoReleaser {
     return message;
   }
 
+  private createTag(module: string, repoDir: string): string {
+    const moduleName = path.basename(module);
+    const moduleVersion = this.extractVersion(module);
+
+    let tagName = undefined;
+
+    if (module === repoDir) {
+      // root module
+      tagName = `v${moduleVersion}`;
+    } else {
+      // sub module
+      tagName = `${moduleName}/v${moduleVersion}`;
+    }
+
+    shell.run('git', ['tag', '-a', tagName, '-m', tagName]);
+    return tagName;
+  }
+
   private extractVersion(module: string) {
     let moduleVersion = undefined;
     const versionFile = path.join(path.dirname(module), 'version');
@@ -208,35 +244,6 @@ export class GoReleaser {
         + 'Either include a \'version\' file, or specify a global version using the VERSION environment variable.');
     }
     return moduleVersion;
-  }
-
-  private extractRepo(): string {
-    const repos = new Set<string>();
-
-    function findModuleDeclaration(_modFile: string) {
-      for (const line of fs.readFileSync(_modFile).toString().split('\n')) {
-        if (line.startsWith('module ')) {
-          return line.split(' ')[1];
-        }
-      }
-      throw new Error(`No module declaration in file: ${_modFile}`);
-    }
-
-    for (const module of this.modules) {
-      const modFile = path.join(path.dirname(module), 'go.mod');
-      const fullModuleName = findModuleDeclaration(modFile);
-      const owner = fullModuleName[1];
-      const repo = fullModuleName[2];
-      repos.add(`${owner}/${repo}`);
-    }
-
-    if (repos.size === 0) {
-      throw new Error('Unable to detect repository from module files.');
-    }
-    if (repos.size > 1) {
-      throw new Error('Multiple repositories found in module files');
-    }
-    return repos.values().next().value;
   }
 
 }

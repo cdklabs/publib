@@ -23,7 +23,3 @@ export function run(program: string, args: string[], options?: child.SpawnSyncOp
   }
   return result.stdout.toString();
 }
-
-export function gitClone(repo: string, gitHubToken: string, targetDir: string) {
-  run('git', ['clone', `https://${gitHubToken}@github.com/${repo}.git`, targetDir]);
-}
