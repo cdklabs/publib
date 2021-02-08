@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { GoReleaser } from '../src';
+import { GoReleaser, GoReleaserProps } from '../src';
 import * as utils from '../src/utils';
 
 function initRepo(repoDir: string) {
@@ -13,7 +13,7 @@ function initRepo(repoDir: string) {
   utils.shell('git commit -m "Initial commit"');
 }
 
-function createReleaser(fixture: string) {
+function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}) {
 
   const fixturePath = path.join(__dirname, '__fixtures__', fixture);
   const sourceDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(fixture));
@@ -21,7 +21,11 @@ function createReleaser(fixture: string) {
 
   // create the releaser with a copy of the fixture to allow
   // source customization.
-  const releaser = new GoReleaser(sourceDir);
+  const releaser = new GoReleaser({
+    dir: sourceDir,
+    dryRun: true,
+    ...props,
+  });
   (releaser as any)._cloner = function(_: string, targetDir: string) {
     // the cloned repo is always the original fixture.
     utils.shell(`cp -r ${fixturePath} ${targetDir}`);
@@ -30,11 +34,6 @@ function createReleaser(fixture: string) {
 
   return { releaser, sourceDir };
 }
-
-
-beforeEach(() => {
-  process.env.DRY_RUN = 'True';
-});
 
 test('top-level produces a tag without prefix', () => {
 

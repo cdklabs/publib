@@ -14,6 +14,57 @@ export interface GoRelease {
   readonly tags?: string[];
 }
 
+/**
+ * Properties for `GoReleaser`.
+ */
+export interface GoReleaserProps {
+
+  /**
+   * The source code directory.
+   *
+   * @default 'dist/go'
+   */
+  readonly dir?: string;
+
+  /**
+   * Execute a dry run only.
+   *
+   * @default false
+   */
+  readonly dryRun?: boolean;
+
+  /**
+   * The branch to push to.
+   *
+   * @default 'main'
+   */
+  readonly branch?: string;
+
+  /**
+   * The username to use for the commit.
+   *
+   * @default - taken from git config. throws if not configured.
+   */
+  readonly username?: string;
+
+  /**
+   * The email to use for the commit.
+   *
+   * @default - taken from git config. throws if not configured.
+   */
+  readonly email?: string;
+
+  /**
+   * The version.
+   *
+   * @default - taken from the 'version'. throws if doesn't exist.
+   */
+  readonly version?: string;
+}
+
+/**
+ * Release a set of Golang modules.
+ */
 export class GoReleaser {
 
   private readonly version?: string;
@@ -26,7 +77,7 @@ export class GoReleaser {
 
   private readonly _cloner: (repository: string, targetDir: string) => void;
 
-  constructor(dir?: string) {
+  constructor(props: GoReleaserProps) {
 
     try {
       utils.which('git');
@@ -34,13 +85,12 @@ export class GoReleaser {
       throw new Error('git must be available to create this release');
     }
 
-    this.version = process.env.VERSION;
-    this.dir = dir ?? 'dist/go';
-    this.gitBranch = process.env.GIT_BRANCH ?? 'main';
-    this._cloner = this.cloneGitHub;
-    this.dryRun = (process.env.DRY_RUN ?? 'false').toLowerCase() === 'true';
-    this.gitUsername = process.env.GIT_USER_NAME ?? utils.shell('git config user.name');
-    this.gitUseremail = process.env.GIT_USER_EMAIL ?? utils.shell('git config user.email');
+    this.version = props.version;
+    this.dir = props.dir ?? 'dist/go';
+    this.gitBranch = props.branch ?? 'main';
+    this.dryRun = props.dryRun ?? false;
+    this.gitUsername = props.username ?? utils.shell('git config user.name');
+    this.gitUseremail = props.email ?? utils.shell('git config user.email');
 
     if (this.gitUseremail === '') {
       throw new Error('Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable');
@@ -49,6 +99,9 @@ export class GoReleaser {
     if (this.gitUsername === '') {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
+
+    this._cloner = this.cloneGitHub;
+
   }
 
   /**
