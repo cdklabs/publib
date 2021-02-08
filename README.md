@@ -215,7 +215,7 @@ require (
 |------|--------|-----------|
 |`GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
-|`GITHUB_REPO`|Optional|GitHub repository to push to. Default is derived from the module name.|
+the module name.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
 |`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the global git user.name config. Fails it it doesn't exist.|
 |`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the global git user.email config. Fails it it doesn't exist.|

@@ -35,7 +35,7 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
   return { releaser, sourceDir };
 }
 
-test('top-level produces a tag without prefix', () => {
+test('top-level', () => {
 
   const { releaser, sourceDir } = createReleaser('top-level');
 
@@ -43,10 +43,11 @@ test('top-level produces a tag without prefix', () => {
   const release = releaser.release();
 
   expect(release.tags).toEqual(['v1.1.0']);
+  expect(release.commitMessage).toEqual('chore(release): v1.1.0');
 
 });
 
-test('sub-modules produce tags with prefixes', () => {
+test('sub-modules', () => {
 
   const { releaser, sourceDir } = createReleaser('sub-modules');
 
@@ -54,10 +55,11 @@ test('sub-modules produce tags with prefixes', () => {
   const release = releaser.release();
 
   expect(release.tags).toEqual(['module1/v1.1.0', 'module2/v1.1.0']);
+  expect(release.commitMessage).toEqual('chore(release): v1.1.0');
 
 });
 
-test('combined procudes tags both with an without a prefix', () => {
+test('combined', () => {
 
   const { releaser, sourceDir } = createReleaser('combined');
 
@@ -65,10 +67,11 @@ test('combined procudes tags both with an without a prefix', () => {
   const release = releaser.release();
 
   expect(release.tags).toEqual(['v1.1.0', 'module1/v1.1.0', 'module2/v1.1.0']);
+  expect(release.commitMessage).toEqual('chore(release): v1.1.0');
 
 });
 
-test('multi-version produces tags with different versions', () => {
+test('multi-version', () => {
 
   const { releaser, sourceDir } = createReleaser('multi-version');
   fs.writeFileSync(path.join(sourceDir, 'module1', 'file'), 'test');
@@ -76,16 +79,45 @@ test('multi-version produces tags with different versions', () => {
   const release = releaser.release();
 
   expect(release.tags).toEqual(['module1/v1.1.0', 'module2/v1.2.0']);
+  expect(release.commitMessage).toEqual('chore(release): module1@v1.1.0 module2@v1.2.0');
 
 });
 
-test('throws when submodules use different repos', () => {});
+test('throws when submodules use multiple repos', () => {
 
-test('throws when version file doesnt exist and no global version', () => {});
+  const { releaser } = createReleaser('multi-repo');
 
-test('uses global version', () => {});
+  expect(() => releaser.release()).toThrow(/Multiple repositories found in module files/);
 
-test('throws is domain if module repo domain is not github.com', () => {});
+});
+
+test('throws when version file doesnt exist and no global version', () => {
+
+  const { releaser, sourceDir } = createReleaser('no-version');
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+
+  expect(() => releaser.release()).toThrow(/Unable to determine version of module/);
+
+});
+
+test('uses global version', () => {
+
+  const { releaser, sourceDir } = createReleaser('no-version', { version: '1.0.0' });
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+
+  const release = releaser.release();
+  expect(release.tags).toEqual(['v1.0.0']);
+
+});
+
+test('throws if module repo domain is not github.com', () => {
+
+  const { releaser, sourceDir } = createReleaser('not-github');
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+
+  expect(() => releaser.release()).toThrow(/gitlab.com is not supported/);
+
+});
 
 test('considers deleted files', () => {
 
@@ -98,7 +130,16 @@ test('considers deleted files', () => {
 
 });
 
-test('considers deleted modules', () => {});
+test('considers deleted modules', () => {
+
+  const { releaser, sourceDir } = createReleaser('sub-modules');
+
+  utils.removeDirectory(path.join(sourceDir, 'module1'));
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['module2/v1.1.0']);
+
+});
 
 test('considers added files', () => {
 
@@ -111,6 +152,25 @@ test('considers added files', () => {
 
 });
 
-test('considers added modules', () => {});
+test('considers added modules', () => {
 
-test('skips when no changes', () => {});
+  const { releaser, sourceDir } = createReleaser('sub-modules');
+
+  const module3 = path.join(sourceDir, 'module3');
+  fs.mkdirSync(module3);
+  fs.writeFileSync(path.join(module3, 'go.mod'), 'module github.com/aws/sub-modules/module3');
+  fs.writeFileSync(path.join(module3, 'version'), '1.0.0');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['module1/v1.1.0', 'module2/v1.1.0', 'module3/v1.0.0']);
+
+});
+
+test('skips when no changes', () => {
+
+  const { releaser } = createReleaser('top-level');
+  const release = releaser.release();
+
+  expect(release.tags).toBeUndefined();
+
+});

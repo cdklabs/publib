@@ -9,8 +9,35 @@ import * as shlex from 'shlex';
  *
  * @param program program to check (e.g 'git')
  */
-export function which(program: string): string {
-  return shell(`which ${program}`);
+export function checkProgram(program: string): string {
+  return shell(`which ${program}`, { capture: true });
+}
+
+/**
+ * Options for the `shell` function.
+ */
+export interface ShellOptions {
+
+  /**
+   * Wokring directory.
+   *
+   * @default process.cwd()
+   */
+  readonly cwd?: string;
+
+  /**
+   * Capture the output of the command and return to caller.
+   *
+   * @default - no capture, output is printed to stdout.
+   */
+  readonly capture?: boolean;
+
+  /**
+   * Run the command inside a shell.
+   *
+   * @default false
+   */
+  readonly shell?: boolean;
 }
 
 /**
@@ -19,22 +46,20 @@ export function which(program: string): string {
  *
  * @param command command (e.g 'git commit -m')
  */
-export function shell(command: string, options?: child.SpawnSyncOptions): string {
+export function shell(command: string, options: ShellOptions = {}): string {
   const shsplit = shlex.split(command);
+  const pipe = options.capture ?? false;
   const result = child.spawnSync(shsplit[0], shsplit.slice(1), {
-    stdio: [
-      'ignore', // ignore stdio
-      'inherit', // inherit stdout
-      process.stdout, // redirect stderr to stdout
-    ],
-    ...options,
+    stdio: ['ignore', pipe ? 'pipe' : 'inherit', process.stdout],
+    cwd: options.cwd,
+    shell: options.shell,
   });
   if (result.error) {
     throw result.error;
   }
   if (result.status !== 0) {
-    const message = `[stdout: ${result.stdout?.toString()} | stderr: ${result.stderr?.toString()}]`;
-    throw new Error(message);
+    // we always redirect stderr to stdout so its ok to take stdout.
+    throw new Error(result.stdout.toString());
   }
   return result.stdout?.toString();
 }

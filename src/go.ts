@@ -12,6 +12,11 @@ export interface GoRelease {
    * The tags the release created.
    */
   readonly tags?: string[];
+
+  /**
+   * The commit message of the release.
+   */
+  readonly commitMessage?: string;
 }
 
 /**
@@ -75,22 +80,25 @@ export class GoReleaser {
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
 
+  // hack to allow tests to inject a different clone behavior.
+  // tried using a proper mock and lost too much time trying to make it work.
+  // eventually we should switch.
   private readonly _cloner: (repository: string, targetDir: string) => void;
 
   constructor(props: GoReleaserProps) {
 
     try {
-      utils.which('git');
+      utils.checkProgram('git');
     } catch (err) {
-      throw new Error('git must be available to create this release');
+      throw new Error(`git must be available to create this release: ${err.message}`);
     }
 
     this.version = props.version;
-    this.dir = props.dir ?? 'dist/go';
+    this.dir = props.dir ?? path.join(process.cwd(), 'dist/go');
     this.gitBranch = props.branch ?? 'main';
     this.dryRun = props.dryRun ?? false;
-    this.gitUsername = props.username ?? utils.shell('git config user.name');
-    this.gitUseremail = props.email ?? utils.shell('git config user.email');
+    this.gitUsername = props.username ?? utils.shell('git config user.name', { capture: true });
+    this.gitUseremail = props.email ?? utils.shell('git config user.email', { capture: true });
 
     if (this.gitUseremail === '') {
       throw new Error('Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable');
@@ -128,7 +136,6 @@ export class GoReleaser {
     }
 
     this.syncModules(repoDir);
-
     try {
       utils.shell('git add .');
       utils.shell('git diff-index --exit-code HEAD --');
@@ -138,11 +145,10 @@ export class GoReleaser {
       // changes exist, thats ok.
     }
 
-    utils.shell(`git config user.name ${this.gitUsername}`);
-    utils.shell(`git config user.email ${this.gitUseremail}`);
-
     const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.createReleaseMessage(modules);
 
+    utils.shell(`git config user.name ${this.gitUsername}`);
+    utils.shell(`git config user.email ${this.gitUseremail}`);
     utils.shell(`git commit -m "${commitMessage}"`);
 
     const tags = modules.map(m => this.createTag(m, repoDir));
@@ -154,22 +160,18 @@ export class GoReleaser {
       utils.shell(`git push origin ${this.gitBranch}`);
       tags.forEach(t => utils.shell(`git push origin ${t}`));
     }
-    return { tags };
+    return { tags, commitMessage };
   }
 
   private cloneGitHub(repository: string, targetDir: string) {
-
     const gitHubToken = process.env.GITHUB_TOKEN;
-
     if (!gitHubToken) {
       throw new Error('GITHUB_TOKEN env variable is required');
     }
-
     utils.shell(`git clone https://${gitHubToken}@github.com/${repository}.git ${targetDir}`);
   }
 
   private collectModules(dir: string): string[] {
-
     const modules = [];
 
     // top level module
@@ -184,7 +186,6 @@ export class GoReleaser {
         modules.push(fullPath);
       }
     }
-
     return modules;
   }
 
@@ -220,6 +221,10 @@ export class GoReleaser {
     for (const module of modules) {
       const modFile = path.join(module, 'go.mod');
       const fullModuleName = findModuleDeclaration(modFile).split('/');
+      const domain = fullModuleName[0];
+      if (domain !== 'github.com') {
+        throw new Error(`${domain} is not supported`);
+      }
       const owner = fullModuleName[1];
       const repo = fullModuleName[2];
       repos.add(`${owner}/${repo}`);
@@ -235,16 +240,24 @@ export class GoReleaser {
   }
 
   private createReleaseMessage(modules: readonly string[]) {
-    let message = 'chore(release):';
-    if (this.version) {
-      return `${message} ${this.version}`;
+
+    const moduleVersions: any = {};
+    for (const moduleDir of modules) {
+      const moduleName = path.basename(moduleDir);
+      const moduleVersion = this.extractVersion(moduleDir);
+      moduleVersions[moduleName] = moduleVersion;
     }
-    for (const module of modules) {
-      const moduleName = path.basename(module);
-      const moduleVersion = this.extractVersion(module);
-      message = `${message} ${moduleName}@${moduleVersion}`;
+
+    const semantic = 'chore(release)';
+
+    const versions = new Set(Object.values(moduleVersions));
+    if (versions.size === 1) {
+      // single version
+      return `${semantic}: v${versions.values().next().value}`;
+    } else {
+      // multiple versions
+      return `${semantic}: ${Object.entries(moduleVersions).map(e => `${e[0]}@v${e[1]}`).join(' ')}`;
     }
-    return message;
   }
 
   private createTag(moduleDirectory: string, repoDir: string): string {
@@ -262,13 +275,13 @@ export class GoReleaser {
     return tagName;
   }
 
-  private extractVersion(moduleDirectory: string) {
+  private extractVersion(moduleDirectory: string): string {
     let moduleVersion = undefined;
     const versionFile = path.join(moduleDirectory, 'version');
     if (this.version) {
       moduleVersion = this.version;
     } else if (fs.existsSync(versionFile)) {
-      moduleVersion = fs.readFileSync(versionFile);
+      moduleVersion = fs.readFileSync(versionFile).toString();
     } else {
       throw new Error(`Unable to determine version of module ${moduleDirectory}. `
         + 'Either include a \'version\' file, or specify a global version using the VERSION environment variable.');
