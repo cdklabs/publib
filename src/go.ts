@@ -14,41 +14,6 @@ export interface GoRelease {
   readonly tags?: string[];
 }
 
-/**
- * A cloner is responsible for cloning a git repository from a remote
- * host to a local target directory.
- */
-export interface GitCloner {
-
-  /**
-   * Clone the repository into the target directory.
-   *
-   * @param repository the repository. (e.g 'aws/constructs')
-   * @param targetDir the target directory.
-   */
-  clone(repository: string, targetDir: string): void;
-}
-
-/**
- * Properties of `GoReleaser`.
- */
-export interface GoReleaserProps {
-
-  /**
-   * The cloner to use.
-   *
-   * @default - Clones from GitHub using an access token.
-   */
-  readonly cloner?: GitCloner;
-
-  /**
-   * The source directory to release.
-   *
-   * @default 'dist/go'
-   */
-  readonly sourceDir?: string;
-}
-
 export class GoReleaser {
 
   private readonly version?: string;
@@ -58,9 +23,10 @@ export class GoReleaser {
   private readonly gitBranch: string;
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
-  private readonly cloner: GitCloner;
 
-  constructor(props: GoReleaserProps) {
+  private readonly _cloner: (repository: string, targetDir: string) => void;
+
+  constructor(dir?: string) {
 
     try {
       utils.which('git');
@@ -69,9 +35,9 @@ export class GoReleaser {
     }
 
     this.version = process.env.VERSION;
-    this.dir = props.sourceDir ?? 'dist/go';
+    this.dir = dir ?? 'dist/go';
     this.gitBranch = process.env.GIT_BRANCH ?? 'main';
-    this.cloner = props.cloner ?? { clone: this.cloneGitHub };
+    this._cloner = this.cloneGitHub;
     this.dryRun = (process.env.DRY_RUN ?? 'false').toLowerCase() === 'true';
     this.gitUsername = process.env.GIT_USER_NAME ?? utils.shell('git config user.name');
     this.gitUseremail = process.env.GIT_USER_EMAIL ?? utils.shell('git config user.email');
@@ -83,7 +49,6 @@ export class GoReleaser {
     if (this.gitUsername === '') {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
-
   }
 
   /**
@@ -99,7 +64,7 @@ export class GoReleaser {
 
     const repo = this.extractRepo(modules);
     const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(repo));
-    this.cloner.clone(repo, repoDir);
+    this._cloner(repo, repoDir);
 
     process.chdir(repoDir);
 
