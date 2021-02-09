@@ -264,9 +264,7 @@ export class GoReleaser {
   }
 
   private createReleaseMessage(modules: GoModule[]) {
-
     const semantic = 'chore(release)';
-
     const versions = new Set(modules.map(m => m.version));
     if (versions.size === 1) {
       // single version
