@@ -80,11 +80,6 @@ export class GoReleaser {
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
 
-  // hack to allow tests to inject a different clone behavior.
-  // tried using a proper mock and lost too much time trying to make it work.
-  // eventually we should switch.
-  private readonly _cloner: (repository: string, targetDir: string) => void;
-
   constructor(props: GoReleaserProps) {
 
     try {
@@ -108,8 +103,6 @@ export class GoReleaser {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
 
-    this._cloner = this.cloneGitHub;
-
   }
 
   /**
@@ -125,7 +118,7 @@ export class GoReleaser {
 
     const repo = this.extractRepo(modules);
     const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(repo));
-    this._cloner(repo, repoDir);
+    utils.gitClone(repo, repoDir);
 
     process.chdir(repoDir);
 
@@ -161,14 +154,6 @@ export class GoReleaser {
       tags.forEach(t => utils.shell(`git push origin ${t}`));
     }
     return { tags, commitMessage };
-  }
-
-  private cloneGitHub(repository: string, targetDir: string) {
-    const gitHubToken = process.env.GITHUB_TOKEN;
-    if (!gitHubToken) {
-      throw new Error('GITHUB_TOKEN env variable is required');
-    }
-    utils.shell(`git clone https://${gitHubToken}@github.com/${repository}.git ${targetDir}`);
   }
 
   private collectModules(dir: string): string[] {

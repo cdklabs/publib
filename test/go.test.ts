@@ -26,7 +26,8 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
     dryRun: true,
     ...props,
   });
-  (releaser as any)._cloner = function(_: string, targetDir: string) {
+
+  (utils as any).gitClone = function(_: string, targetDir: string) {
     // the cloned repo is always the original fixture.
     utils.shell(`cp -r ${fixturePath} ${targetDir}`);
     initRepo(targetDir);

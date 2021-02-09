@@ -108,3 +108,11 @@ export function removeDirectory(dir: string, options: RemoveDirectoryOptions = {
     fs.rmdirSync(dir);
   }
 };
+
+export function gitClone(repository: string, targetDir: string) {
+  const gitHubToken = process.env.GITHUB_TOKEN;
+  if (!gitHubToken) {
+    throw new Error('GITHUB_TOKEN env variable is required');
+  }
+  shell(`git clone https://${gitHubToken}@github.com/${repository}.git ${targetDir}`);
+}
