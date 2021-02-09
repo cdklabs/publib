@@ -201,13 +201,6 @@ Repository tags will be in the following format:
 - For a module located at the root: `v${module_version}` (e.g `v1.20.1`)
 - For modules located inside subdirectories: `<subdir-name>/v${module_version}` (e.g `my-module/v3.3.1`)
 
-Consumers of the module will need to specify the full tag name in their `require` directives. For example, for a module called `my-module`:
-
-```go
-require (
-	github.com/<owner>/<repo>/my-module my-module/v2.1.1
-)
-```
 
 **Options (environment variables):**
 
