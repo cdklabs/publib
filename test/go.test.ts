@@ -16,6 +16,8 @@ function initRepo(repoDir: string) {
 function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}) {
 
   const fixturePath = path.join(__dirname, '__fixtures__', fixture);
+  const tmp = os.tmpdir();
+  console.log(`Creating a temporary directory in ${tmp}`);
   const sourceDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(fixture));
   utils.shell(`cp -r ${fixturePath} ${sourceDir}`);
 
