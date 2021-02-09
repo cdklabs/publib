@@ -191,25 +191,18 @@ export class GoReleaser {
   private collectModules(dir: string): GoModule[] {
     const modules: GoModule[] = [];
 
-    // top level module
-    if (fs.existsSync(path.join(dir, 'go.mod'))) {
-      modules.push(this.createModule(dir));
-    }
-
-    // submodules
-    for (const p of fs.readdirSync(dir)) {
-      const fullPath = path.join(dir, p);
-      if (fs.existsSync(path.join(fullPath, 'go.mod'))) {
-        modules.push(this.createModule(fullPath));
+    for (const p of [...fs.readdirSync(dir), '.']) {
+      const modFile = path.join(dir, p, 'go.mod');
+      if (fs.existsSync(modFile)) {
+        modules.push(this.createModule(modFile));
       }
     }
     return modules;
   }
 
-  private createModule(moduleDirectory: string): GoModule {
+  private createModule(modFile: string): GoModule {
 
-    const version = this.extractVersion(moduleDirectory);
-    const modFile = path.join(moduleDirectory, 'go.mod');
+    const version = this.extractVersion(path.dirname(modFile));
     const majorVersion = version.split('.')[0];
 
     const cannonicalNameParts = [];

@@ -67,7 +67,7 @@ test('combined', () => {
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
   const release = releaser.release();
 
-  expect(release.tags).toEqual(['v1.1.0', 'module1/v1.1.0', 'module2/v1.1.0']);
+  expect(release.tags).toEqual(['module1/v1.1.0', 'module2/v1.1.0', 'v1.1.0']);
   expect(release.commitMessage).toEqual('chore(release): v1.1.0');
 
 });
