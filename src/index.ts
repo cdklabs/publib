@@ -1,1 +1,1 @@
-export * from './go';
+export * from './targets/go';

@@ -1,4 +1,4 @@
-import * as go from '../go';
+import * as go from '../targets/go';
 
 const releaser = new go.GoReleaser({
   dir: process.argv[2],

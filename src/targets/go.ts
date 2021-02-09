@@ -1,6 +1,8 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as utils from './utils';
+import * as fs from 'fs-extra';
+import * as git from '../help/git';
+import * as os from '../help/os';
+import * as shell from '../help/shell';
 
 /**
  * Encapsulates some information about the release.
@@ -113,24 +115,22 @@ export class GoReleaser {
 
   constructor(props: GoReleaserProps) {
 
-    try {
-      utils.checkProgram('git');
-    } catch (err) {
-      throw new Error(`git must be available to create this release: ${err.message}`);
+    if (!shell.which('git')) {
+      throw new Error('git must be available to in order to be able to push Go code to GitHub');
     }
 
     this.version = props.version;
-    this.dir = props.dir ?? path.join(process.cwd(), 'dist/go');
+    this.dir = props.dir ?? path.join(process.cwd(), 'dist', 'go');
     this.gitBranch = props.branch ?? 'main';
     this.dryRun = props.dryRun ?? false;
-    this.gitUsername = props.username ?? utils.shell('git config user.name', { capture: true });
-    this.gitUseremail = props.email ?? utils.shell('git config user.email', { capture: true });
+    this.gitUsername = props.username ?? git.username();
+    this.gitUseremail = props.email ?? git.email();
 
-    if (this.gitUseremail === '') {
+    if (!this.gitUseremail) {
       throw new Error('Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable');
     }
 
-    if (this.gitUsername === '') {
+    if (!this.gitUsername) {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
 
@@ -142,9 +142,7 @@ export class GoReleaser {
    * @returns metadata about the release.
    */
   public release(): GoRelease {
-
     const modules = this.collectModules(this.dir);
-
     if (modules.length === 0) {
       console.log('No modules detected. Skipping');
       return {};
@@ -154,41 +152,40 @@ export class GoReleaser {
     modules.forEach(m => console.log(` - ${m.modFile}`));
 
     const repoURL = this.extractRepoURL(modules);
-    const repoDir = path.join(utils.makeTempDirectory(), 'repo');
-    utils.gitHubClone(repoURL, repoDir);
+    const repoDir = path.join(os.mkdtempSync(), 'repo');
+    git.clone(repoURL, repoDir);
 
-    process.chdir(repoDir);
-
+    const cwd = process.cwd();
     try {
-      utils.shell(`git checkout ${this.gitBranch}`);
-    } catch (err) {
-      utils.shell(`git checkout -b ${this.gitBranch}`);
+      process.chdir(repoDir);
+      return this.doRelease(modules, repoDir);
+    } finally {
+      process.chdir(cwd);
     }
 
+  }
+
+  private doRelease(modules: GoModule[], repoDir: string): GoRelease {
+
+    git.checkout(this.gitBranch, { create: true });
     this.syncModules(repoDir);
-    try {
-      utils.shell('git add .');
-      utils.shell('git diff-index --exit-code HEAD --');
+
+    git.add('.');
+    if (!git.diffIndex()) {
       console.log('No changes. Skipping release');
       return {};
-    } catch (err) {
-      // changes exist, thats ok.
     }
 
     const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.createReleaseMessage(modules);
-
-    utils.shell(`git config user.name ${this.gitUsername}`);
-    utils.shell(`git config user.email ${this.gitUseremail}`);
-    utils.shell(`git commit -m "${commitMessage}"`);
+    git.commit(commitMessage, this.gitUseremail, this.gitUseremail);
 
     const tags = modules.map(m => this.createTag(m));
+    const refs = [...tags, this.gitBranch];
 
     if (this.dryRun) {
-      console.log(`Will push to branch: ${this.gitBranch}`);
-      tags.forEach(t => console.log(`Will push tag: ${t}`));
+      refs.forEach(t => console.log(`Will push: ${t}`));
     } else {
-      utils.shell(`git push origin ${this.gitBranch}`);
-      tags.forEach(t => utils.shell(`git push origin ${t}`));
+      refs.forEach(t => git.push(t));
     }
     return { tags, commitMessage };
   }
@@ -239,17 +236,20 @@ export class GoReleaser {
     const topLevel = path.join(repoDir, 'go.mod');
     if (fs.existsSync(topLevel)) {
       // with top level modules we sync the entire repository
-      utils.removeDirectory(repoDir, { includeRoot: false, exclude: ['.git'] });
+      // so we just empty it out
+      fs.readdirSync(repoDir)
+        .filter(f => f !== '.git')
+        .forEach(f => fs.removeSync(path.join(repoDir, f)));
     } else {
       // otherwise, we selectively remove the submodules only.
       for (const p of fs.readdirSync(repoDir)) {
         const submodule = path.join(repoDir, p, 'go.mod');
         if (fs.existsSync(submodule)) {
-          utils.removeDirectory(path.join(repoDir, p));
+          fs.removeSync(path.join(repoDir, p));
         }
       }
     }
-    utils.shell(`cp -r ${this.dir}/* ${repoDir}`, { shell: true });
+    fs.copySync(this.dir, repoDir, { recursive: true });
   }
 
   private extractRepoURL(modules: GoModule[]): string {
@@ -277,7 +277,7 @@ export class GoReleaser {
 
   private createTag(module: GoModule): string {
     const tagName = module.repoPath === '' ? `v${module.version}` : `${module.repoPath}/v${module.version}`;
-    utils.shell(`git tag -a ${tagName} -m ${tagName}`);
+    git.tag(tagName);
     return tagName;
   }
 

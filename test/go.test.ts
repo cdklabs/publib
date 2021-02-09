@@ -1,22 +1,26 @@
-import * as fs from 'fs';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { GoReleaser, GoReleaserProps } from '../src';
-import * as utils from '../src/utils';
+import * as git from '../src/help/git';
+import * as os from '../src/help/os';
 
 function initRepo(repoDir: string) {
-  process.chdir(repoDir);
-  utils.shell('git init');
-  utils.shell('git config user.name jsii-release-tests');
-  utils.shell('git config user.email <>');
-  utils.shell('git add .');
-  utils.shell('git commit -m "Initial commit"');
+  const cwd = process.cwd();
+  try {
+    process.chdir(repoDir);
+    git.init();
+    git.add('.');
+    git.commit('Initial Commit', 'jsii-release-test', '<>');
+  } finally {
+    process.chdir(cwd);
+  }
 }
 
 function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}) {
 
   const fixturePath = path.join(__dirname, '__fixtures__', fixture);
-  const sourceDir = path.join(utils.makeTempDirectory(), path.basename(fixture));
-  utils.shell(`cp -r ${fixturePath} ${sourceDir}`);
+  const sourceDir = path.join(os.mkdtempSync(), path.basename(fixture));
+  fs.copySync(fixturePath, sourceDir, { recursive: true });
 
   // create the releaser with a copy of the fixture to allow
   // source customization.
@@ -26,9 +30,9 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
     ...props,
   });
 
-  (utils as any).gitHubClone = function(_: string, targetDir: string) {
+  (git as any).clone = function(_: string, targetDir: string) {
     // the cloned repo is always the original fixture.
-    utils.shell(`cp -r ${fixturePath} ${targetDir}`);
+    fs.copySync(fixturePath, targetDir, { recursive: true });
     initRepo(targetDir);
   };
 
@@ -134,7 +138,7 @@ test('considers deleted modules', () => {
 
   const { releaser, sourceDir } = createReleaser('sub-modules');
 
-  utils.removeDirectory(path.join(sourceDir, 'module1'));
+  fs.removeSync(path.join(sourceDir, 'module1'));
   const release = releaser.release();
 
   expect(release.tags).toEqual(['module2/v1.1.0']);

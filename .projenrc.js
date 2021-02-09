@@ -19,8 +19,6 @@ project.buildTask.exec('yarn pack');
 project.buildTask.exec('mkdir -p dist/js');
 project.buildTask.exec('mv ./jsii-release-v*.tgz dist/js');
 
-project.addDeps(
-  'shlex', // for splitting shell commands
-);
+project.addDeps('shlex', 'fs-extra', '@types/fs-extra');
 
 project.synth();

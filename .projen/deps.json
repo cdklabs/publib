@@ -68,6 +68,14 @@
       "type": "build"
     },
     {
+      "name": "@types/fs-extra",
+      "type": "runtime"
+    },
+    {
+      "name": "fs-extra",
+      "type": "runtime"
+    },
+    {
       "name": "shlex",
       "type": "runtime"
     }
