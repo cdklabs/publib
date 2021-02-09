@@ -145,6 +145,12 @@ export class GoReleaser {
   public release(): GoRelease {
 
     const modules = this.collectModules(this.dir);
+
+    if (modules.length === 0) {
+      console.log('No modules detected. Skipping');
+      return {};
+    }
+
     console.log('Detected modules:');
     modules.forEach(m => console.log(` - ${m.modFile}`));
 

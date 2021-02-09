@@ -186,3 +186,12 @@ test('does not include major version suffix in tag names', () => {
   expect(release.tags).toEqual(['module1/v3.3.3']);
 
 });
+
+test('no-ops on a directory with no modules', () => {
+
+  const { releaser } = createReleaser('no-modules');
+  const release = releaser.release();
+
+  expect(release.tags).toBeUndefined();
+
+});
