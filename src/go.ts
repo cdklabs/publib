@@ -148,9 +148,9 @@ export class GoReleaser {
     console.log('Detected modules:');
     modules.forEach(m => console.log(` - ${m.modFile}`));
 
-    const repo = this.extractRepo(modules);
+    const repoURL = this.extractRepoURL(modules);
     const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), 'repo');
-    utils.gitHubClone(repo, repoDir);
+    utils.gitHubClone(repoURL, repoDir);
 
     process.chdir(repoDir);
 
@@ -247,7 +247,7 @@ export class GoReleaser {
     utils.shell(`cp -r ${this.dir}/* ${repoDir}`, { shell: true });
   }
 
-  private extractRepo(modules: GoModule[]): string {
+  private extractRepoURL(modules: GoModule[]): string {
     const repos = new Set<string>(modules.map(m => m.repoURL));
     if (repos.size === 0) {
       throw new Error('Unable to detect repository from module files.');

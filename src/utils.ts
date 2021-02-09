@@ -57,11 +57,13 @@ export function shell(command: string, options: ShellOptions = {}): string {
   if (result.error) {
     throw result.error;
   }
+  // we always redirect stderr to stdout so its ok to take stdout.
+  // but when we don't pipe, we don't have the output.
+  const message = result.stdout?.toString() ?? `Command failed: ${command}`;
   if (result.status !== 0) {
-    // we always redirect stderr to stdout so its ok to take stdout.
-    throw new Error(result.stdout.toString());
+    throw new Error(message);
   }
-  return result.stdout?.toString();
+  return message;
 }
 
 /**
