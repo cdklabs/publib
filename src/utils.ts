@@ -109,10 +109,16 @@ export function removeDirectory(dir: string, options: RemoveDirectoryOptions = {
   }
 };
 
-export function gitClone(repository: string, targetDir: string) {
+/**
+ * Clones a repository from GitHub. Required a `GITHUB_TOKEN` env variable.
+ *
+ * @param repositoryUrl the repository to clone.
+ * @param targetDir the clone directory.
+ */
+export function gitHubClone(repositoryUrl: string, targetDir: string) {
   const gitHubToken = process.env.GITHUB_TOKEN;
   if (!gitHubToken) {
     throw new Error('GITHUB_TOKEN env variable is required');
   }
-  shell(`git clone https://${gitHubToken}@github.com/${repository}.git ${targetDir}`);
+  shell(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
 }

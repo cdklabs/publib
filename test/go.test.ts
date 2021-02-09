@@ -27,7 +27,7 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
     ...props,
   });
 
-  (utils as any).gitClone = function(_: string, targetDir: string) {
+  (utils as any).gitHubClone = function(_: string, targetDir: string) {
     // the cloned repo is always the original fixture.
     utils.shell(`cp -r ${fixturePath} ${targetDir}`);
     initRepo(targetDir);
@@ -116,7 +116,7 @@ test('throws if module repo domain is not github.com', () => {
   const { releaser, sourceDir } = createReleaser('not-github');
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
 
-  expect(() => releaser.release()).toThrow(/gitlab.com is not supported/);
+  expect(() => releaser.release()).toThrow(/Repository must be hosted on github.com/);
 
 });
 
@@ -173,5 +173,16 @@ test('skips when no changes', () => {
   const release = releaser.release();
 
   expect(release.tags).toBeUndefined();
+
+});
+
+test('does not include major version suffix in tag names', () => {
+
+  const { releaser, sourceDir } = createReleaser('major-version');
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['module1/v3.3.3']);
 
 });

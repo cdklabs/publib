@@ -68,6 +68,38 @@ export interface GoReleaserProps {
 }
 
 /**
+ * Information about a specific module.
+ */
+export interface GoModule {
+
+  /**
+   * Path to the mod file.
+   */
+  readonly modFile: string;
+
+  /**
+   * The version of the module.
+   */
+  readonly version: string;
+
+  /**
+   * The cannonical name of the module. (e.g 'github.com/aws/constructs-go/constructs/v3`)
+   */
+  readonly cannonicalName: string;
+
+  /**
+   * The path inside the repository the module is located in. (e.g 'constructs')
+   */
+  readonly repoPath: string;
+
+  /**
+   * The repository URL. (e.g 'github.com/aws/constructs')
+   */
+  readonly repoURL: string;
+
+}
+
+/**
  * Release a set of Golang modules.
  */
 export class GoReleaser {
@@ -114,11 +146,11 @@ export class GoReleaser {
 
     const modules = this.collectModules(this.dir);
     console.log('Detected modules:');
-    modules.forEach(m => console.log(` - ${m}`));
+    modules.forEach(m => console.log(` - ${m.modFile}`));
 
     const repo = this.extractRepo(modules);
-    const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(repo));
-    utils.gitClone(repo, repoDir);
+    const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), 'repo');
+    utils.gitHubClone(repo, repoDir);
 
     process.chdir(repoDir);
 
@@ -144,7 +176,7 @@ export class GoReleaser {
     utils.shell(`git config user.email ${this.gitUseremail}`);
     utils.shell(`git commit -m "${commitMessage}"`);
 
-    const tags = modules.map(m => this.createTag(m, repoDir));
+    const tags = modules.map(m => this.createTag(m));
 
     if (this.dryRun) {
       console.log(`Will push to branch: ${this.gitBranch}`);
@@ -156,22 +188,53 @@ export class GoReleaser {
     return { tags, commitMessage };
   }
 
-  private collectModules(dir: string): string[] {
-    const modules = [];
+  private collectModules(dir: string): GoModule[] {
+    const modules: GoModule[] = [];
 
     // top level module
     if (fs.existsSync(path.join(dir, 'go.mod'))) {
-      modules.push(dir);
+      modules.push(this.createModule(dir));
     }
 
     // submodules
     for (const p of fs.readdirSync(dir)) {
       const fullPath = path.join(dir, p);
       if (fs.existsSync(path.join(fullPath, 'go.mod'))) {
-        modules.push(fullPath);
+        modules.push(this.createModule(fullPath));
       }
     }
     return modules;
+  }
+
+  private createModule(moduleDirectory: string): GoModule {
+
+    const version = this.extractVersion(moduleDirectory);
+    const modFile = path.join(moduleDirectory, 'go.mod');
+    const majorVersion = version.split('.')[0];
+
+    const cannonicalNameParts = [];
+    for (const line of fs.readFileSync(modFile).toString().split('\n')) {
+      if (line.startsWith('module ')) {
+        cannonicalNameParts.push(...line.split(' ')[1].split('/'));
+        break;
+      }
+    }
+
+    if (cannonicalNameParts.length === 0) {
+      throw new Error(`Unable to detected module declaration in ${modFile}`);
+    }
+
+    const repoURL = cannonicalNameParts.slice(0, 3).join('/');
+
+    if (!repoURL.startsWith('github.com')) {
+      throw new Error(`Repository must be hosted on github.com. Found: ${repoURL}`);
+    }
+
+    const cannonicalName = cannonicalNameParts.join('/');
+    const repoPath = cannonicalNameParts.slice(3).join('/').replace(`/v${majorVersion}`, '');
+
+    return { modFile, version, cannonicalName, repoPath, repoURL };
+
   }
 
   private syncModules(repoDir: string) {
@@ -191,30 +254,8 @@ export class GoReleaser {
     utils.shell(`cp -r ${this.dir}/* ${repoDir}`, { shell: true });
   }
 
-  private extractRepo(modules: string[]): string {
-    const repos = new Set<string>();
-
-    function findModuleDeclaration(_modFile: string) {
-      for (const line of fs.readFileSync(_modFile).toString().split('\n')) {
-        if (line.startsWith('module ')) {
-          return line.split(' ')[1];
-        }
-      }
-      throw new Error(`No module declaration in file: ${_modFile}`);
-    }
-
-    for (const module of modules) {
-      const modFile = path.join(module, 'go.mod');
-      const fullModuleName = findModuleDeclaration(modFile).split('/');
-      const domain = fullModuleName[0];
-      if (domain !== 'github.com') {
-        throw new Error(`${domain} is not supported`);
-      }
-      const owner = fullModuleName[1];
-      const repo = fullModuleName[2];
-      repos.add(`${owner}/${repo}`);
-    }
-
+  private extractRepo(modules: GoModule[]): string {
+    const repos = new Set<string>(modules.map(m => m.repoURL));
     if (repos.size === 0) {
       throw new Error('Unable to detect repository from module files.');
     }
@@ -224,38 +265,22 @@ export class GoReleaser {
     return repos.values().next().value;
   }
 
-  private createReleaseMessage(modules: readonly string[]) {
-
-    const moduleVersions: any = {};
-    for (const moduleDir of modules) {
-      const moduleName = path.basename(moduleDir);
-      const moduleVersion = this.extractVersion(moduleDir);
-      moduleVersions[moduleName] = moduleVersion;
-    }
+  private createReleaseMessage(modules: GoModule[]) {
 
     const semantic = 'chore(release)';
 
-    const versions = new Set(Object.values(moduleVersions));
+    const versions = new Set(modules.map(m => m.version));
     if (versions.size === 1) {
       // single version
       return `${semantic}: v${versions.values().next().value}`;
     } else {
       // multiple versions
-      return `${semantic}: ${Object.entries(moduleVersions).map(e => `${e[0]}@v${e[1]}`).join(' ')}`;
+      return `${semantic}: ${modules.map(m => `${m.repoPath}@v${m.version}`).join(' ')}`;
     }
   }
 
-  private createTag(moduleDirectory: string, repoDir: string): string {
-    const moduleName = path.basename(moduleDirectory);
-    const moduleVersion = this.extractVersion(moduleDirectory);
-    let tagName = undefined;
-    if (moduleName === path.basename(repoDir)) {
-      // root module
-      tagName = `v${moduleVersion}`;
-    } else {
-      // sub module
-      tagName = `${moduleName}/v${moduleVersion}`;
-    }
+  private createTag(module: GoModule): string {
+    const tagName = module.repoPath === '' ? `v${module.version}` : `${module.repoPath}/v${module.version}`;
     utils.shell(`git tag -a ${tagName} -m ${tagName}`);
     return tagName;
   }
