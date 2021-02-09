@@ -18,7 +18,7 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
   const fixturePath = path.join(__dirname, '__fixtures__', fixture);
   const tmp = os.tmpdir();
   console.log(`Creating a temporary directory in ${tmp}`);
-  const sourceDir = path.join(fs.mkdtempSync(os.tmpdir()), path.basename(fixture));
+  const sourceDir = path.join(utils.makeTempDirectory(), path.basename(fixture));
   utils.shell(`cp -r ${fixturePath} ${sourceDir}`);
 
   // create the releaser with a copy of the fixture to allow

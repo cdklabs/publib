@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as utils from './utils';
 
@@ -155,7 +154,7 @@ export class GoReleaser {
     modules.forEach(m => console.log(` - ${m.modFile}`));
 
     const repoURL = this.extractRepoURL(modules);
-    const repoDir = path.join(fs.mkdtempSync(os.tmpdir()), 'repo');
+    const repoDir = path.join(utils.makeTempDirectory(), 'repo');
     utils.gitHubClone(repoURL, repoDir);
 
     process.chdir(repoDir);

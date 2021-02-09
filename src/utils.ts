@@ -1,7 +1,9 @@
 import * as child from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as shlex from 'shlex';
+
 
 /**
  * Return the path under which a program is available.
@@ -110,6 +112,21 @@ export function removeDirectory(dir: string, options: RemoveDirectoryOptions = {
     fs.rmdirSync(dir);
   }
 };
+
+/**
+ * Creates a temporary directory inside the global temp dir of the OS.
+ */
+export function makeTempDirectory() {
+  let osTempDir = os.tmpdir();
+  if (!osTempDir.endsWith(path.sep)) {
+    // on some platform this happens, like in GitHub actions where it return /tmp.
+    // causing the `mkdtempSync` call to try and create /tmpXXXXXX and fail on permissions denied since `/` is write protected.
+    // instead it should have created it in /tmp/XXXXXX
+    osTempDir = `${osTempDir}${path.sep}`;
+  }
+
+  return fs.mkdtempSync(osTempDir);
+}
 
 /**
  * Clones a repository from GitHub. Required a `GITHUB_TOKEN` env variable.
