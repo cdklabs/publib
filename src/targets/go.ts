@@ -176,7 +176,7 @@ export class GoReleaser {
     }
 
     const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.buildReleaseMessage(modules);
-    git.commit(commitMessage, this.gitUseremail, this.gitUseremail);
+    git.commit(commitMessage, { user: this.gitUseremail, address: this.gitUseremail } );
 
     const tags = modules.map(m => this.buildTagName(m));
     const refs = [...tags, this.gitBranch];
@@ -216,7 +216,7 @@ export class GoReleaser {
       throw new Error(`Unable to detected module declaration in ${modFile}`);
     }
 
-    // e.g 'github.com/aws/constructs-go/constructs/v3
+    // e.g 'github.com/aws/constructs-go/constructs/v3'
     const cannonicalName = match[1];
 
     // e.g ['github.com', 'aws', 'constructs-go', 'constructs', 'v3']
