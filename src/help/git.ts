@@ -114,6 +114,6 @@ export function email() {
  * @param email the email address.
  */
 export function identify(user: string, address: string) {
-  shell.run(`git config user.user "${user}"`);
+  shell.run(`git config user.name "${user}"`);
   shell.run(`git config user.email "${address}"`);
 }

@@ -18,6 +18,11 @@ export interface GoRelease {
    * The commit message of the release.
    */
   readonly commitMessage?: string;
+
+  /**
+   * The directory where the repository was released from.
+   */
+  readonly repoDir?: string;
 }
 
 /**
@@ -166,7 +171,7 @@ export class GoReleaser {
 
   private doRelease(modules: GoModule[], repoDir: string): GoRelease {
 
-    git.identify(this.gitUseremail, this.gitUseremail);
+    git.identify(this.gitUsername, this.gitUseremail);
     git.checkout(this.gitBranch, { create: true });
     this.syncRepo(repoDir);
 
@@ -192,7 +197,7 @@ export class GoReleaser {
     } else {
       refs.forEach(t => git.push(t));
     }
-    return { tags, commitMessage };
+    return { tags, commitMessage, repoDir };
   }
 
   private collectModules(dir: string): GoModule[] {

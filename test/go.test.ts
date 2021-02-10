@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import { GoReleaser, GoReleaserProps } from '../src';
 import * as git from '../src/help/git';
 import * as os from '../src/help/os';
+import * as shell from '../src/help/shell';
 
 function initRepo(repoDir: string) {
   const cwd = process.cwd();
@@ -197,5 +198,19 @@ test('no-ops on a directory with no modules', () => {
   const release = releaser.release();
 
   expect(release.tags).toBeUndefined();
+
+});
+
+test('accepts a custom git identity', () => {
+
+  const username = 'some-user';
+  const email = 'some-user@example.com';
+  const { releaser, sourceDir } = createReleaser('top-level', { username, email });
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  const lastCommit = shell.run('git log -1', { capture: true, cwd: release.repoDir });
+  expect(lastCommit).toContain(`Author: ${username} <${email}>`);
 
 });
