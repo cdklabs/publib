@@ -38,21 +38,12 @@ export function add(p: string) {
 }
 
 /**
- * Pefrom a commit. If `options.user` is specified, author information will be added.
+ * Commit.
  *
  * @param message the commit message.
- * @param options options.
  */
-export function commit(message: string, options: { user?: string; address?: string } ) {
-  const author = options.user ? `"${options.user} <${options.address ?? ''}>"` : undefined;
-
-  const flags = ['-m', `"${message}"`];
-
-  if (author) {
-    flags.push('--author', author);
-  }
-
-  shell.run(`git commit ${flags.join(' ')}`);
+export function commit(message: string) {
+  shell.run(`git commit -m "${message}"`);
 }
 
 /**
@@ -114,4 +105,15 @@ export function email() {
   } catch (err) {
     return '';
   }
+}
+
+/**
+ * Identify the committer with a username and email.
+ *
+ * @param user the username.
+ * @param email the email address.
+ */
+export function identify(user: string, address: string) {
+  shell.run(`git config user.user "${user}"`);
+  shell.run(`git config user.email "${address}"`);
 }

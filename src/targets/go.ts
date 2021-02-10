@@ -166,6 +166,7 @@ export class GoReleaser {
 
   private doRelease(modules: GoModule[], repoDir: string): GoRelease {
 
+    git.identify(this.gitUseremail, this.gitUseremail);
     git.checkout(this.gitBranch, { create: true });
     this.syncRepo(repoDir);
 
@@ -176,7 +177,7 @@ export class GoReleaser {
     }
 
     const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.buildReleaseMessage(modules);
-    git.commit(commitMessage, { user: this.gitUseremail, address: this.gitUseremail } );
+    git.commit(commitMessage);
 
     const tags = modules.map(m => this.buildTagName(m));
     const refs = [...tags, this.gitBranch];

@@ -10,7 +10,8 @@ function initRepo(repoDir: string) {
     process.chdir(repoDir);
     git.init();
     git.add('.');
-    git.commit('Initial Commit', { user: 'jsii-release-test' });
+    git.identify('jsii-release-test', '<>');
+    git.commit('Initial Commit');
   } finally {
     process.chdir(cwd);
   }
