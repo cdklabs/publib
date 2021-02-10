@@ -223,7 +223,6 @@ test('throws when global version conflicts with version file', () => {
 
 });
 
-
 test('throws when no major version suffix', () => {
 
   const { releaser } = createReleaser('no-major-version-suffix');
