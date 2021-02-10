@@ -53,8 +53,8 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@types/fs-extra": "^9.0.6",
-    "fs-extra": "^9.1.0",
+    "@types/fs-extra": "^8.0.0",
+    "fs-extra": "^8.0.0",
     "shlex": "^2.0.2"
   },
   "bundledDependencies": [],

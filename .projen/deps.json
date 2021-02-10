@@ -69,10 +69,12 @@
     },
     {
       "name": "@types/fs-extra",
+      "version": "^8.0.0",
       "type": "runtime"
     },
     {
       "name": "fs-extra",
+      "version": "^8.0.0",
       "type": "runtime"
     },
     {

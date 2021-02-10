@@ -19,6 +19,9 @@ project.buildTask.exec('yarn pack');
 project.buildTask.exec('mkdir -p dist/js');
 project.buildTask.exec('mv ./jsii-release-v*.tgz dist/js');
 
-project.addDeps('shlex', 'fs-extra', '@types/fs-extra');
+// we can't use 9.x because it doesn't work with node 10.
+const fsExtraVersion = '^8.0.0';
+
+project.addDeps('shlex', `fs-extra@${fsExtraVersion}`, `@types/fs-extra@${fsExtraVersion}`);
 
 project.synth();

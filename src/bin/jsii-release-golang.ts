@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import * as go from '../targets/go';
 
 const releaser = new go.GoReleaser({

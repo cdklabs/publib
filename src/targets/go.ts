@@ -133,7 +133,6 @@ export class GoReleaser {
     if (!this.gitUsername) {
       throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
     }
-
   }
 
   /**
@@ -168,7 +167,7 @@ export class GoReleaser {
   private doRelease(modules: GoModule[], repoDir: string): GoRelease {
 
     git.checkout(this.gitBranch, { create: true });
-    this.syncModules(repoDir);
+    this.syncRepo(repoDir);
 
     git.add('.');
     if (!git.diffIndex()) {
@@ -176,14 +175,19 @@ export class GoReleaser {
       return {};
     }
 
-    const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.createReleaseMessage(modules);
+    const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.buildReleaseMessage(modules);
     git.commit(commitMessage, this.gitUseremail, this.gitUseremail);
 
-    const tags = modules.map(m => this.createTag(m));
+    const tags = modules.map(m => this.buildTagName(m));
     const refs = [...tags, this.gitBranch];
 
+    tags.forEach(t => git.tag(t));
+
     if (this.dryRun) {
-      refs.forEach(t => console.log(`Will push: ${t}`));
+      console.log('===========================================');
+      console.log('            🏜️ DRY-RUN MODE 🏜️');
+      console.log('===========================================');
+      refs.forEach(t => console.log(`Remote ref will update: ${t}`));
     } else {
       refs.forEach(t => git.push(t));
     }
@@ -192,47 +196,73 @@ export class GoReleaser {
 
   private collectModules(dir: string): GoModule[] {
     const modules: GoModule[] = [];
-
     for (const p of [...fs.readdirSync(dir), '.']) {
       const modFile = path.join(dir, p, 'go.mod');
       if (fs.existsSync(modFile)) {
-        modules.push(this.createModule(modFile));
+        modules.push(this.parseModule(modFile));
       }
     }
     return modules;
   }
 
-  private createModule(modFile: string): GoModule {
+  private parseModule(modFile: string): GoModule {
 
     const version = this.extractVersion(path.dirname(modFile));
-    const majorVersion = version.split('.')[0];
+    const majorVersion = Number(version.split('.')[0]);
 
-    const cannonicalNameParts = [];
-    for (const line of fs.readFileSync(modFile).toString().split('\n')) {
-      if (line.startsWith('module ')) {
-        cannonicalNameParts.push(...line.split(' ')[1].split('/'));
-        break;
-      }
-    }
-
-    if (cannonicalNameParts.length === 0) {
+    // extract the module decleration (e.g 'module github.com/aws/constructs-go/constructs/v3')
+    const match = fs.readFileSync(modFile).toString().match(/module (.*)/);
+    if (!match || !match[1]) {
       throw new Error(`Unable to detected module declaration in ${modFile}`);
     }
 
+    // e.g 'github.com/aws/constructs-go/constructs/v3
+    const cannonicalName = match[1];
+
+    // e.g ['github.com', 'aws', 'constructs-go', 'constructs', 'v3']
+    const cannonicalNameParts = cannonicalName.split('/');
+
+    // e.g 'github.com/aws/constructs-go'
     const repoURL = cannonicalNameParts.slice(0, 3).join('/');
 
-    if (!repoURL.startsWith('github.com')) {
-      throw new Error(`Repository must be hosted on github.com. Found: ${repoURL}`);
+    // e.g 'v3'
+    const majorVersionSuffix = majorVersion > 1 ? `/v${majorVersion}` : '';
+
+    if (!cannonicalName.endsWith(majorVersionSuffix)) {
+      throw new Error(`Module declaration in '${modFile}' expected to end with '${majorVersionSuffix}' since its major version is larger than 1`);
     }
 
-    const cannonicalName = cannonicalNameParts.join('/');
-    const repoPath = cannonicalNameParts.slice(3).join('/').replace(`/v${majorVersion}`, '');
+    if (!repoURL.startsWith('github.com')) {
+      throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
+    }
+
+    // e.g 'constructs'
+    const repoPath = cannonicalNameParts
+      .slice(3)
+      .join('/')
+      .replace(majorVersionSuffix, '');
 
     return { modFile, version, cannonicalName, repoPath, repoURL };
 
   }
 
-  private syncModules(repoDir: string) {
+  private buildTagName(m: GoModule) {
+    return m.repoPath === '' ? `v${m.version}` : `${m.repoPath}/v${m.version}`;
+  }
+
+  private buildReleaseMessage(modules: GoModule[]) {
+    const semantic = 'chore(release)';
+    const versions = new Set(modules.map(m => m.version));
+    if (versions.size === 1) {
+      // single version
+      return `${semantic}: v${versions.values().next().value}`;
+    } else {
+      // multiple versions
+      return `${semantic}: ${modules.map(m => `${m.repoPath}@v${m.version}`).join(' ')}`;
+    }
+  }
+
+  private syncRepo(repoDir: string) {
     const topLevel = path.join(repoDir, 'go.mod');
     if (fs.existsSync(topLevel)) {
       // with top level modules we sync the entire repository
@@ -263,36 +293,27 @@ export class GoReleaser {
     return repos.values().next().value;
   }
 
-  private createReleaseMessage(modules: GoModule[]) {
-    const semantic = 'chore(release)';
-    const versions = new Set(modules.map(m => m.version));
-    if (versions.size === 1) {
-      // single version
-      return `${semantic}: v${versions.values().next().value}`;
-    } else {
-      // multiple versions
-      return `${semantic}: ${modules.map(m => `${m.repoPath}@v${m.version}`).join(' ')}`;
-    }
-  }
-
-  private createTag(module: GoModule): string {
-    const tagName = module.repoPath === '' ? `v${module.version}` : `${module.repoPath}/v${module.version}`;
-    git.tag(tagName);
-    return tagName;
-  }
-
   private extractVersion(moduleDirectory: string): string {
-    let moduleVersion = undefined;
+
     const versionFile = path.join(moduleDirectory, 'version');
-    if (this.version) {
-      moduleVersion = this.version;
-    } else if (fs.existsSync(versionFile)) {
-      moduleVersion = fs.readFileSync(versionFile).toString();
-    } else {
-      throw new Error(`Unable to determine version of module ${moduleDirectory}. `
-        + 'Either include a \'version\' file, or specify a global version using the VERSION environment variable.');
+
+    const repoVersion = this.version;
+    const moduleVersion = fs.existsSync(versionFile) ? fs.readFileSync(versionFile).toString() : undefined;
+
+    if (repoVersion && moduleVersion && repoVersion !== moduleVersion) {
+      throw new Error(`Repo version (${repoVersion}) conflicts with module version ${moduleVersion} for module in ${moduleDirectory}`);
     }
-    return moduleVersion;
+
+    // just take the one thats defined, they have to the same if both are.
+    const version = moduleVersion ? moduleVersion : repoVersion;
+
+    if (!version) {
+      throw new Error(`Unable to determine version of module ${moduleDirectory}. `
+        + "Either include a 'version' file, or specify a global version using the VERSION environment variable.");
+    }
+
+    return version;
+
   }
 
 }
