@@ -93,15 +93,25 @@ export function checkout(branch: string, options: { create?: boolean } ) {
 }
 
 /**
- * Fetch the globally configured git user name.
+ * Fetch the configured git user name for the current directory.
+ * Returns an empty string if not configured.
  */
 export function username() {
-  return shell.run('git config --global user.name', { capture: true });
+  try {
+    return shell.run('git config user.name', { capture: true });
+  } catch (err) {
+    return '';
+  }
 }
 
 /**
- * Fetch the globally configured git user email.
+ * Fetch the configured git user email for the current directory.
+ * Returns an empty string if not configured.
  */
 export function email() {
-  return shell.run('git config --global user.email', { capture: true });
+  try {
+    return shell.run('git config user.email', { capture: true });
+  } catch (err) {
+    return '';
+  }
 }
