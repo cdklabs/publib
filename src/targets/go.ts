@@ -236,11 +236,13 @@ export class GoReleaser {
       throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
     }
 
-    // e.g 'constructs'
-    const repoPath = cannonicalNameParts
-      .slice(3)
-      .join('/')
-      .replace(majorVersionSuffix, '');
+    let repoPath = cannonicalNameParts
+      .slice(3) // e.g ['constructs', 'v3']
+      .join('/') // e.g 'constructs/v3'
+      .replace(`v${majorVersion}`, ''); // e.g 'constructs/'
+
+    // strip '/' if exists (wont exist for top level modules)
+    repoPath = repoPath.endsWith('/') ? repoPath.substr(0, repoPath.length - 1) : repoPath;
 
     return { modFile, version, cannonicalName, repoPath, repoURL };
 
@@ -254,11 +256,11 @@ export class GoReleaser {
     const semantic = 'chore(release)';
     const versions = new Set(modules.map(m => m.version));
     if (versions.size === 1) {
-      // single version
+      // single version (e.g chore(release): v1.2.3)
       return `${semantic}: v${versions.values().next().value}`;
     } else {
-      // multiple versions
-      return `${semantic}: ${modules.map(m => `${m.repoPath}@v${m.version}`).join(' ')}`;
+      // multiple versions (e.g chore(release): chore(release): module1@v1.2.3  module2@v1.2.3)
+      return `${semantic}: ${modules.map(m => `${m.repoPath ? `${m.repoPath}@` : ''}v${m.version}`).join(' ')}`;
     }
   }
 

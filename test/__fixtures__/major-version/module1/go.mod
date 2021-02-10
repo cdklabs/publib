@@ -1,3 +1,3 @@
-module github.com/aws/sub-modules/module1/v3
+module github.com/aws/major-version/module1/v3
 
 go 1.15

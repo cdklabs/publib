@@ -186,7 +186,7 @@ test('does not include major version suffix in tag names', () => {
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
   const release = releaser.release();
 
-  expect(release.tags).toEqual(['module1/v3.3.3']);
+  expect(release.tags).toEqual(['module1/v3.3.3', 'v3.3.3']);
 
 });
 
