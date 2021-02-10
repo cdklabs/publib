@@ -214,3 +214,20 @@ test('accepts a custom git identity', () => {
   expect(lastCommit).toContain(`Author: ${username} <${email}>`);
 
 });
+
+test('throws when global version conflicts with version file', () => {
+
+  const { releaser } = createReleaser('top-level', { version: '10.0.0' });
+
+  expect(() => releaser.release()).toThrow(/Repo version \(10.0.0\) conflicts with module version \(1.1.0\)/);
+
+});
+
+
+test('throws when no major version suffix', () => {
+
+  const { releaser } = createReleaser('no-major-version-suffix');
+
+  expect(() => releaser.release()).toThrow(/expected to end with '\/v3'/);
+
+});

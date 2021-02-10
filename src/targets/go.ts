@@ -132,11 +132,11 @@ export class GoReleaser {
     this.gitUseremail = props.email ?? git.email();
 
     if (!this.gitUseremail) {
-      throw new Error('Unable to detect username. either configure a global git user.name or pass GIT_USER_NAME env variable');
+      throw new Error('Unable to detect username. either configure a git user.name or pass GIT_USER_NAME env variable');
     }
 
     if (!this.gitUsername) {
-      throw new Error('Unable to detect user email. either configure a global git user.email or pass GIT_USER_EMAIL env variable');
+      throw new Error('Unable to detect user email. either configure a git user.email or pass GIT_USER_EMAIL env variable');
     }
   }
 
@@ -309,7 +309,7 @@ export class GoReleaser {
     const moduleVersion = fs.existsSync(versionFile) ? fs.readFileSync(versionFile).toString() : undefined;
 
     if (repoVersion && moduleVersion && repoVersion !== moduleVersion) {
-      throw new Error(`Repo version (${repoVersion}) conflicts with module version ${moduleVersion} for module in ${moduleDirectory}`);
+      throw new Error(`Repo version (${repoVersion}) conflicts with module version (${moduleVersion}) for module in ${moduleDirectory}`);
     }
 
     // just take the one thats defined, they have to the same if both are.
