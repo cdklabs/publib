@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { GoReleaser, GoReleaserProps } from '../src';
-import * as git from '../src/help/git';
-import * as os from '../src/help/os';
-import * as shell from '../src/help/shell';
+import { GoReleaser, GoReleaserProps } from '../../src';
+import * as git from '../../src/help/git';
+import * as os from '../../src/help/os';
+import * as shell from '../../src/help/shell';
 
 function initRepo(repoDir: string) {
   const cwd = process.cwd();
@@ -20,8 +20,8 @@ function initRepo(repoDir: string) {
 
 function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}) {
 
-  const fixturePath = path.join(__dirname, '__fixtures__', fixture);
-  const sourceDir = path.join(os.mkdtempSync(), path.basename(fixture));
+  const fixturePath = path.join(__dirname, '..', '__fixtures__', fixture);
+  const sourceDir = path.join(os.mkdtempSync(), fixture);
   fs.copySync(fixturePath, sourceDir, { recursive: true });
 
   // create the releaser with a copy of the fixture to allow
