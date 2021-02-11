@@ -10,7 +10,6 @@ const project = new TypeScriptProject({
   authorName: 'Amazon Web Services',
   authorOrganization: true,
   authorUrl: 'https://aws.amazon.com',
-  jest: true,
   homepage: 'https://github.com/aws/jsii-release',
 });
 

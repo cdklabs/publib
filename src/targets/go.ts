@@ -71,6 +71,11 @@ export interface GoReleaserProps {
    * @default - taken from the 'version'. throws if doesn't exist.
    */
   readonly version?: string;
+
+  /**
+   * The message to use for the commit marking the release.
+   */
+  readonly message?: string;
 }
 
 /**
@@ -111,6 +116,7 @@ export interface GoModule {
 export class GoReleaser {
 
   private readonly version?: string;
+  private readonly gitCommitMessage?: string;
 
   private readonly dir: string;
   private readonly dryRun: boolean;
@@ -125,19 +131,24 @@ export class GoReleaser {
     }
 
     this.version = props.version;
+    this.gitCommitMessage = props.message;
     this.dir = props.dir ?? path.join(process.cwd(), 'dist', 'go');
     this.gitBranch = props.branch ?? 'main';
     this.dryRun = props.dryRun ?? false;
-    this.gitUsername = props.username ?? git.username();
-    this.gitUseremail = props.email ?? git.email();
 
-    if (!this.gitUseremail) {
+    const gitUsername = props.username ?? git.username();
+    const gitUseremail = props.email ?? git.email();
+
+    if (!gitUseremail) {
       throw new Error('Unable to detect username. either configure a git user.name or pass GIT_USER_NAME env variable');
     }
 
-    if (!this.gitUsername) {
+    if (!gitUsername) {
       throw new Error('Unable to detect user email. either configure a git user.email or pass GIT_USER_EMAIL env variable');
     }
+
+    this.gitUseremail = gitUseremail;
+    this.gitUsername = gitUsername;
   }
 
   /**
@@ -172,7 +183,7 @@ export class GoReleaser {
   private doRelease(modules: GoModule[], repoDir: string): GoRelease {
 
     git.identify(this.gitUsername, this.gitUseremail);
-    git.checkout(this.gitBranch, { create: true });
+    git.checkout(this.gitBranch, { createIfMissing: true });
     this.syncRepo(repoDir);
 
     git.add('.');
@@ -181,7 +192,7 @@ export class GoReleaser {
       return {};
     }
 
-    const commitMessage = process.env.GIT_COMMIT_MESSAGE ?? this.buildReleaseMessage(modules);
+    const commitMessage = this.gitCommitMessage ?? this.buildReleaseMessage(modules);
     git.commit(commitMessage);
 
     const tags = modules.map(m => this.buildTagName(m));

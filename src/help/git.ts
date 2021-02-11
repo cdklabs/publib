@@ -72,38 +72,38 @@ export function push(ref: string) {
 }
 
 /**
- * Checkout to a new branch. Creates a new one if `options.create` is True.
+ * Checkout to a new branch. Creates a new one if `options.createIfMissing` is True and the branch doesn't exist.
  *
  * @param branch the branch.
  * @param options options.
  */
-export function checkout(branch: string, options: { create?: boolean } ) {
+export function checkout(branch: string, options: { createIfMissing?: boolean } ) {
   const flags = [];
-  if (options.create) { flags.push('-B'); }
-  shell.run(`git checkout ${flags.join(' ')} ${branch}`);
+  if (options.createIfMissing) { flags.push('-B'); }
+  shell.run(`git checkout${` ${flags.join(' ')}`} ${branch}`);
 }
 
 /**
  * Fetch the configured git user name for the current directory.
- * Returns an empty string if not configured.
+ * Returns undefined if not configured.
  */
 export function username() {
   try {
     return shell.run('git config user.name', { capture: true });
   } catch (err) {
-    return '';
+    return undefined;
   }
 }
 
 /**
  * Fetch the configured git user email for the current directory.
- * Returns an empty string if not configured.
+ * Returns undefined if not configured.
  */
 export function email() {
   try {
     return shell.run('git config user.email', { capture: true });
   } catch (err) {
-    return '';
+    return undefined;
   }
 }
 
