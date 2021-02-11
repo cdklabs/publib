@@ -132,7 +132,7 @@ export class GoReleaser {
 
     this.version = props.version;
     this.gitCommitMessage = props.message;
-    this.dir = props.dir ?? path.join(process.cwd(), 'dist', 'go');
+    this.dir = path.resolve(props.dir ?? path.join(process.cwd(), 'dist', 'go'));
     this.gitBranch = props.branch ?? 'main';
     this.dryRun = props.dryRun ?? false;
 
