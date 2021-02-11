@@ -193,17 +193,14 @@ Pushes a directory of golang modules to a GitHub repository.
 npx jsii-release-golang [DIR]
 ```
 
-`DIR` is a directory where the golang modules are located (default is `dist/go`). Each subdirectory inside it
-must be a go module and contain a go.mod file. This directory is pushed as is to the repository root, overriding existing files.
+`DIR` is a directory where the golang modules are located (default is `dist/go`). Modules can be located either in subdirectories, (e.g 'dist/go/my-module/go.mod')
+or in the root (e.g 'dist/go/go.mod').
 
-Note that the repository tags will be prefixed with the module name. If a repository contains multiple modules,
-the repository will have multiple tags for each version, each corresponding to a different module. Consumers of the module will need to specify this prefix in their `require` directives. For example, for a module called `my-module`:
+If you specify the `VERSION` env variable, all modules will recieve that version, otherwise a `version` file is expected to exist in each module directory.
+Repository tags will be in the following format:
+- For a module located at the root: `v${module_version}` (e.g `v1.20.1`)
+- For modules located inside subdirectories: `<subdir-name>/v${module_version}` (e.g `my-module/v3.3.1`)
 
-```go
-require (
-	github.com/<owner>/<repo>/my-module my-module/v2.1.1
-)
-```
 
 **Options (environment variables):**
 
@@ -211,10 +208,10 @@ require (
 |------|--------|-----------|
 |`GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
-|`GITHUB_REPO`|Optional|GitHub repository to push to. Default is derived from the module name.|
+the module name.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
-|`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the global git user.name config. Fails it it doesn't exist.|
-|`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the global git user.email config. Fails it it doesn't exist.|
+|`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the git user.name config in the current directory. Fails it it doesn't exist.|
+|`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the git user.email config in the current directory. Fails it it doesn't exist.|
 |`GIT_COMMIT_MESSAGE`|Optional|The commit message. Defaults to 'chore(release): $VERSION'.|
 |`DRYRUN`|Set to "true" for a dry run.|
 
