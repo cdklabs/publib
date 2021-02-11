@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.17](https://github.com/aws/jsii-release/compare/v0.2.16...v0.2.17) (2021-02-11)
+
+
+### Features
+
+* **golang:** Support Multi-version and root level modules ([#34](https://github.com/aws/jsii-release/issues/34)) ([4ef7d59](https://github.com/aws/jsii-release/commit/4ef7d599ff2db405a388248218814edda256984e))
+
 ### 0.2.16 (2021-02-04)
 
 
