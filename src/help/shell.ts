@@ -36,22 +36,27 @@ export interface RunOptions {
  */
 export function run(command: string, options: RunOptions = {}): string {
   const shsplit = shlex.split(command);
-  const pipe = options.capture ?? false;
+  const pipeOrInherit = (options.capture ?? false) ? 'pipe': 'inherit';
   const result = child.spawnSync(shsplit[0], shsplit.slice(1), {
-    stdio: ['ignore', pipe ? 'pipe' : 'inherit', process.stdout],
+    stdio: ['ignore', pipeOrInherit, pipeOrInherit],
     cwd: options.cwd,
     shell: options.shell,
   });
   if (result.error) {
     throw result.error;
   }
-  // we always redirect stderr to stdout so its ok to take stdout.
-  // but when we don't pipe, we don't have the output.
-  const message = result.stdout?.toString() ?? `Command failed: ${command}`;
+
+  const stdout = result.stdout?.toString();
+  const stderr = result.stderr?.toString();
+
   if (result.status !== 0) {
+    const message = `
+    Command failed: ${command}.
+      Output: ${stdout}
+      Error:${stderr}`;
     throw new Error(message);
   }
-  return message;
+  return stdout;
 }
 
 /**

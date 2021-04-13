@@ -195,16 +195,25 @@ export class GoReleaser {
     const commitMessage = this.gitCommitMessage ?? this.buildReleaseMessage(modules);
     git.commit(commitMessage);
 
-    const tags = modules.map(m => this.buildTagName(m));
-    const refs = [...tags, this.gitBranch];
+    const tags = [];
+    for (const module of modules) {
+      const name = this.buildTagName(module);
+      const created = git.tag(name);
+      if (created) { tags.push(name); }
+    }
 
-    tags.forEach(t => git.tag(t));
+    if (tags.length === 0) {
+      console.log('All tags already exist. Skipping release');
+      return {};
+    }
+
+    const refs = [...tags, this.gitBranch];
 
     if (this.dryRun) {
       console.log('===========================================');
       console.log('            🏜️ DRY-RUN MODE 🏜️');
       console.log('===========================================');
-      refs.forEach(t => console.log(`Remote ref will update: ${t}`));
+      refs.forEach(t => console.log(`Remote ref will be updated: ${t}`));
     } else {
       refs.forEach(t => git.push(t));
     }
