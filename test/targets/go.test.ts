@@ -5,7 +5,11 @@ import * as git from '../../src/help/git';
 import * as os from '../../src/help/os';
 import * as shell from '../../src/help/shell';
 
-function initRepo(repoDir: string) {
+interface Initializers {
+  postInit?: (repoDir: string) => void;
+}
+
+function initRepo(repoDir: string, postInit?: (repoDir: string) => void) {
   const cwd = process.cwd();
   try {
     process.chdir(repoDir);
@@ -13,12 +17,13 @@ function initRepo(repoDir: string) {
     git.add('.');
     git.identify('jsii-release-test', '<>');
     git.commit('Initial Commit');
+    if (postInit) { postInit(repoDir); };
   } finally {
     process.chdir(cwd);
   }
 }
 
-function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}) {
+function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}, initializers: Initializers = {}) {
 
   const fixturePath = path.join(__dirname, '..', '__fixtures__', fixture);
   const sourceDir = path.join(os.mkdtempSync(), fixture);
@@ -35,7 +40,7 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
   (git as any).clone = function(_: string, targetDir: string) {
     // the cloned repo is always the original fixture.
     fs.copySync(fixturePath, targetDir, { recursive: true });
-    initRepo(targetDir);
+    initRepo(targetDir, initializers.postInit);
   };
 
   return { releaser, sourceDir };
@@ -228,5 +233,36 @@ test('throws when no major version suffix', () => {
   const { releaser } = createReleaser('no-major-version-suffix');
 
   expect(() => releaser.release()).toThrow(/expected to end with '\/v3'/);
+
+});
+
+test('skips when all tags already exist', () => {
+
+  const { releaser, sourceDir } = createReleaser('sub-modules', {}, {
+    postInit: (_: string) => {
+      git.tag('module1/v1.1.0');
+      git.tag('module2/v1.1.0');
+    },
+  });
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+
+  const release = releaser.release();
+  expect(release).toStrictEqual({});
+
+});
+
+test('creates missing tags only', () => {
+
+  const { releaser, sourceDir } = createReleaser('sub-modules', {}, {
+    postInit: (_: string) => {
+      git.tag('module2/v1.1.0');
+    },
+  });
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+
+  const release = releaser.release();
+  expect(release.tags).toEqual(['module1/v1.1.0']);
 
 });
