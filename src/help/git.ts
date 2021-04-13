@@ -64,10 +64,10 @@ export function tag(name: string): boolean {
     shell.run(`git tag -a ${name} -m ${name}`, { capture: true });
     return true;
   } catch (e) {
-    if (!e.message.includes('already exists')) {
-      throw e;
+    if (e.message.includes('already exists')) {
+      return false;
     }
-    return false;
+    throw e;
   }
 }
 

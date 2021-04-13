@@ -210,7 +210,6 @@ Repository tags will be in the following format:
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
 the module name.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
-|`BRANCH_ONLY`|Optional|Only push to the branch and skip tag creation.|
 |`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the git user.name config in the current directory. Fails it it doesn't exist.|
 |`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the git user.email config in the current directory. Fails it it doesn't exist.|
 |`GIT_COMMIT_MESSAGE`|Optional|The commit message. Defaults to 'chore(release): $VERSION'.|

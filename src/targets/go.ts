@@ -52,13 +52,6 @@ export interface GoReleaserProps {
   readonly branch?: string;
 
   /**
-   * Only push to the branch, without creating a tag.
-   *
-   * @default false
-   */
-  readonly branchOnly?: boolean;
-
-  /**
    * The username to use for the commit.
    *
    * @default - taken from git config. throws if not configured.
@@ -128,7 +121,6 @@ export class GoReleaser {
   private readonly dir: string;
   private readonly dryRun: boolean;
   private readonly gitBranch: string;
-  private readonly branchOnly: boolean;
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
 
@@ -142,7 +134,6 @@ export class GoReleaser {
     this.gitCommitMessage = props.message;
     this.dir = path.resolve(props.dir ?? path.join(process.cwd(), 'dist', 'go'));
     this.gitBranch = props.branch ?? 'main';
-    this.branchOnly = props.branchOnly ?? false;
     this.dryRun = props.dryRun ?? false;
 
     const gitUsername = props.username ?? git.username();
@@ -216,7 +207,7 @@ export class GoReleaser {
       return {};
     }
 
-    const refs = [...(this.branchOnly ? [] : tags), this.gitBranch];
+    const refs = [...tags, this.gitBranch];
 
     if (this.dryRun) {
       console.log('===========================================');
