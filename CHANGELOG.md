@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.21](https://github.com/aws/jsii-release/compare/v0.2.20...v0.2.21) (2021-04-13)
+
+### [0.2.20](https://github.com/aws/jsii-release/compare/v0.2.19...v0.2.20) (2021-04-13)
+
+### [0.2.19](https://github.com/aws/jsii-release/compare/v0.2.17...v0.2.19) (2021-04-13)
+
+
+### Bug Fixes
+
+* **go:** Release is not idempotent to existing tags ([#72](https://github.com/aws/jsii-release/issues/72)) ([74e8f0f](https://github.com/aws/jsii-release/commit/74e8f0fac1d7d27109fc422f6723958ec34d8e89))
+
 ### [0.2.18](https://github.com/aws/jsii-release/compare/v0.2.17...v0.2.18) (2021-02-12)
 
 ### [0.2.17](https://github.com/aws/jsii-release/compare/v0.2.16...v0.2.17) (2021-02-11)
