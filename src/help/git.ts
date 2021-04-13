@@ -57,9 +57,18 @@ export function init() {
  * Cerate a tag.
  *
  * @param name tag name.
+ * @returns true if the tag was created, false if it already exists.
  */
-export function tag(name: string) {
-  shell.run(`git tag -a ${name} -m ${name}`);
+export function tag(name: string): boolean {
+  try {
+    shell.run(`git tag -a ${name} -m ${name}`, { capture: true });
+    return true;
+  } catch (e) {
+    if (!e.message.includes('already exists')) {
+      throw e;
+    }
+    return false;
+  }
 }
 
 /**

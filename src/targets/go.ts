@@ -52,6 +52,13 @@ export interface GoReleaserProps {
   readonly branch?: string;
 
   /**
+   * Only push to the branch, without creating a tag.
+   *
+   * @default false
+   */
+  readonly branchOnly?: boolean;
+
+  /**
    * The username to use for the commit.
    *
    * @default - taken from git config. throws if not configured.
@@ -121,6 +128,7 @@ export class GoReleaser {
   private readonly dir: string;
   private readonly dryRun: boolean;
   private readonly gitBranch: string;
+  private readonly branchOnly: boolean;
   private readonly gitUsername: string;
   private readonly gitUseremail: string;
 
@@ -134,6 +142,7 @@ export class GoReleaser {
     this.gitCommitMessage = props.message;
     this.dir = path.resolve(props.dir ?? path.join(process.cwd(), 'dist', 'go'));
     this.gitBranch = props.branch ?? 'main';
+    this.branchOnly = props.branchOnly ?? false;
     this.dryRun = props.dryRun ?? false;
 
     const gitUsername = props.username ?? git.username();
@@ -195,16 +204,25 @@ export class GoReleaser {
     const commitMessage = this.gitCommitMessage ?? this.buildReleaseMessage(modules);
     git.commit(commitMessage);
 
-    const tags = modules.map(m => this.buildTagName(m));
-    const refs = [...tags, this.gitBranch];
+    const tags = [];
+    for (const module of modules) {
+      const name = this.buildTagName(module);
+      const created = git.tag(name);
+      if (created) { tags.push(name); }
+    }
 
-    tags.forEach(t => git.tag(t));
+    if (tags.length === 0) {
+      console.log('All tags already exist. Skipping release');
+      return {};
+    }
+
+    const refs = [...(this.branchOnly ? [] : tags), this.gitBranch];
 
     if (this.dryRun) {
       console.log('===========================================');
       console.log('            🏜️ DRY-RUN MODE 🏜️');
       console.log('===========================================');
-      refs.forEach(t => console.log(`Remote ref will update: ${t}`));
+      refs.forEach(t => console.log(`Remote ref will be updated: ${t}`));
     } else {
       refs.forEach(t => git.push(t));
     }
