@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.20](https://github.com/aws/jsii-release/compare/v0.2.19...v0.2.20) (2021-04-13)
+
 ### [0.2.19](https://github.com/aws/jsii-release/compare/v0.2.17...v0.2.19) (2021-04-13)
 
 
