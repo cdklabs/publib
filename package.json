@@ -63,7 +63,7 @@
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "version": "0.2.24",
+  "version": "0.2.25",
   "homepage": "https://github.com/aws/jsii-release",
   "jest": {
     "testMatch": [
