@@ -65,7 +65,7 @@
   "main": "lib/index.js",
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/jsii-release",
-  "version": "0.0.0",
+  "version": "0.2.33",
   "jest": {
     "testMatch": [
       "**/__tests__/**/*.ts?(x)",
