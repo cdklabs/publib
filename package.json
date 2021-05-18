@@ -50,7 +50,7 @@
     "jest-junit": "^12",
     "json-schema": "^0.3.0",
     "npm-check-updates": "^11",
-    "projen": "^0.17.95",
+    "projen": "^0.18.1",
     "standard-version": "^9",
     "ts-jest": "^26.5.0",
     "typescript": "^3.9.5"
