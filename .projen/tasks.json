@@ -157,6 +157,9 @@
           "exec": "npm-check-updates --upgrade --target=minor --reject='projen'"
         },
         {
+          "exec": "yarn install --check-files"
+        },
+        {
           "exec": "npx projen"
         }
       ]
@@ -169,6 +172,9 @@
       "steps": [
         {
           "exec": "npm-check-updates --upgrade --target=minor --filter='projen'"
+        },
+        {
+          "exec": "yarn install --check-files"
         },
         {
           "exec": "npx projen"
