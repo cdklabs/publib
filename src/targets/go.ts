@@ -139,11 +139,11 @@ export class GoReleaser {
     const gitUsername = props.username ?? git.username();
     const gitUseremail = props.email ?? git.email();
 
-    if (!gitUseremail) {
+    if (!gitUsername) {
       throw new Error('Unable to detect username. either configure a git user.name or pass GIT_USER_NAME env variable');
     }
 
-    if (!gitUsername) {
+    if (!gitUseremail) {
       throw new Error('Unable to detect user email. either configure a git user.email or pass GIT_USER_EMAIL env variable');
     }
 
