@@ -100,6 +100,7 @@ export function username() {
   try {
     return shell.run('git config user.name', { capture: true });
   } catch (err) {
+    console.warn(err.message);
     return undefined;
   }
 }
@@ -112,6 +113,7 @@ export function email() {
   try {
     return shell.run('git config user.email', { capture: true });
   } catch (err) {
+    console.warn(err.message);
     return undefined;
   }
 }
