@@ -34,6 +34,8 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
   const releaser = new GoReleaser({
     dir: sourceDir,
     dryRun: true,
+    username: 'jsii-release-tester',
+    email: 'jsii-release@test.com',
     ...props,
   });
 
