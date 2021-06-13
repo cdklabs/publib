@@ -12,6 +12,11 @@ const project = new TypeScriptProject({
   authorUrl: 'https://aws.amazon.com',
   homepage: 'https://github.com/aws/jsii-release',
   projenUpgradeSecret: 'PROJEN_GITHUB_TOKEN',
+  autoApproveOptions: {
+    allowedUsernames: ['aws-cdk-automation'],
+    secret: 'GITHUB_TOKEN',
+  },
+  autoApproveUpgrades: true,
 });
 
 // create tarball and move to dist/js so release workflow can pick it up from there.
