@@ -2,11 +2,6 @@
 
 This library includes a set of programs that can be used to release multiple modules into various package managers.
 
-These scripts where extracted from
-[aws-delivlib](https://github.com/awslabs/aws-delivlib), which is used to
-release [jsii](https://github.com/aws/jsii) and the [AWS
-CDK](https://github.com/aws/aws-cdk).
-
 ## Usage
 
 This is an npm module. You can install it using `yarn add jsii-release` or `npm
