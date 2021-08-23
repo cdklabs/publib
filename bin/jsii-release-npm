@@ -9,14 +9,23 @@ set -eu
 #
 # DIR: directory where npm tarballs are found (default is `dist/js`).
 #
-# NPM_TOKEN (required): registry authentication token (either from npmjs or a GitHub personal access token)
+# NPM_TOKEN (optional): registry authentication token (either from npmjs or a GitHub personal access token), not used for AWS CodeArtifact
 # NPM_REGISTRY (optional): the registry URL (defaults to "registry.npmjs.org")
+# AWS_ACCESS_KEY_ID (optional): If AWS CodeArtifact is used as registry, an AWS access key can be spedified.
+# AWS_SECRET_ACCESS_KEY (optional): Secret access key that belongs to the AWS access key.
 #
 ###
 
 dir="${1:-"dist/js"}"
 
-if [ -z "${NPM_TOKEN:-}" ]; then
+
+if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws.com ]]; then
+  codeartifact_account="$(echo $NPM_REGISTRY | cut -d. -f1 | rev | cut -d- -f1 | rev)"
+  codeartifact_subdomain="$(echo $NPM_REGISTRY | cut -d. -f1)"
+  codeartifact_domain="$(echo $codeartifact_subdomain | cut -b -$((${#codeartifact_subdomain}-${#codeartifact_account}-1)))"
+  codeartifact_region="$(echo $NPM_REGISTRY | cut -d. -f4)"
+  NPM_TOKEN=`aws codeartifact get-authorization-token --domain $codeartifact_domain --domain-owner $codeartifact_account --region $codeartifact_region --query authorizationToken --output text`
+elif [ -z "${NPM_TOKEN:-}" ]; then
   echo "NPM_TOKEN is required"
   exit 1
 fi
