@@ -87,9 +87,11 @@ export function push(ref: string) {
  * @param options options.
  */
 export function checkout(branch: string, options: { createIfMissing?: boolean } ) {
-  const flags = [];
-  if (options.createIfMissing) { flags.push('-B'); }
-  shell.run(`git checkout${` ${flags.join(' ')}`} ${branch}`);
+  if (options.createIfMissing) {
+    shell.run(`(git show-branch origin/${branch}) && (git checkout ${branch}) || (git checkout -b ${branch})`);
+  } else {
+    shell.run(`git checkout ${branch}`);
+  }
 }
 
 /**
