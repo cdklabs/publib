@@ -25,12 +25,12 @@
     "unbump": "npx projen unbump",
     "publish:github": "npx projen publish:github",
     "publish:npm": "npx projen publish:npm",
-    "upgrade": "npx projen upgrade",
     "default": "npx projen default",
     "watch": "npx projen watch",
     "package": "npx projen package",
     "eslint": "npx projen eslint",
     "release": "npx projen release",
+    "upgrade": "npx projen upgrade",
     "projen": "npx projen"
   },
   "author": {
@@ -41,8 +41,8 @@
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/node": "^14.17.0",
-    "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.32.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.5.0",
@@ -51,7 +51,7 @@
     "jest-junit": "^12",
     "json-schema": "^0.3.0",
     "npm-check-updates": "^11",
-    "projen": "^0.28.34",
+    "projen": "^0.29.5",
     "standard-version": "^9",
     "ts-jest": "^26.5.6",
     "typescript": "^3.9.10"
