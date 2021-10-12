@@ -41,11 +41,10 @@ junit.xml
 !/.github/pull_request_template.md
 !/test/
 !/tsconfig.json
+!/tsconfig.dev.json
 !/src/
 /lib
 /dist/
-!/tsconfig.jest.json
 !/.eslintrc.json
-!/tsconfig.eslint.json
 !/.github/workflows/release.yml
 !/.github/workflows/upgrade-master.yml
