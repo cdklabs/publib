@@ -43,7 +43,9 @@ You can also execute individual publishers:
 
 ## npm
 
-Publishes all `*.tgz` files from `DIR` to [npmjs](npmjs.com) or [GitHub Packages](https://github.com/features/packages).
+Publishes all `*.tgz` files from `DIR` to [npmjs](npmjs.com), [GitHub Packages](https://github.com/features/packages) or [AWS CodeArtifact](https://aws.amazon.com/codeartifact/).
+
+If AWS CodeArtifact is used as npm registry, a temporary npm authorization token is created using AWS CLI. Therefore, it is necessary to provide the necessary [configuration settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html), e.g. by passing access key ID and secret access key to this script.
 
 **Usage:**
 
@@ -57,9 +59,11 @@ npx jsii-release-npm [DIR]
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`NPM_TOKEN`|Required|Registry authentication token (either [npm.js publishing token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens) or a [GitHub personal access token](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#authenticating-to-github-packages))|
-|`NPM_REGISTRY`|Optional|The registry URL (defaults to "registry.npmjs.org"). Use "npm.pkg.github.com" to publish to GitHub Packages|
+|`NPM_TOKEN`|Optional|Registry authentication token (either [npm.js publishing token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens) or a [GitHub personal access token](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#authenticating-to-github-packages)), not used for AWS CodeArtifact|
+|`NPM_REGISTRY`|Optional|The registry URL (defaults to "registry.npmjs.org"). Use "npm.pkg.github.com" to publish to GitHub Packages. Use repository endpoint for AWS CodeAtifact, e.g. "my-domain-111122223333.d.codeartifact.us-west-2.amazonaws.com/npm/my_repo/".|
 |`NPM_DIST_TAG`|Optional|Registers the published package with the given [dist-tag](https://docs.npmjs.com/cli/dist-tag) (e.g. `next`, default is `latest`)|
+|`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be spedified.|
+|`AWS_SECRET_ACCESS_KEY`|Optional|Secret access key that belongs to the AWS access key.|
 
 ## Maven
 
