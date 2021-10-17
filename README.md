@@ -93,10 +93,11 @@ npx jsii-release-maven [DIR]
 
 Install [GnuPG](https://gnupg.org/).
 
-Generate your key (use RSA, 4096, passphrase):
+Generate your key:
 
 ```console
-$ gpg --gen-key
+$ gpg --full-generate-key
+# select RSA only, 4096, passphrase
 ```
 
 Your selected passphrase goes to `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`.

@@ -87,9 +87,18 @@ export function push(ref: string) {
  * @param options options.
  */
 export function checkout(branch: string, options: { createIfMissing?: boolean } ) {
-  const flags = [];
-  if (options.createIfMissing) { flags.push('-B'); }
-  shell.run(`git checkout${` ${flags.join(' ')}`} ${branch}`);
+  if (options.createIfMissing) {
+    try {
+      shell.run(`git show-branch origin/${branch}`);
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('fatal: bad sha1 reference')) {
+        console.log('Remote branch not found, creating new branch.');
+        shell.run(`git checkout -B ${branch}`);
+        return;
+      }
+    }
+  }
+  shell.run(`git checkout ${branch}`);
 }
 
 /**

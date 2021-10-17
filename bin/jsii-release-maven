@@ -25,7 +25,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # HOW TO CREATE A GPG KEY?
 #
-#   gpg --gen-key (use RSA, 4096, passphrase)
+#   gpg --full-generate-key (use RSA, 4096, passphrase)
 #
 # Export and publish the public key:
 #   1. gpg -a --export > public.pem

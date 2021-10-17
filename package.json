@@ -25,12 +25,12 @@
     "unbump": "npx projen unbump",
     "publish:github": "npx projen publish:github",
     "publish:npm": "npx projen publish:npm",
-    "upgrade": "npx projen upgrade",
     "default": "npx projen default",
     "watch": "npx projen watch",
     "package": "npx projen package",
     "eslint": "npx projen eslint",
     "release": "npx projen release",
+    "upgrade": "npx projen upgrade",
     "projen": "npx projen"
   },
   "author": {
@@ -40,18 +40,18 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/node": "^10.17.0",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
+    "@types/node": "^14.17.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
-    "eslint-import-resolver-typescript": "^2.4.0",
-    "eslint-plugin-import": "^2.24.1",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.2",
     "jest": "^26.6.3",
     "jest-junit": "^12",
     "json-schema": "^0.3.0",
     "npm-check-updates": "^11",
-    "projen": "^0.27.32",
+    "projen": "^0.30.3",
     "standard-version": "^9",
     "ts-jest": "^26.5.6",
     "typescript": "^3.9.10"
@@ -104,7 +104,7 @@
     "preset": "ts-jest",
     "globals": {
       "ts-jest": {
-        "tsconfig": "tsconfig.jest.json"
+        "tsconfig": "tsconfig.dev.json"
       }
     }
   },
