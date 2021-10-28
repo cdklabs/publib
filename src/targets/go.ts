@@ -264,8 +264,16 @@ export class GoReleaser {
 
     let repoPath = cannonicalNameParts
       .slice(3) // e.g ['constructs', 'v3']
-      .join('/') // e.g 'constructs/v3'
-      .replace(`v${majorVersion}`, ''); // e.g 'constructs/'
+      .join('/'); // e.g 'constructs/v3'
+
+    // we could have something like
+    // constructs/v3
+    // or something like
+    // constructsv3/v3
+    // we only want to strip the last 'v3'
+    if (repoPath.endsWith(`v${majorVersion}`)) {
+      repoPath = repoPath.slice(0, repoPath.length - 2);
+    }
 
     // strip '/' if exists (wont exist for top level modules)
     repoPath = repoPath.endsWith('/') ? repoPath.substr(0, repoPath.length - 1) : repoPath;
