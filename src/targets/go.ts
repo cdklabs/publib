@@ -276,9 +276,6 @@ export class GoReleaser {
       split.pop();
       repoPath = split.join('/');
     }
-    // if (repoPath.endsWith(`/v${majorVersion}`)) {
-    //   repoPath = repoPath.slice(0, repoPath.length - 3);
-    // }
 
     // strip '/' if exists (wont exist for top level modules)
     repoPath = repoPath.endsWith('/') ? repoPath.substr(0, repoPath.length - 1) : repoPath;
