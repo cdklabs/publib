@@ -212,6 +212,17 @@ test('does not include major version suffix in tag names', () => {
 
 });
 
+test('does not strip major version from package name in tag names', () => {
+
+  const { releaser, sourceDir } = createReleaser('major-versionv3');
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['module1v3/v3.3.3', 'v3.3.3']);
+
+});
+
 test('no-ops on a directory with no modules', () => {
 
   const { releaser } = createReleaser('no-modules');
