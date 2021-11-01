@@ -271,7 +271,7 @@ export class GoReleaser {
     // or something like
     // constructsv3/v3
     // we only want to strip the last 'v3'
-    if (repoPath.endsWith(`v${majorVersion}`)) {
+    if (repoPath.endsWith(`/v${majorVersion}`)) {
       repoPath = repoPath.slice(0, repoPath.length - 2);
     }
 
