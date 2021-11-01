@@ -271,9 +271,14 @@ export class GoReleaser {
     // or something like
     // constructsv3/v3
     // we only want to strip the last 'v3'
-    if (repoPath.endsWith(`/v${majorVersion}`)) {
-      repoPath = repoPath.slice(0, repoPath.length - 2);
+    const split = repoPath.split('/');
+    if (split[split.length - 1] === `v${majorVersion}`) {
+      split.pop();
+      repoPath = split.join('/');
     }
+    // if (repoPath.endsWith(`/v${majorVersion}`)) {
+    //   repoPath = repoPath.slice(0, repoPath.length - 3);
+    // }
 
     // strip '/' if exists (wont exist for top level modules)
     repoPath = repoPath.endsWith('/') ? repoPath.substr(0, repoPath.length - 1) : repoPath;
