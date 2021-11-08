@@ -20,9 +20,9 @@ const project = new TypeScriptProject({
 });
 
 // create tarball and move to dist/js so release workflow can pick it up from there.
-project.buildTask.exec('yarn pack');
-project.buildTask.exec('mkdir -p dist/js');
-project.buildTask.exec('mv ./jsii-release-v*.tgz dist/js');
+project.projectBuild.postCompileTask.exec('yarn pack');
+project.projectBuild.postCompileTask.exec('mkdir -p dist/js');
+project.projectBuild.postCompileTask.exec('mv ./jsii-release-v*.tgz dist/js');
 
 // we can't use 9.x because it doesn't work with node 10.
 const fsExtraVersion = '^8.0.0';

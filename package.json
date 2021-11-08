@@ -21,6 +21,8 @@
     "default": "npx projen default",
     "eslint": "npx projen eslint",
     "package": "npx projen package",
+    "post-compile": "npx projen post-compile",
+    "pre-compile": "npx projen pre-compile",
     "publish:github": "npx projen publish:github",
     "publish:npm": "npx projen publish:npm",
     "release": "npx projen release",
@@ -50,7 +52,7 @@
     "jest-junit": "^12",
     "json-schema": "^0.3.0",
     "npm-check-updates": "^11",
-    "projen": "^0.32.9",
+    "projen": "^0.33.1",
     "standard-version": "^9",
     "ts-jest": "^27.0.7",
     "typescript": "^3.9.10"
