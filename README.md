@@ -64,6 +64,7 @@ npx jsii-release-npm [DIR]
 |`NPM_DIST_TAG`|Optional|Registers the published package with the given [dist-tag](https://docs.npmjs.com/cli/dist-tag) (e.g. `next`, default is `latest`)|
 |`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be spedified.|
 |`AWS_SECRET_ACCESS_KEY`|Optional|Secret access key that belongs to the AWS access key.|
+|`AWS_ROLE_TO_ASSUME`|Optional|If AWS CodeArtifact is used as registry, an AWS role ARN to assume before authorizing.|
 
 ## Maven
 
