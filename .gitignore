@@ -38,6 +38,7 @@ junit.xml
 !/.github/workflows/build.yml
 /dist/changelog.md
 /dist/version.txt
+!/.github/workflows/release.yml
 !/.mergify.yml
 !/.github/pull_request_template.md
 !/test/
@@ -47,5 +48,4 @@ junit.xml
 /lib
 /dist/
 !/.eslintrc.json
-!/.github/workflows/release.yml
 !/.github/workflows/upgrade-master.yml
