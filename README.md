@@ -70,7 +70,7 @@ npx jsii-release-npm [DIR]
 
 Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven.org/).
 
-Note that if you signed up at SonaType after February 2021, your need to use this URL: `https://s01.oss.sonatype.org` ([announcement](https://central.sonatype.org/news/20210223_new-users-on-s01/)).
+Note that if you signed up at SonaType after February 2021, you need to use this URL: `https://s01.oss.sonatype.org` ([announcement](https://central.sonatype.org/news/20210223_new-users-on-s01/)).
 
 **Usage:**
 
