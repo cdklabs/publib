@@ -1,6 +1,6 @@
-const { TypeScriptProject } = require('projen');
+const { typescript } = require('projen');
 
-const project = new TypeScriptProject({
+const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'master',
   name: 'jsii-release',
   description: 'Release jsii modules to multiple package managers',
