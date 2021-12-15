@@ -301,6 +301,14 @@ main() {
         is_central=true
     else
         is_central=false
+
+        if [ -n "${MAVEN_REPOSITORY_URL:-}" ] && [[ $MAVEN_REPOSITORY_URL =~ .codeartifact.*.amazonaws.com ]]; then
+            codeartifact_account="$(echo $MAVEN_REPOSITORY_URL | cut -d. -f1 | rev | cut -d- -f1 | rev)"
+            codeartifact_subdomain="$(echo $MAVEN_REPOSITORY_URL | cut -d. -f1 | rev | cut -d/ -f1 | rev)"
+            codeartifact_domain="$(echo $codeartifact_subdomain | cut -b -$((${#codeartifact_subdomain}-${#codeartifact_account}-1)))"
+            codeartifact_region="$(echo $MAVEN_REPOSITORY_URL | cut -d. -f4)"
+            export MAVEN_PASSWORD=`aws codeartifact get-authorization-token --domain $codeartifact_domain --domain-owner $codeartifact_account --region $codeartifact_region --query authorizationToken --output text`
+        fi
     fi
 
     if [[ -n "${MAVEN_GPG_PRIVATE_KEY_FILE:-}" ]] || [[ -n "${MAVEN_GPG_PRIVATE_KEY:-}" ]]; then

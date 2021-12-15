@@ -62,13 +62,15 @@ npx jsii-release-npm [DIR]
 |`NPM_TOKEN`|Optional|Registry authentication token (either [npm.js publishing token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens) or a [GitHub personal access token](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#authenticating-to-github-packages)), not used for AWS CodeArtifact|
 |`NPM_REGISTRY`|Optional|The registry URL (defaults to "registry.npmjs.org"). Use "npm.pkg.github.com" to publish to GitHub Packages. Use repository endpoint for AWS CodeAtifact, e.g. "my-domain-111122223333.d.codeartifact.us-west-2.amazonaws.com/npm/my_repo/".|
 |`NPM_DIST_TAG`|Optional|Registers the published package with the given [dist-tag](https://docs.npmjs.com/cli/dist-tag) (e.g. `next`, default is `latest`)|
-|`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be spedified.|
+|`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be specified.|
 |`AWS_SECRET_ACCESS_KEY`|Optional|Secret access key that belongs to the AWS access key.|
 |`AWS_ROLE_TO_ASSUME`|Optional|If AWS CodeArtifact is used as registry, an AWS role ARN to assume before authorizing.|
 
 ## Maven
 
 Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven.org/).
+
+If AWS CodeArtifact is used as maven repository, a temporary maven password is created using AWS CLI. Therefore, it is necessary to provide the necessary [configuration settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html), e.g. by passing access key ID and secret access key to this script.
 
 **Usage:**
 
@@ -82,13 +84,17 @@ npx jsii-release-maven [DIR]
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details.|
+|`MAVEN_USERNAME`|Yes|Username for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details. For AWS CodeArtifact, any value can be used. |
+|`MAVEN_PASSWORD`|Yes, except for AWS CodeArtifact|Password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details. For AWS CodeArtifact, password should not be passed to the script as a temporary password is created using AWS CLI. |
 |`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes for Maven Central|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
 |`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`).|
 |`MAVEN_ENDPOINT`|No|URL of Nexus repository. Defaults to `https://oss.sonatype.org`|
-|`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup (e.g. use `github` when publishing to GitHub). Defaults to `ossrh` for Maven Central.|
+|`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup (e.g. use `github` when publishing to GitHub, `codeartifact` when publishing to AWS CodeArtifact). Defaults to `ossrh` for Maven Central.|
 |`MAVEN_REPOSITORY_URL`|No|Deployment repository when not deploying to Maven Central|
 |`MAVEN_DRYRUN`|No|Set to "true" for a dry run|
+|`AWS_ACCESS_KEY_ID`|Yes for AWS CodeArtifact|If AWS CodeArtifact is used as maven repository, an AWS access key can be specified.|
+|`AWS_SECRET_ACCESS_KEY`|Yes for AWS CodeArtifact|Secret access key that belongs to the AWS access key.|
+
 
 **How to create a GPG key?**
 
@@ -137,6 +143,18 @@ An example GitHub Actions publish step:
     MAVEN_USERNAME: ${{ github.actor }}
     MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     MAVEN_REPOSITORY_URL: "https://maven.pkg.github.com/${{ github.repository }}"
+```
+
+**Publish to AWS CodeArtifact**
+
+An example GitHub Actions publish step:
+```yaml
+- name: Publish package
+  run: npx -p jsii-release jsii-release-maven
+  env:
+    MAVEN_SERVER_ID: codeartifact
+    MAVEN_USERNAME: ${{ github.actor }}
+    MAVEN_REPOSITORY_URL: "https://my_domain-111122223333.d.codeartifact.us-west-2.amazonaws.com/maven/my_repo/'"
 ```
 
 ## NuGet
@@ -222,7 +240,7 @@ the module name.|
 
 - [X] GitHub Support: Maven
 - [X] GitHub Support: NuGet
-- [ ] CodeArtifact Support: Maven
+- [x] CodeArtifact Support: Maven
 - [ ] CodeArtifact Support: NuGet
 - [ ] CodeArtifact Support: Python
 
