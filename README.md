@@ -155,6 +155,8 @@ An example GitHub Actions publish step:
     MAVEN_SERVER_ID: codeartifact
     MAVEN_USERNAME: ${{ github.actor }}
     MAVEN_REPOSITORY_URL: "https://my_domain-111122223333.d.codeartifact.us-west-2.amazonaws.com/maven/my_repo/'"
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
 ## NuGet
