@@ -27,9 +27,9 @@ if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws
   codeartifact_region="$(echo $NPM_REGISTRY | cut -d. -f4)"
   if [ -n "${AWS_ROLE_TO_ASSUME:-}" ]; then
     credentials=`aws sts assume-role --role-session-name "jsii-release-code-artifact" --role-arn ${AWS_ROLE_TO_ASSUME} --output text | sed -n '2 p'`
-    AWS_ACCESS_KEY_ID="$(echo $credentials | cut -d' ' -f2)"
-    AWS_SECRET_ACCESS_KEY="$(echo $credentials | cut -d' ' -f4)"
-    AWS_SESSION_TOKEN="$(echo $credentials | cut -d' ' -f5)"
+    export AWS_ACCESS_KEY_ID="$(echo $credentials | cut -d' ' -f2)"
+    export AWS_SECRET_ACCESS_KEY="$(echo $credentials | cut -d' ' -f4)"
+    export AWS_SESSION_TOKEN="$(echo $credentials | cut -d' ' -f5)"
   fi
   NPM_TOKEN=`aws codeartifact get-authorization-token --domain $codeartifact_domain --domain-owner $codeartifact_account --region $codeartifact_region --query authorizationToken --output text`
 elif [ -z "${NPM_TOKEN:-}" ]; then
