@@ -70,6 +70,8 @@ npx jsii-release-npm [DIR]
 
 Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven.org/).
 
+Note that if you signed up at SonaType after February 2021, you need to use this URL: `https://s01.oss.sonatype.org` ([announcement](https://central.sonatype.org/news/20210223_new-users-on-s01/)).
+
 **Usage:**
 
 ```shell
@@ -84,8 +86,8 @@ npx jsii-release-maven [DIR]
 |------|--------|-----------|
 |`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details.|
 |`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes for Maven Central|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
-|`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`).|
-|`MAVEN_ENDPOINT`|No|URL of Nexus repository. Defaults to `https://oss.sonatype.org`|
+|`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org or https://s01.oss.sonatype.org if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`).|
+|`MAVEN_ENDPOINT`|Yes for new Maven Central users|URL of Nexus repository. Defaults to `https://oss.sonatype.org`. Use `https://s01.oss.sonatype.org` if you are a new user.|
 |`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup (e.g. use `github` when publishing to GitHub). Defaults to `ossrh` for Maven Central.|
 |`MAVEN_REPOSITORY_URL`|No|Deployment repository when not deploying to Maven Central|
 |`MAVEN_DRYRUN`|No|Set to "true" for a dry run|
