@@ -5,7 +5,7 @@ set -euo pipefail
 #
 # Publishes all *.whl files to PyPI
 #
-# Usage: ./jsii-release-pypi [DIR]
+# Usage: ./publib-pypi [DIR]
 #
 # DIR is where *.whl files are looked up (default is "dist/python")
 #

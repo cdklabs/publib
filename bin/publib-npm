@@ -5,7 +5,7 @@ set -eu
 #
 # Publishes all *.tgz files to npm
 #
-# Usage: ./jsii-release-npm [DIR]
+# Usage: ./publib-npm [DIR]
 #
 # DIR: directory where npm tarballs are found (default is `dist/js`).
 #
@@ -27,7 +27,7 @@ if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws
   codeartifact_region="$(echo $NPM_REGISTRY | cut -d. -f4)"
   export AWS_DEFAULT_REGION="$(echo $codeartifact_region)" 
   if [ -n "${AWS_ROLE_TO_ASSUME:-}" ]; then
-    credentials=`aws sts assume-role --role-session-name "jsii-release-code-artifact" --role-arn ${AWS_ROLE_TO_ASSUME} --output text | sed -n '2 p'`
+    credentials=`aws sts assume-role --role-session-name "publib-code-artifact" --role-arn ${AWS_ROLE_TO_ASSUME} --output text | sed -n '2 p'`
     export AWS_ACCESS_KEY_ID="$(echo $credentials | cut -d' ' -f2)"
     export AWS_SECRET_ACCESS_KEY="$(echo $credentials | cut -d' ' -f4)"
     export AWS_SESSION_TOKEN="$(echo $credentials | cut -d' ' -f5)"

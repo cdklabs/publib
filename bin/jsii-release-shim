@@ -1,0 +1,19 @@
+#!/bin/sh
+scriptdir=$(cd $(dirname $0) && pwd)
+jsii_command=$(basename $0)
+
+publib_command="$(echo ${jsii_command} | sed -e "s/jsii-release/publib/")"
+
+echo "-----------------------------------------------------------------"
+echo "WARNING: 'jsii-release' is now released under the name 'publib'"
+echo "Please install it and execute '${publib_command}' instead"
+echo "-----------------------------------------------------------------"
+
+actual="${scriptdir}/${publib_command}"
+
+if [ ! -e "${actual}" ]; then
+  echo "${publib_command} not found"
+  exit 1
+fi
+
+exec "${actual}"
