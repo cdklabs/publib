@@ -220,6 +220,9 @@
         },
         {
           "exec": "mv *.tgz dist/js/"
+        },
+        {
+          "spawn": "package-as-publib"
         }
       ]
     },
@@ -229,6 +232,29 @@
       "steps": [
         {
           "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test build-tools .projenrc.js"
+        }
+      ]
+    },
+    "package-as-publib": {
+      "name": "package-as-publib",
+      "steps": [
+        {
+          "exec": "cp package.json package.json.bak"
+        },
+        {
+          "exec": "node ./scripts/update-package-name.js publib"
+        },
+        {
+          "exec": "yarn pack"
+        },
+        {
+          "exec": "mv ./publib*.tgz dist/js"
+        },
+        {
+          "exec": "cp package.json.bak package.json"
+        },
+        {
+          "exec": "rm package.json.bak"
         }
       ]
     },

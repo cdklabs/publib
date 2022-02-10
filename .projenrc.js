@@ -29,4 +29,15 @@ const fsExtraVersion = '^8.0.0';
 
 project.addDeps('shlex', `fs-extra@${fsExtraVersion}`, `@types/fs-extra@${fsExtraVersion}`);
 
+const publib = project.addTask('package-as-publib');
+publib.exec('cp package.json package.json.bak');
+publib.exec('node ./scripts/update-package-name.js publib');
+publib.exec('yarn pack');
+publib.exec('mv ./publib*.tgz dist/js');
+publib.exec('cp package.json.bak package.json');
+publib.exec('rm package.json.bak');
+
+project.packageTask.spawn(publib);
+
+
 project.synth();
