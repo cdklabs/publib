@@ -5,7 +5,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # Publishes all maven modules in the specified directory to maven.
 #
-# Usage: ./jsii-release-maven [DIR]
+# Usage: ./publib-maven [DIR]
 #
 # DIR is the root directory of a local maven repository (default `dist/java`).
 #
@@ -170,7 +170,7 @@ sign_artifacts() {
     # way to do so via -Dgpg.gpgArguments or the settings file, so here we are.
     local gpg_exec="gpg"
     if [[ "$(uname)" == "Darwin" ]]; then
-        gpg_exec="/tmp/jsii-release-gpg.sh"
+        gpg_exec="/tmp/publib-gpg.sh"
         echo "#!/bin/bash" > $gpg_exec
         echo "exec gpg --pinentry-mode loopback \"\$@\"" >> $gpg_exec
         chmod +x $gpg_exec

@@ -1,22 +1,31 @@
-# jsii-release
+# publib
 
-This library includes a set of programs that can be used to release multiple modules into various package managers.
+> Previously known as `jsii-release`
+
+A unified toolchain for publishing libraries to popular package managers.
+
+Supports:
+
+* npm
+* PyPI
+* NuGet
+* Maven
+* Go (GitHub)
 
 ## Usage
 
-This is an npm module. You can install it using `yarn add jsii-release` or `npm
-install jsii-release`. In most cases it will be installed as a `devDependency`
+This is an npm module. You can install it using `yarn add publib` or
+`npm install publib`. In most cases it will be installed as a `devDependency`
 in your `package.json`.
 
 This tool expects to find a distribution directory (default name is `dist`)
-which contains "ready-to-publish" artifacts for each package manager. This
-structure is compatible with `jsii-pacmak`:
+which contains "ready-to-publish" artifacts for each package manager.
 
-- `dist/js/*.tgz` - npm tarballs
-- `dist/python/*.whl` - Python wheels
-- `dist/nuget/*.nupkg` - Nuget packages
-- `dist/java/**` - Maven artifacts in local repository structure
-- `dist/go/**/go.mod` - Go modules. Each subdirectory should have its own go.mod file.
+* `dist/js/*.tgz` - npm tarballs
+* `dist/python/*.whl` - Python wheels
+* `dist/nuget/*.nupkg` - Nuget packages
+* `dist/java/**` - Maven artifacts in local repository structure
+* `dist/go/**/go.mod` - Go modules. Each subdirectory should have its own go.mod file.
 
 Each publisher needs a set of environment variables with credentials as
 described below (`NPM_TOKEN`, `TWINE_PASSWORD` etc).
@@ -24,10 +33,10 @@ described below (`NPM_TOKEN`, `TWINE_PASSWORD` etc).
 Then:
 
 ```shell
-$ jsii-release
+publib
 ```
 
-You can customize the distribution directory through `jsii-release DIR` (the
+You can customize the distribution directory through `publib DIR` (the
 default is `dist`)
 
 This command will discover all the artifacts based on the above structure and
@@ -35,11 +44,11 @@ will publish them to their respective package manager.
 
 You can also execute individual publishers:
 
-* `jsii-release-maven`
-* `jsii-release-nuget`
-* `jsii-release-npm`
-* `jsii-release-pypi`
-* `jsii-release-golang`
+* `publib-maven`
+* `publib-nuget`
+* `publib-npm`
+* `publib-pypi`
+* `publib-golang`
 
 ## npm
 
@@ -50,7 +59,7 @@ If AWS CodeArtifact is used as npm registry, a temporary npm authorization token
 **Usage:**
 
 ```shell
-npx jsii-release-npm [DIR]
+npx publib-npm [DIR]
 ```
 
 `DIR` is a directory with npm tarballs (*.tgz). Default is `dist/js`.
@@ -75,7 +84,7 @@ Note that if you signed up at SonaType after February 2021, you need to use this
 **Usage:**
 
 ```shell
-npx jsii-release-maven [DIR]
+npx publib-maven [DIR]
 ```
 
 `DIR` is a directory with a local maven layout. Default is `dist/java`.
@@ -86,7 +95,7 @@ npx jsii-release-maven [DIR]
 |------|--------|-----------|
 |`MAVEN_USERNAME` and `MAVEN_PASSWORD`|Yes|Username and password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details.|
 |`MAVEN_GPG_PRIVATE_KEY` or `MAVEN_GPG_PRIVATE_KEY_FILE` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`|Yes for Maven Central|GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below|
-|`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in https://oss.sonatype.org or https://s01.oss.sonatype.org if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`).|
+|`MAVEN_STAGING_PROFILE_ID`|Yes for Maven Central|Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in <https://oss.sonatype.org> or <https://s01.oss.sonatype.org> if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`).|
 |`MAVEN_ENDPOINT`|Yes for new Maven Central users|URL of Nexus repository. Defaults to `https://oss.sonatype.org`. Use `https://s01.oss.sonatype.org` if you are a new user.|
 |`MAVEN_SERVER_ID`|No|Used in maven settings for credential lookup (e.g. use `github` when publishing to GitHub). Defaults to `ossrh` for Maven Central.|
 |`MAVEN_REPOSITORY_URL`|No|Deployment repository when not deploying to Maven Central|
@@ -108,16 +117,16 @@ Your selected passphrase goes to `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE`.
 Export and publish the public key:
 
 ```console
-$ gpg -a --export > public.pem
+gpg -a --export > public.pem
 ```
 
-Go to https://keyserver.ubuntu.com/ and submit the public key.
+Go to <https://keyserver.ubuntu.com/> and submit the public key.
 You can use `cat public.pem` and copy/paste it into the "Submit Key" dialog.
 
 Export the private key:
 
 ```console
-$ gpg -a --export-secret-keys <fingerprint> > private.pem
+gpg -a --export-secret-keys <fingerprint> > private.pem
 ```
 
 Now, either set `MAVEN_GPG_PRIVATE_KEY_FILE` to point to `private.pem` or
@@ -125,15 +134,16 @@ export the private key to a single line where newlines are encoded as `\n`
 and then assign it to `MAVEN_GPG_PRIVATE_KEY`:
 
 ```console
-$ echo $(cat -e private.pem) | sed 's/\$ /\\n/g' | sed 's/\$$//'
+echo $(cat -e private.pem) | sed 's/\$ /\\n/g' | sed 's/\$$//'
 ```
 
 **Publish to GitHub Packages**
 
 An example GitHub Actions publish step:
+
 ```yaml
 - name: Publish package
-  run: npx -p jsii-release jsii-release-maven
+  run: npx -p publib publib-maven
   env:
     MAVEN_SERVER_ID: github
     MAVEN_USERNAME: ${{ github.actor }}
@@ -148,7 +158,7 @@ Publishes all `*.nupkg` to the [NuGet Gallery](https://www.nuget.org/).
 **Usage:**
 
 ```shell
-npx jsii-release-nuget [DIR]
+npx publib-nuget [DIR]
 ```
 
 `DIR` is a directory with Nuget packages (*.nupkg). Default is `dist/dotnet`.
@@ -173,7 +183,7 @@ Publishes all `*.whl` files to [PyPI](https://pypi.org/).
 **Usage:**
 
 ```shell
-npx jsii-release-pypi [DIR]
+npx publib-pypi [DIR]
 ```
 
 `DIR` is a directory with Python wheels (*.whl). Default is `dist/python`.
@@ -186,7 +196,6 @@ npx jsii-release-pypi [DIR]
 |`TWINE_PASSWORD`|Required|PyPI password|
 |`TWINE_REPOSITORY_URL`|Optional|The registry URL (defaults to Twine default)|
 
-
 ## Golang
 
 Pushes a directory of golang modules to a GitHub repository.
@@ -194,7 +203,7 @@ Pushes a directory of golang modules to a GitHub repository.
 **Usage:**
 
 ```shell
-npx jsii-release-golang [DIR]
+npx publib-golang [DIR]
 ```
 
 `DIR` is a directory where the golang modules are located (default is `dist/go`). Modules can be located either in subdirectories, (e.g 'dist/go/my-module/go.mod')
@@ -202,9 +211,9 @@ or in the root (e.g 'dist/go/go.mod').
 
 If you specify the `VERSION` env variable, all modules will recieve that version, otherwise a `version` file is expected to exist in each module directory.
 Repository tags will be in the following format:
-- For a module located at the root: `v${module_version}` (e.g `v1.20.1`)
-- For modules located inside subdirectories: `<subdir-name>/v${module_version}` (e.g `my-module/v3.3.1`)
 
+* For a module located at the root: `v${module_version}` (e.g `v1.20.1`)
+* For modules located inside subdirectories: `<subdir-name>/v${module_version}` (e.g `my-module/v3.3.1`)
 
 **Options (environment variables):**
 
@@ -219,14 +228,13 @@ the module name.|
 |`GIT_COMMIT_MESSAGE`|Optional|The commit message. Defaults to 'chore(release): $VERSION'.|
 |`DRYRUN`|Set to "true" for a dry run.|
 
-
 ## Roadmap
 
-- [X] GitHub Support: Maven
-- [X] GitHub Support: NuGet
-- [ ] CodeArtifact Support: Maven
-- [ ] CodeArtifact Support: NuGet
-- [ ] CodeArtifact Support: Python
+* [X] GitHub Support: Maven
+* [X] GitHub Support: NuGet
+* [ ] CodeArtifact Support: Maven
+* [ ] CodeArtifact Support: NuGet
+* [ ] CodeArtifact Support: Python
 
 ## License
 

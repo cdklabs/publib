@@ -1,5 +1,5 @@
 #!/bin/bash
-# usage: jsii-release [DIR]
+# usage: publib [DIR]
 #
 # DIR is the root directory of the distribution where we will look for `js`,
 # `java`, `python` and `dotnet` subdirectories (default is "dist")
@@ -21,7 +21,7 @@ function release() {
   local dist_subdir="${dist}/${subdir}"
   if [ -d "${dist_subdir}" ]; then
     echo "found ${type} artifacts under ${dist_subdir}"
-    ${scriptdir}/jsii-release-${type} "${dist_subdir}"
+    ${scriptdir}/publib-${type} "${dist_subdir}"
   else
     echo "${dist_subdir}: no ${type} artifacts"
   fi

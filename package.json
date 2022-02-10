@@ -1,17 +1,24 @@
 {
-  "name": "jsii-release",
+  "name": "publib",
   "description": "Release jsii modules to multiple package managers",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/jsii-release.git"
+    "url": "https://github.com/aws/publib.git"
   },
   "bin": {
-    "jsii-release": "bin/jsii-release",
-    "jsii-release-golang": "bin/jsii-release-golang",
-    "jsii-release-maven": "bin/jsii-release-maven",
-    "jsii-release-npm": "bin/jsii-release-npm",
-    "jsii-release-nuget": "bin/jsii-release-nuget",
-    "jsii-release-pypi": "bin/jsii-release-pypi"
+    "jsii-release": "./bin/jsii-release-shim",
+    "jsii-release-golang": "./bin/jsii-release-shim",
+    "jsii-release-maven": "./bin/jsii-release-shim",
+    "jsii-release-npm": "./bin/jsii-release-shim",
+    "jsii-release-nuget": "./bin/jsii-release-shim",
+    "jsii-release-pypi": "./bin/jsii-release-shim",
+    "jsii-release-shim": "bin/jsii-release-shim",
+    "publib": "bin/publib",
+    "publib-golang": "bin/publib-golang",
+    "publib-maven": "bin/publib-maven",
+    "publib-npm": "bin/publib-npm",
+    "publib-nuget": "bin/publib-nuget",
+    "publib-pypi": "bin/publib-pypi"
   },
   "scripts": {
     "build": "npx projen build",
@@ -22,7 +29,7 @@
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
     "package": "npx projen package",
-    "package-as-publib": "npx projen package-as-publib",
+    "package-legacy": "npx projen package-legacy",
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
@@ -32,6 +39,7 @@
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
+    "upgrade-projen": "npx projen upgrade-projen",
     "watch": "npx projen watch",
     "projen": "npx projen"
   },
@@ -63,12 +71,9 @@
     "fs-extra": "^8.0.0",
     "shlex": "^2.1.0"
   },
-  "keywords": [
-    "jsii"
-  ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/aws/jsii-release",
+  "homepage": "https://github.com/aws/publib",
   "version": "0.0.0",
   "jest": {
     "testMatch": [

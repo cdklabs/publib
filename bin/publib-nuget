@@ -6,7 +6,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # Publishes all *.nupkg to NuGet
 #
-# Usage: ./jsii-release-nuget [DIR]
+# Usage: ./publib-nuget [DIR]
 #
 # DIR is a directory with *.nupkg files (default is 'dist/dotnet')
 #

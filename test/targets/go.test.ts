@@ -15,7 +15,7 @@ function initRepo(repoDir: string, postInit?: (repoDir: string) => void) {
     process.chdir(repoDir);
     git.init();
     git.add('.');
-    git.identify('jsii-release-test', '<>');
+    git.identify('publib-test', '<>');
     git.commit('Initial Commit');
     if (postInit) { postInit(repoDir); };
   } finally {
@@ -38,8 +38,8 @@ function createReleaser(
   const releaser = new GoReleaser({
     dir: sourceDir,
     dryRun: true,
-    username: 'jsii-release-tester',
-    email: 'jsii-release@test.com',
+    username: 'publib-tester',
+    email: 'publib@test.com',
     ...props,
   });
 
