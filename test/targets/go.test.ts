@@ -23,7 +23,11 @@ function initRepo(repoDir: string, postInit?: (repoDir: string) => void) {
   }
 }
 
-function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {}, initializers: Initializers = {}) {
+function createReleaser(
+  fixture: string,
+  props: Omit<GoReleaserProps, 'dir' | 'dryRun'> = {},
+  initializers: Initializers = {},
+) {
 
   const fixturePath = path.join(__dirname, '..', '__fixtures__', fixture);
   const sourceDir = path.join(os.mkdtempSync(), fixture);
@@ -43,6 +47,15 @@ function createReleaser(fixture: string, props: Omit<GoReleaserProps, 'dir' | 'd
     // the cloned repo is always the original fixture.
     fs.copySync(fixturePath, targetDir, { recursive: true });
     initRepo(targetDir, initializers.postInit);
+  };
+
+  (git as any).checkout = function(branch: string, options: { createIfMissing?: boolean }) {
+    // skip logic for comparing against remote since we don't have one
+    if (options.createIfMissing) {
+      shell.run(`git checkout -B ${branch}`);
+    } else {
+      shell.run(`git checkout ${branch}`);
+    }
   };
 
   return { releaser, sourceDir };
@@ -199,6 +212,17 @@ test('does not include major version suffix in tag names', () => {
 
 });
 
+test('does not strip major version from package name in tag names', () => {
+
+  const { releaser, sourceDir } = createReleaser('major-versionv3');
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['module1v3/v3.3.3', 'v3.3.3']);
+
+});
+
 test('no-ops on a directory with no modules', () => {
 
   const { releaser } = createReleaser('no-modules');
@@ -266,5 +290,19 @@ test('creates missing tags only', () => {
 
   const release = releaser.release();
   expect(release.tags).toEqual(['module1/v1.1.0']);
+
+});
+
+test('releases on separate branch', () => {
+
+  const { releaser, sourceDir } = createReleaser('top-level', {
+    branch: 'boo',
+  });
+
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['v1.1.0']);
+  expect(release.commitMessage).toEqual('chore(release): v1.1.0');
 
 });

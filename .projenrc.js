@@ -1,6 +1,6 @@
-const { TypeScriptProject } = require('projen');
+const { typescript } = require('projen');
 
-const project = new TypeScriptProject({
+const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'master',
   name: 'jsii-release',
   description: 'Release jsii modules to multiple package managers',
@@ -13,16 +13,16 @@ const project = new TypeScriptProject({
   homepage: 'https://github.com/aws/jsii-release',
   projenUpgradeSecret: 'PROJEN_GITHUB_TOKEN',
   autoApproveOptions: {
-    allowedUsernames: ['aws-cdk-automation'],
+    allowedUsernames: ['cdklabs-automation'],
     secret: 'GITHUB_TOKEN',
   },
   autoApproveUpgrades: true,
 });
 
 // create tarball and move to dist/js so release workflow can pick it up from there.
-project.buildTask.exec('yarn pack');
-project.buildTask.exec('mkdir -p dist/js');
-project.buildTask.exec('mv ./jsii-release-v*.tgz dist/js');
+project.projectBuild.postCompileTask.exec('yarn pack');
+project.projectBuild.postCompileTask.exec('mkdir -p dist/js');
+project.projectBuild.postCompileTask.exec('mv ./jsii-release-v*.tgz dist/js');
 
 // we can't use 9.x because it doesn't work with node 10.
 const fsExtraVersion = '^8.0.0';
