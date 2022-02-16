@@ -16,4 +16,4 @@ if [ ! -e "${actual}" ]; then
   exit 1
 fi
 
-exec "${actual}"
+exec "${actual}" "$@"
