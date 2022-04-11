@@ -3,7 +3,7 @@
   "description": "Release jsii modules to multiple package managers",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/publib.git"
+    "url": "https://github.com/cdklabs/publib.git"
   },
   "bin": {
     "jsii-release": "./bin/jsii-release-shim",
@@ -73,7 +73,7 @@
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/aws/publib",
+  "homepage": "https://github.com/cdklabs/publib",
   "version": "0.0.0",
   "jest": {
     "testMatch": [
