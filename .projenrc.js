@@ -6,11 +6,11 @@ const project = new typescript.TypeScriptProject({
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
   releaseToNpm: true,
-  repository: 'https://github.com/aws/publib.git',
+  repository: 'https://github.com/cdklabs/publib.git',
   authorName: 'Amazon Web Services',
   authorOrganization: true,
   authorUrl: 'https://aws.amazon.com',
-  homepage: 'https://github.com/aws/publib',
+  homepage: 'https://github.com/cdklabs/publib',
   autoApproveOptions: {
     allowedUsernames: ['cdklabs-automation'],
     secret: 'GITHUB_TOKEN',
