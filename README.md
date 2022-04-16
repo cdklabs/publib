@@ -74,6 +74,7 @@ npx publib-npm [DIR]
 |`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be spedified.|
 |`AWS_SECRET_ACCESS_KEY`|Optional|Secret access key that belongs to the AWS access key.|
 |`AWS_ROLE_TO_ASSUME`|Optional|If AWS CodeArtifact is used as registry, an AWS role ARN to assume before authorizing.|
+|`DISABLE_HTTPS`|Optional|Connect to the registry with HTTP instead of HTTPS (defaults to false).|
 
 ## Maven
 
