@@ -64,7 +64,7 @@ export function tag(name: string): boolean {
     shell.run(`git tag -a ${name} -m ${name}`, { capture: true });
     return true;
   } catch (e) {
-    if (e.message.includes('already exists')) {
+    if (e instanceof Error && e.message.includes('already exists')) {
       return false;
     }
     throw e;
@@ -109,7 +109,9 @@ export function username() {
   try {
     return shell.run('git config user.name', { capture: true });
   } catch (err) {
-    console.warn(err.message);
+    if (err instanceof Error) {
+      console.warn(err.message);
+    }
     return undefined;
   }
 }
@@ -122,7 +124,9 @@ export function email() {
   try {
     return shell.run('git config user.email', { capture: true });
   } catch (err) {
-    console.warn(err.message);
+    if (err instanceof Error) {
+      console.warn(err.message);
+    }
     return undefined;
   }
 }
