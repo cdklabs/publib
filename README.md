@@ -220,7 +220,7 @@ Repository tags will be in the following format:
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
+|`GO_GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
 the module name.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
