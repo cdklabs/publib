@@ -1,5 +1,5 @@
-import * as shell from '../../src/help/shell';
 import * as git from '../../src/help/git';
+import * as shell from '../../src/help/shell';
 
 // mock shell.run
 jest.mock('../../src/help/shell');
@@ -9,7 +9,7 @@ const mockedShellRun = (shell.run as unknown) as jest.Mock<typeof shell.run>;
 const OLD_ENV = process.env;
 
 beforeEach(() => {
-  jest.resetModules() // Most important - it clears the cache
+  jest.resetModules(); // Most important - it clears the cache
   process.env = { ...OLD_ENV }; // Make a copy
 });
 
@@ -29,7 +29,7 @@ test('clone with token', () => {
 
 test('clone with ssh', () => {
   process.env.GITHUB_USE_SSH = '1';
-  
+
   git.clone('github.com/cdklabs/publib', 'target');
 
   expect(mockedShellRun.mock.calls).toHaveLength(1);
