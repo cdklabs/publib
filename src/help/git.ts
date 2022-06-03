@@ -14,7 +14,7 @@ export function clone(repositoryUrl: string, targetDir: string) {
   } else {
     const gitHubToken = process.env.GITHUB_TOKEN;
     if (!gitHubToken) {
-      throw new Error('GITHUB_TOKEN env variable is required');
+      throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
     }
     shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
   }

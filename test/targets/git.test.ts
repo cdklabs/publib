@@ -38,5 +38,5 @@ test('clone with ssh', () => {
 
 test('throw exception without token or ssh', () => {
   const t = () => git.clone('github.com/cdklabs/publib', 'target');
-  expect(t).toThrow('GITHUB_TOKEN env variable is required');
+  expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
 });
