@@ -7,11 +7,17 @@ import * as shell from './shell';
  * @param targetDir the clone directory.
  */
 export function clone(repositoryUrl: string, targetDir: string) {
-  const gitHubToken = process.env.GITHUB_TOKEN;
-  if (!gitHubToken) {
-    throw new Error('GITHUB_TOKEN env variable is required');
+  const gitHubUseSsh = process.env.GITHUB_USE_SSH;
+  if (gitHubUseSsh) {
+    const sshRepositoryUrl = repositoryUrl.replace('/', ':');
+    shell.run(`git clone git@${sshRepositoryUrl}.git ${targetDir}`);
+  } else {
+    const gitHubToken = process.env.GITHUB_TOKEN;
+    if (!gitHubToken) {
+      throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+    }
+    shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
   }
-  shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
 }
 
 /**

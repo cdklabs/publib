@@ -220,14 +220,14 @@ Repository tags will be in the following format:
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`GITHUB_TOKEN`|Required|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
+|`GITHUB_TOKEN`|Required if `GITHUB_USE_SSH` is not specified|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
+|`GITHUB_USE_SSH`|Required if `GITHUB_TOKEN` is not specified|Set any value to use SSH with [deploy keys](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) or your private SSH key. Your system must ready to use the key as publib will not set it up.|
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
-the module name.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
 |`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the git user.name config in the current directory. Fails if it doesn't exist.|
 |`GIT_USER_EMAIL`|Optional|Email to perform the commit with. Defaults to the git user.email config in the current directory. Fails if it doesn't exist.|
 |`GIT_COMMIT_MESSAGE`|Optional|The commit message. Defaults to 'chore(release): $VERSION'.|
-|`DRYRUN`|Set to "true" for a dry run.|
+|`DRYRUN`|Optional|Set to "true" for a dry run.|
 
 ## Roadmap
 
