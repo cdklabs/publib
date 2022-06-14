@@ -49,4 +49,4 @@ junit.xml
 /lib
 /dist/
 !/.eslintrc.json
-!/.github/workflows/upgrade-master.yml
+!/.github/workflows/upgrade-main.yml

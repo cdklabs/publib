@@ -2,7 +2,7 @@ const { readdirSync } = require('fs');
 const { typescript } = require('projen');
 
 const project = new typescript.TypeScriptProject({
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'main',
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
   releaseToNpm: true,
