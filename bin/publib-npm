@@ -57,10 +57,22 @@ if [ -n "${NPM_DIST_TAG:-}" ]; then
   echo "Publishing under the following dist-tag: ${NPM_DIST_TAG}"
 fi
 
+# access level
+access=""
+if [ -n "${NPM_ACCESS_LEVEL:-}" ]; then
+  if ! [[ "${NPM_ACCESS_LEVEL}" =~ ^(public|restricted)$ ]]; then
+    echo "Invalid package access level: ${NPM_ACCESS_LEVEL}. Valid values are: public, restricted (default is restricted for scoped packages and public for unscoped packages)"
+    exit 1
+  fi
+
+  access="--access ${NPM_ACCESS_LEVEL}"
+  echo "Publishing package with access level: ${NPM_ACCESS_LEVEL}"
+fi
+
 log=$(mktemp -d)/npmlog.txt
 
 for file in ${dir}/**.tgz; do
-  npm publish ${tag} ${file} 2>&1 | tee ${log}
+  npm publish ${tag} ${access} ${file} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
 
   if [ ${exit_code} -ne 0 ]; then
