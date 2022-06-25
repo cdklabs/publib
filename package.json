@@ -69,7 +69,7 @@
   "dependencies": {
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
-    "shlex": "^2.1.0"
+    "shlex": "^2.1.2"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
