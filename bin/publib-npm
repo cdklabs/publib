@@ -10,6 +10,7 @@ set -eu
 # DIR: directory where npm tarballs are found (default is `dist/js`).
 #
 # NPM_TOKEN (optional): registry authentication token (either from npmjs or a GitHub personal access token), not used for AWS CodeArtifact
+# NPM_ACCESS (optional): Sets the access of the package. Unset by default, which means: 'restricted' for scoped packages, 'public' for unscoped packages.
 # NPM_REGISTRY (optional): the registry URL (defaults to "registry.npmjs.org")
 # AWS_ACCESS_KEY_ID (optional): If AWS CodeArtifact is used as registry, an AWS access key can be spedified.
 # AWS_SECRET_ACCESS_KEY (optional): Secret access key that belongs to the AWS access key.
@@ -26,7 +27,7 @@ if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws
   codeartifact_subdomain="$(echo $NPM_REGISTRY | cut -d. -f1)"
   codeartifact_domain="$(echo $codeartifact_subdomain | cut -b -$((${#codeartifact_subdomain}-${#codeartifact_account}-1)))"
   codeartifact_region="$(echo $NPM_REGISTRY | cut -d. -f4)"
-  export AWS_DEFAULT_REGION="$(echo $codeartifact_region)" 
+  export AWS_DEFAULT_REGION="$(echo $codeartifact_region)"
   if [ -n "${AWS_ROLE_TO_ASSUME:-}" ]; then
     credentials=`aws sts assume-role --role-session-name "publib-code-artifact" --role-arn ${AWS_ROLE_TO_ASSUME} --output text | sed -n '2 p'`
     export AWS_ACCESS_KEY_ID="$(echo $credentials | cut -d' ' -f2)"
@@ -59,8 +60,13 @@ fi
 
 log=$(mktemp -d)/npmlog.txt
 
+npm_command="npm publish"
+if [ -n "${NPM_ACCESS:-}" ]; then
+  npm_command="${npm_command} --access ${NPM_ACCESS}"
+fi
+
 for file in ${dir}/**.tgz; do
-  npm publish ${tag} ${file} 2>&1 | tee ${log}
+  ${npm_command} ${tag} ${file} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
 
   if [ ${exit_code} -ne 0 ]; then
