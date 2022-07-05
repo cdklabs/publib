@@ -71,6 +71,7 @@ npx publib-npm [DIR]
 |`NPM_TOKEN`|Optional|Registry authentication token (either [npm.js publishing token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens) or a [GitHub personal access token](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-npm-for-use-with-github-packages#authenticating-to-github-packages)), not used for AWS CodeArtifact|
 |`NPM_REGISTRY`|Optional|The registry URL (defaults to "registry.npmjs.org"). Use "npm.pkg.github.com" to publish to GitHub Packages. Use repository endpoint for AWS CodeAtifact, e.g. "my-domain-111122223333.d.codeartifact.us-west-2.amazonaws.com/npm/my_repo/".|
 |`NPM_DIST_TAG`|Optional|Registers the published package with the given [dist-tag](https://docs.npmjs.com/cli/dist-tag) (e.g. `next`, default is `latest`)|
+|`NPM_ACCESS_LEVEL`|Optional|Publishes the package with the given [access level](https://docs.npmjs.com/cli/v8/commands/npm-publish#access) (e.g. `public`, default is `restricted` for scoped packages and `public` for unscoped packages)|
 |`AWS_ACCESS_KEY_ID`|Optional|If AWS CodeArtifact is used as registry, an AWS access key can be spedified.|
 |`AWS_SECRET_ACCESS_KEY`|Optional|Secret access key that belongs to the AWS access key.|
 |`AWS_ROLE_TO_ASSUME`|Optional|If AWS CodeArtifact is used as registry, an AWS role ARN to assume before authorizing.|
