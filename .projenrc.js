@@ -16,6 +16,19 @@ const project = new typescript.TypeScriptProject({
     secret: 'GITHUB_TOKEN',
   },
   autoApproveUpgrades: true,
+  minNodeVersion: '14.17.0',
+  deps: [
+    '@aws-sdk/client-codeartifact',
+    '@aws-sdk/credential-providers',
+    '@aws-sdk/types',
+    'glob',
+    'yargs',
+    'p-queue',
+    'npm@^8',
+  ],
+  devDeps: [
+    '@types/node@^14.17.0',
+  ],
 });
 
 // we can't use 9.x because it doesn't work with node 10.

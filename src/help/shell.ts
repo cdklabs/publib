@@ -26,6 +26,11 @@ export interface RunOptions {
    * @default false
    */
   readonly shell?: boolean;
+
+  /**
+   * Properties to add to 'env'
+   */
+  readonly modEnv?: Record<string, string>;
 }
 
 /**
@@ -37,10 +42,12 @@ export interface RunOptions {
 export function run(command: string, options: RunOptions = {}): string {
   const shsplit = shlex.split(command);
   const pipeOrInherit = (options.capture ?? false) ? 'pipe': 'inherit';
+  const env = { ...process.env, ...options.modEnv };
   const result = child.spawnSync(shsplit[0], shsplit.slice(1), {
     stdio: ['ignore', pipeOrInherit, pipeOrInherit],
     cwd: options.cwd,
     shell: options.shell,
+    env,
   });
   if (result.error) {
     throw result.error;
@@ -53,7 +60,7 @@ export function run(command: string, options: RunOptions = {}): string {
     const message = `
     Command failed: ${command}.
       Output: ${stdout}
-      Error:${stderr}`;
+      Error: ${stderr}`;
     throw new Error(message);
   }
   return stdout;

@@ -6,7 +6,7 @@
     },
     {
       "name": "@types/node",
-      "version": "^12",
+      "version": "^14",
       "type": "build"
     },
     {
@@ -72,6 +72,18 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-codeartifact",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/credential-providers",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/types",
+      "type": "runtime"
+    },
+    {
       "name": "@types/fs-extra",
       "version": "^8.0.0",
       "type": "runtime"
@@ -82,7 +94,24 @@
       "type": "runtime"
     },
     {
+      "name": "glob",
+      "type": "runtime"
+    },
+    {
+      "name": "npm",
+      "version": "^8",
+      "type": "runtime"
+    },
+    {
+      "name": "p-queue",
+      "type": "runtime"
+    },
+    {
       "name": "shlex",
+      "type": "runtime"
+    },
+    {
+      "name": "yargs",
       "type": "runtime"
     }
   ],
