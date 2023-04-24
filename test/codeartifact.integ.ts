@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 
 test('this runs with AWS credentials', async () => {
