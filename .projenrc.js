@@ -76,7 +76,7 @@ test.addJob('test', {
       name: 'Setup Node.js',
       uses: 'actions/setup-node@v3',
       with: {
-        'node-version': '14.18.0',
+        'node-version': '16.16.0',
         'cache': 'yarn',
       },
     },
