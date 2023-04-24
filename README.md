@@ -239,14 +239,17 @@ actual public package managers).
 Use the following commands:
 
 `publib-ca create [--no-gc] [--no-login]` creates a new CodeArtifact repository
-with a random name. By default this command runs the `gc` and `login` subcommands
+with a random name, with upstreams configured for all supported public package
+managers. By default this command runs the `gc` and `login` subcommands
 automatically.
 
 `publib-ca login --repo NAME [--cmd COMMAND]` logs in to a CodeArtifact repository and prepares some files that configure package managers for use with this CodeArtifact repository. If `--cmd` is given, the command is run in an environment
 where all supported package managers have been configured for the given repository.
 Otherwise, activate these settings in the current bash shell by running
 `source ~/.publib-ca/usage/activate.bash`. This will set some
-environment variables and copy some files into the current directory.
+environment variables and copy some files into the current directory. (Note: the
+CodeArtifact repository used here does not have to be created using `publib-ca create`. It
+is fine if it already existed beforehand).
 
 `publib-ca gc` collects old repositories created using `publib-ca create`.
 
