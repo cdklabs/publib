@@ -24,7 +24,6 @@ const project = new typescript.TypeScriptProject({
     'glob',
     'yargs',
     'p-queue',
-    'npm@^8',
   ],
   devDeps: [
     '@types/node@^14.17.0',

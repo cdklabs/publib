@@ -28,7 +28,7 @@ export async function uploadNpmPackages(packages: string[], login: LoginInformat
     console.log(`⏳ ${pkg}`);
 
     // path.resolve() is required -- if the filename ends up looking like `js/bla.tgz` then NPM thinks it's a short form GitHub name.
-    await shell(['node', require.resolve('npm'), 'publish', path.resolve(pkg)], {
+    await shell(['node', 'npm', 'publish', path.resolve(pkg)], {
       modEnv: npmEnv(usageDir, login),
       show: 'error',
       output,
