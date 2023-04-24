@@ -47,7 +47,15 @@ for (const f of readdirSync('./bin').filter(file => file.startsWith('publib'))) 
 
 const test = github.GitHub.of(project).addWorkflow('integ');
 test.on({
-  pullRequestTarget: {},
+  pullRequestTarget: {
+    types: [
+      'labeled',
+      'opened',
+      'synchronize',
+      'reopened',
+      'ready_for_review',
+    ],
+  },
   mergeGroup: {},
 });
 test.addJob('test', {
