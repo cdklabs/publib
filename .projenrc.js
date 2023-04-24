@@ -1,5 +1,5 @@
 const { readdirSync } = require('fs');
-const { typescript } = require('projen');
+const { typescript, github } = require('projen');
 
 const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
@@ -15,6 +15,10 @@ const project = new typescript.TypeScriptProject({
     allowedUsernames: ['cdklabs-automation'],
     secret: 'GITHUB_TOKEN',
   },
+  devDeps: [
+    'ts-node',
+    '@aws-sdk/client-sts',
+  ],
   autoApproveUpgrades: true,
 });
 
@@ -38,5 +42,51 @@ for (const f of readdirSync('./bin').filter(file => file.startsWith('publib'))) 
   const shim = ['jsii-release', f.split('-')[1]].filter(x=>x).join('-');
   project.addBins({ [shim]: './bin/jsii-release-shim' });
 }
+
+//////////////////////////////////////////////////////////////////////
+
+const test = github.GitHub.of(project).addWorkflow('integ');
+test.on({
+  pullRequestTarget: {},
+  mergeGroup: {},
+});
+test.addJob('test', {
+  permissions: {
+    contents: 'read',
+    metadata: 'read',
+  },
+  steps: [
+    {
+      name: 'Federate into AWS',
+      uses: 'aws-actions/configure-aws-credentials@v2',
+      with: {
+        'aws-region': 'us-east-1',
+        'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
+        'role-session-name': 'publib-integ-test',
+      },
+    },
+    {
+      name: 'Checkout',
+      uses: 'actions/checkout@v3',
+      with: {
+        ref: '${{ github.event.pull_request.head.ref }}',
+      },
+    },
+    {
+      name: 'Setup Node.js',
+      uses: 'actions/setup-node@v3',
+      with: {
+        'node-version': '14.18.0',
+        'cache': 'yarn',
+      },
+    },
+    {
+      name: 'Run integration tests',
+      // Replace the 'testMatch' in package.json
+      run: 'npx jest --testMatch "<rootDir>/test/**/?(*.)+\\.integ\\.ts?(x)"',
+    },
+  ],
+  environment: 'IntegTestCredentials',
+});
 
 project.synth();

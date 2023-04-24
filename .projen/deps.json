@@ -1,12 +1,16 @@
 {
   "dependencies": [
     {
+      "name": "@aws-sdk/client-sts",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "type": "build"
     },
     {
       "name": "@types/node",
-      "version": "^12",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -42,16 +46,12 @@
     },
     {
       "name": "jest-junit",
-      "version": "^13",
-      "type": "build"
-    },
-    {
-      "name": "json-schema",
+      "version": "^15",
       "type": "build"
     },
     {
       "name": "npm-check-updates",
-      "version": "^12",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -65,6 +65,10 @@
     },
     {
       "name": "ts-jest",
+      "type": "build"
+    },
+    {
+      "name": "ts-node",
       "type": "build"
     },
     {
