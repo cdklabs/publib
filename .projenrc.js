@@ -61,6 +61,7 @@ test.on({
 test.addJob('test', {
   permissions: {
     contents: 'read',
+    idToken: 'write',
   },
   runsOn: 'ubuntu-latest',
   steps: [
