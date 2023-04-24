@@ -42,16 +42,12 @@
     },
     {
       "name": "jest-junit",
-      "version": "^13",
-      "type": "build"
-    },
-    {
-      "name": "json-schema",
+      "version": "^15",
       "type": "build"
     },
     {
       "name": "npm-check-updates",
-      "version": "^12",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -95,11 +91,6 @@
     },
     {
       "name": "glob",
-      "type": "runtime"
-    },
-    {
-      "name": "npm",
-      "version": "^8",
       "type": "runtime"
     },
     {
