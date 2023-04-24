@@ -61,8 +61,8 @@ test.on({
 test.addJob('test', {
   permissions: {
     contents: 'read',
-    metadata: 'read',
   },
+  runsOn: 'ubuntu-latest',
   steps: [
     {
       name: 'Federate into AWS',
