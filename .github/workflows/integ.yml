@@ -12,9 +12,9 @@ on:
   merge_group: {}
 jobs:
   test:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
-      metadata: read
     environment: IntegTestCredentials
     steps:
       - name: Federate into AWS
