@@ -47,7 +47,7 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.316.0",
+    "@aws-sdk/client-sts": "^3.319.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16",
     "@typescript-eslint/eslint-plugin": "^5",
