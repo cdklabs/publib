@@ -96,7 +96,7 @@ test.addJob('test', {
     {
       name: 'Run integration tests',
       // Replace the 'testMatch' in package.json
-      run: 'npx jest --testMatch "<rootDir>/test/**/?(*.)+\\.integ\\.ts?(x)"',
+      run: 'npx jest --testMatch "<rootDir>/test/**/*.integ.ts"',
     },
   ],
   environment: 'IntegTestCredentials',
