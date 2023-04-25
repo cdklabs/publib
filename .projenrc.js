@@ -90,6 +90,10 @@ test.addJob('test', {
       },
     },
     {
+      name: 'Yarn install',
+      run: 'yarn install --frozen-lockfile',
+    },
+    {
       name: 'Run integration tests',
       // Replace the 'testMatch' in package.json
       run: 'npx jest --testMatch "<rootDir>/test/**/?(*.)+\\.integ\\.ts?(x)"',
