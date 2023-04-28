@@ -851,6 +851,16 @@
     "@aws-sdk/util-endpoints" "3.310.0"
     tslib "^2.5.0"
 
+"@aws-sdk/middleware-user-agent@3.319.0":
+  version "3.319.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-user-agent/-/middleware-user-agent-3.319.0.tgz#8fa2d6d5e1824108f2bc618002dc0982801cf5c4"
+  integrity sha512-ytaLx2dlR5AdMSne6FuDCISVg8hjyKj+cHU20b2CRA/E/z+XXrLrssp4JrCgizRKPPUep0psMIa22Zd6osTT5Q==
+  dependencies:
+    "@aws-sdk/protocol-http" "3.310.0"
+    "@aws-sdk/types" "3.310.0"
+    "@aws-sdk/util-endpoints" "3.319.0"
+    tslib "^2.5.0"
+
 "@aws-sdk/node-config-provider@3.310.0":
   version "3.310.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/node-config-provider/-/node-config-provider-3.310.0.tgz#ba8fb41af2db0316291ba9002267627553ec65ac"
@@ -1094,6 +1104,14 @@
   version "3.310.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/util-endpoints/-/util-endpoints-3.310.0.tgz#fea8757038b62d49dacd653061ba04a2ea102a36"
   integrity sha512-zG+/d/O5KPmAaeOMPd6bW1abifdT0H03f42keLjYEoRZzYtHPC5DuPE0UayiWGckI6BCDgy0sRKXCYS49UNFaQ==
+  dependencies:
+    "@aws-sdk/types" "3.310.0"
+    tslib "^2.5.0"
+
+"@aws-sdk/util-endpoints@3.319.0":
+  version "3.319.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/util-endpoints/-/util-endpoints-3.319.0.tgz#9be64762a8fae9eaac004cd3fa95576b3cb6ee38"
+  integrity sha512-3I64UMoYA2e2++oOUJXRcFtYLpLylnZFRltWfPo1B3dLlf+MIWat9djT+mMus+hW1ntLsvAIVu1hLVePJC0gvw==
   dependencies:
     "@aws-sdk/types" "3.310.0"
     tslib "^2.5.0"
