@@ -12,6 +12,7 @@ on:
   merge_group: {}
 jobs:
   targetenv:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     outputs:
