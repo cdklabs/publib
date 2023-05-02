@@ -1,7 +1,8 @@
-const { readdirSync } = require('fs');
-const { typescript, github } = require('projen');
+import { readdirSync } from 'fs';
+import { typescript, github } from 'projen';
 
 const project = new typescript.TypeScriptProject({
+  projenrcTs: true,
   defaultReleaseBranch: 'main',
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
@@ -39,14 +40,14 @@ project.packageTask.spawn(legacy);
 
 // map all "jsii-release-*" to "jsii-release-shim" as executables
 for (const f of readdirSync('./bin').filter(file => file.startsWith('publib'))) {
-  const shim = ['jsii-release', f.split('-')[1]].filter(x=>x).join('-');
+  const shim = ['jsii-release', f.split('-')[1]].filter(x => x).join('-');
   project.addBins({ [shim]: './bin/jsii-release-shim' });
 }
 
 //////////////////////////////////////////////////////////////////////
 
-const test = github.GitHub.of(project).addWorkflow('integ');
-test.on({
+const test = github.GitHub.of(project)?.addWorkflow('integ');
+test?.on({
   pullRequestTarget: {
     types: [
       'labeled',
@@ -64,10 +65,11 @@ test.on({
 // github.pull_request.user.login
 // Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
 // means of a file on disk, export it as an output afterwards.
-test.addJob('targetenv', {
+test?.addJob('targetenv', {
   permissions: {
-    contents: 'read',
+    contents: github.workflows.JobPermission.READ,
   },
+  runsOn: ['ubuntu-latest'],
   steps: [
     {
       name: 'Print event output for debugging in case the condition is incorrect',
@@ -96,12 +98,12 @@ test.addJob('targetenv', {
     env_name: { stepId: 'output', outputName: 'env_name' },
   },
 });
-test.addJob('test', {
+test?.addJob('test', {
   permissions: {
-    contents: 'read',
-    idToken: 'write',
+    contents: github.workflows.JobPermission.READ,
+    idToken: github.workflows.JobPermission.WRITE,
   },
-  runsOn: 'ubuntu-latest',
+  runsOn: ['ubuntu-latest'],
   needs: ['targetenv'],
   environment: '${{needs.targetenv.outputs.env_name}}',
   steps: [
