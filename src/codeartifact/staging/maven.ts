@@ -3,6 +3,7 @@ import * as path from 'path';
 import { pathExists } from 'fs-extra';
 import { parallelShell } from './parallel-shell';
 import { LoginInformation } from '../codeartifact-repo';
+import { header } from '../display';
 import { writeFile } from '../files';
 import { shell } from '../shell';
 import { UsageDir } from '../usage-dir';
@@ -27,6 +28,11 @@ function settingsFile(usageDir: UsageDir) {
 }
 
 export async function uploadJavaPackages(packages: string[], login: LoginInformation, usageDir: UsageDir) {
+  if (packages.length === 0) {
+    return;
+  }
+
+  header('Java');
   await parallelShell(packages, async (pkg, output) => {
     console.log(`⏳ ${pkg}`);
 

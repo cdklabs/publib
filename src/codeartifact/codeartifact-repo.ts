@@ -1,4 +1,4 @@
-import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand } from '@aws-sdk/client-codeartifact';
+import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand, ResourceNotFoundException } from '@aws-sdk/client-codeartifact';
 import { AwsCredentialIdentityProvider, Command, MetadataBearer } from '@aws-sdk/types';
 import { sleep } from '../help/sleep';
 
@@ -13,7 +13,7 @@ export interface CodeArtifactRepoOptions {
  * A CodeArtifact repository
  */
 export class CodeArtifactRepo {
-  public static readonly DEFAULT_DOMAIN = 'test-cdk';
+  public static readonly DEFAULT_DOMAIN = 'test-domain';
 
   /**
    * Create a CodeArtifact repo with a random name
@@ -63,7 +63,7 @@ export class CodeArtifactRepo {
         const collectable = tags?.tags?.find(t => t.key === COLLECT_BY_TAG && Number(t.value) < Date.now());
         if (collectable) {
           // eslint-disable-next-line no-console
-          console.log('Deleting', repo.name);
+          console.error('Deleting', repo.name);
           await retryThrottled(() => codeArtifact.send(new DeleteRepositoryCommand({
             domain: repo.domainName!,
             repository: repo.name!,
@@ -152,9 +152,9 @@ export class CodeArtifactRepo {
       }));
 
       // eslint-disable-next-line no-console
-      console.log('Deleted', this.repositoryName);
+      console.error('Deleted', this.repositoryName);
     } catch (e: any) {
-      if (e.code !== 'ResourceNotFoundException') { throw e; }
+      if (!isResourceNotFoundException(e)) { throw e; }
       // Okay
     }
   }
@@ -241,7 +241,7 @@ export class CodeArtifactRepo {
       await this.send(new DescribeDomainCommand({ domain: this.domain }));
       return true;
     } catch (e: any) {
-      if (e.code !== 'ResourceNotFoundException') { throw e; }
+      if (!isResourceNotFoundException(e)) { throw e; }
       return false;
     }
   }
@@ -251,7 +251,7 @@ export class CodeArtifactRepo {
       await this.send(new DescribeRepositoryCommand({ domain: this.domain, repository: name }));
       return true;
     } catch (e: any) {
-      if (e.code !== 'ResourceNotFoundException') { throw e; }
+      if (!isResourceNotFoundException(e)) { throw e; }
       return false;
     }
   }
@@ -326,4 +326,8 @@ export interface LoginInformation {
   readonly mavenEndpoint: string;
   readonly nugetEndpoint: string;
   readonly pypiEndpoint: string;
+}
+
+function isResourceNotFoundException(x: any): x is ResourceNotFoundException {
+  return x instanceof ResourceNotFoundException;
 }

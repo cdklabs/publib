@@ -27,7 +27,7 @@ const project = new typescript.TypeScriptProject({
     '@aws-sdk/types',
     'glob',
     'yargs',
-    'p-queue',
+    'p-queue@6', // Last non-ESM version
   ],
   devDeps: [
     '@types/node@^14.17.0',

@@ -2,6 +2,7 @@
 import * as path from 'path';
 import { parallelShell } from './parallel-shell';
 import { LoginInformation } from '../codeartifact-repo';
+import { header } from '../display';
 import { updateIniKey, loadLines, writeLines } from '../files';
 import { shell } from '../shell';
 import { UsageDir } from '../usage-dir';
@@ -24,11 +25,16 @@ function npmEnv(usageDir: UsageDir, login: LoginInformation) {
 }
 
 export async function uploadNpmPackages(packages: string[], login: LoginInformation, usageDir: UsageDir) {
+  if (packages.length === 0) {
+    return;
+  }
+
+  header('NPM');
   await parallelShell(packages, async (pkg, output) => {
     console.log(`⏳ ${pkg}`);
 
     // path.resolve() is required -- if the filename ends up looking like `js/bla.tgz` then NPM thinks it's a short form GitHub name.
-    await shell(['node', 'npm', 'publish', path.resolve(pkg)], {
+    await shell(['npm', 'publish', path.resolve(pkg)], {
       modEnv: npmEnv(usageDir, login),
       show: 'error',
       output,

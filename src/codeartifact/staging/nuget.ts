@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { parallelShell } from './parallel-shell';
 import { LoginInformation } from '../codeartifact-repo';
+import { header } from '../display';
 import { writeFile } from '../files';
 import { shell } from '../shell';
 import { UsageDir } from '../usage-dir';
@@ -12,6 +13,11 @@ export async function nugetLogin(login: LoginInformation, usageDir: UsageDir) {
 }
 
 export async function uploadDotnetPackages(packages: string[], usageDir: UsageDir) {
+  if (packages.length === 0) {
+    return;
+  }
+
+  header('.NET');
   await usageDir.copySelectCwdFileHere('NuGet.Config');
 
   await parallelShell(packages, async (pkg, output) => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { parallelShell } from './parallel-shell';
 import { LoginInformation } from '../codeartifact-repo';
+import { header } from '../display';
 import { shell } from '../shell';
 import { UsageDir } from '../usage-dir';
 
@@ -17,6 +18,11 @@ export async function pipLogin(login: LoginInformation, usageDir: UsageDir) {
 }
 
 export async function uploadPythonPackages(packages: string[], login: LoginInformation) {
+  if (packages.length === 0) {
+    return;
+  }
+
+  header('Python');
   await shell(['pip', 'install', 'twine'], { show: 'error' });
 
   // Even though twine supports uploading all packages in one go, we have to upload them

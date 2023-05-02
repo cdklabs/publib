@@ -4,6 +4,7 @@
 /* eslint-disable no-console */
 import * as yargs from 'yargs';
 import { CodeArtifactCli } from '../codeartifact/codeartifact-cli';
+import { header } from '../codeartifact/display';
 
 async function main() {
   await yargs
@@ -73,6 +74,24 @@ async function main() {
       } else {
         cli.usageDir.advertise();
       }
+    })
+    .command('shell', 'Start a subshell with the repository activated', cmd => cmd
+      .option('repo', {
+        alias: 'r',
+        description: 'Name of the repository to log in to',
+        type: 'string',
+        requiresArg: true,
+        demandOption: false,
+      }), async (args) => {
+      const cli = new CodeArtifactCli({
+        assumeRoleArn: args['assume-role-arn'],
+      });
+      const repo = await cli.login(args.repo);
+
+      const defaultShell = process.platform === 'win32' ? 'cmd' : 'bash';
+
+      header(`Shell activated for ${repo.repositoryName}`);
+      await cli.runInteractively(process.env.SHELL ?? defaultShell);
     })
     .command('publish <DIRECTORY>', 'Publish a given directory', cmd => cmd
       .positional('DIRECTORY', {

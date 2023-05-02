@@ -33,22 +33,6 @@ export class UsageDir {
     this.cwdDir = path.join(this.directory, 'cwd');
   }
 
-  public async isValid() {
-    const env = await this.currentEnv();
-    // We always have at least CWD_FILES_DIR
-    if (Object.keys(env).length === 1) {
-      return false;
-    }
-
-    if (env.EXPIRATION_TIME_MS) {
-      if (parseInt(env.EXPIRATION_TIME_MS, 10) >= Date.now()) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   public async delete() {
     if (await fs.pathExists(this.directory)) {
       await fs.remove(this.directory);
@@ -144,7 +128,7 @@ export class UsageDir {
   }
 
   public async putJson(key: string, data: any) {
-    await fs.writeJson(path.join(this.directory, key + '.json'), data);
+    await writeFile(path.join(this.directory, key + '.json'), JSON.stringify(data, undefined, 2));
   }
 
   public async readJson<A>(key: string): Promise<A | undefined> {
