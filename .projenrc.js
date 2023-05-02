@@ -65,6 +65,9 @@ test.on({
 // Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
 // means of a file on disk, export it as an output afterwards.
 test.addJob('targetenv', {
+  permissions: {
+    contents: 'read',
+  },
   steps: [
     {
       name: 'Print event output for debugging in case the condition is incorrect',

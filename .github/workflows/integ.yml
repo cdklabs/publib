@@ -11,12 +11,29 @@ on:
       - ready_for_review
   merge_group: {}
 jobs:
+  targetenv:
+    permissions:
+      contents: read
+    outputs:
+      env_name: ${{ steps.undefined.outputs.undefined }}
+    steps:
+      - name: Print event output for debugging in case the condition is incorrect
+        run: cat $GITHUB_EVENT_PATH
+      - name: Start requiring approval
+        run: echo IntegTestCredentialsRequireApproval > .envname
+      - name: If maintainer, do not need approval
+        if: github.pull_request.author_association == 'OWNER' || github.pull_request.author_association == 'MEMBER' || github.pull_request.user.login == 'cdklabs-automation'
+        run: echo IntegTestCredentials > .envname
+      - name: Output the value
+        id: output
+        run: echo "env_name=$(cat .envname)" >> "$GITHUB_OUTPUT"
   test:
+    needs: targetenv
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
-    environment: IntegTestCredentials
+    environment: ${{needs.targetenv.outputs.env_name}}
     steps:
       - name: Federate into AWS
         uses: aws-actions/configure-aws-credentials@v2
