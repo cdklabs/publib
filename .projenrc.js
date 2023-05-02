@@ -58,12 +58,49 @@ test.on({
   },
   mergeGroup: {},
 });
+
+// Select `IntegTestCredentials` or `IntegTestCredentialsRequireApproval` depending on the author of the PR
+// github.pull_request.author_association in ['OWNER', 'COLLABORATOR', 'MEMBER', 'NONE']
+// github.pull_request.user.login
+// Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
+// means of a file on disk, export it as an output afterwards.
+test.addJob('targetenv', {
+  steps: [
+    {
+      name: 'Print event output for debugging in case the condition is incorrect',
+      run: 'cat $GITHUB_EVENT_PATH',
+    },
+    {
+      name: 'Start requiring approval',
+      run: 'echo IntegTestCredentialsRequireApproval > .envname',
+    },
+    {
+      name: 'If maintainer, do not need approval',
+      if: [
+        'github.pull_request.author_association == \'OWNER\'',
+        'github.pull_request.author_association == \'MEMBER\'',
+        'github.pull_request.user.login == \'cdklabs-automation\'',
+      ].join(' || '),
+      run: 'echo IntegTestCredentials > .envname',
+    },
+    {
+      id: 'output',
+      name: 'Output the value',
+      run: 'echo "env_name=$(cat .envname)" >> "$GITHUB_OUTPUT"',
+    },
+  ],
+  outputs: {
+    env_name: '${{ steps.output.outputs.env_name }}',
+  },
+});
 test.addJob('test', {
   permissions: {
     contents: 'read',
     idToken: 'write',
   },
   runsOn: 'ubuntu-latest',
+  needs: ['targetenv'],
+  environment: '${{needs.targetenv.outputs.env_name}}',
   steps: [
     {
       name: 'Federate into AWS',
@@ -99,7 +136,6 @@ test.addJob('test', {
       run: 'npx jest --testMatch "<rootDir>/test/**/*.integ.ts"',
     },
   ],
-  environment: 'IntegTestCredentials',
 });
 
 project.synth();
