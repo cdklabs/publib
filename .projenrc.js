@@ -68,6 +68,7 @@ test.addJob('targetenv', {
   permissions: {
     contents: 'read',
   },
+  runsOn: 'ubuntu-latest',
   steps: [
     {
       name: 'Print event output for debugging in case the condition is incorrect',
