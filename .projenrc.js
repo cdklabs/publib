@@ -30,6 +30,7 @@ const project = new typescript.TypeScriptProject({
     'p-queue@6', // Last non-ESM version
   ],
   devDeps: [
+    '@types/glob',
     '@types/node@^14.17.0',
   ],
 });
