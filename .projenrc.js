@@ -93,7 +93,7 @@ test.addJob('targetenv', {
     },
   ],
   outputs: {
-    env_name: '${{ steps.output.outputs.env_name }}',
+    env_name: { stepId: 'output', outputName: 'env_name' },
   },
 });
 test.addJob('test', {

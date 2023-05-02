@@ -15,7 +15,7 @@ jobs:
     permissions:
       contents: read
     outputs:
-      env_name: ${{ steps.undefined.outputs.undefined }}
+      env_name: ${{ steps.output.outputs.env_name }}
     steps:
       - name: Print event output for debugging in case the condition is incorrect
         run: cat $GITHUB_EVENT_PATH
