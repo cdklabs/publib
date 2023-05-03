@@ -1,26 +1,26 @@
 import { readdirSync } from 'fs';
-import { typescript, github } from 'projen';
+import * as cdklabs from 'cdklabs-projen-project-types';
+import { github } from 'projen';
 
-const project = new typescript.TypeScriptProject({
+const project = new cdklabs.CdklabsTypeScriptProject({
+  private: false,
   projenrcTs: true,
   defaultReleaseBranch: 'main',
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
   releaseToNpm: true,
   repository: 'https://github.com/cdklabs/publib.git',
-  authorName: 'Amazon Web Services',
-  authorOrganization: true,
   authorUrl: 'https://aws.amazon.com',
   homepage: 'https://github.com/cdklabs/publib',
-  autoApproveOptions: {
-    allowedUsernames: ['cdklabs-automation'],
-    secret: 'GITHUB_TOKEN',
-  },
   devDeps: [
     'ts-node',
     '@aws-sdk/client-sts',
+    'cdklabs-projen-project-types',
   ],
-  autoApproveUpgrades: true,
+  workflowNodeVersion: '16.x',
+  minNodeVersion: '16.0.0',
+  enablePRAutoMerge: true,
+  setNodeEngineVersion: false,
 });
 
 // we can't use 9.x because it doesn't work with node 10.
