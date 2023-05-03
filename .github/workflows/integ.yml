@@ -34,7 +34,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    environment: ${{needs.targetenv.outputs.env_name}}
+    environment: ${{needs.determine_env.outputs.env_name}}
     steps:
       - name: Federate into AWS
         uses: aws-actions/configure-aws-credentials@v2

@@ -101,7 +101,7 @@ test?.addJob('test', {
   },
   runsOn: ['ubuntu-latest'],
   needs: ['determine_env'],
-  environment: '${{needs.targetenv.outputs.env_name}}',
+  environment: '${{needs.determine_env.outputs.env_name}}',
   steps: [
     {
       name: 'Federate into AWS',
