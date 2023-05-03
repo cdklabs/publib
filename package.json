@@ -79,11 +79,6 @@
     "shlex": "^2.1.2",
     "yargs": "^17.7.1"
   },
-  "resolutions": {
-    "**/cliui": "^7.0.0",
-    "**/read-package-json/glob": "10.0.0",
-    "**/cacache/glob": "10.0.0"
-  },
   "engines": {
     "node": ">= 14.17.0"
   },

@@ -80,21 +80,6 @@
       "type": "build"
     },
     {
-      "name": "**/cacache/glob",
-      "version": "10.0.0",
-      "type": "override"
-    },
-    {
-      "name": "**/cliui",
-      "version": "^7.0.0",
-      "type": "override"
-    },
-    {
-      "name": "**/read-package-json/glob",
-      "version": "10.0.0",
-      "type": "override"
-    },
-    {
       "name": "@aws-sdk/client-codeartifact",
       "type": "runtime"
     },
