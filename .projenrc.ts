@@ -110,7 +110,9 @@ test?.addJob('determine_env', {
     env_name: { stepId: 'output', outputName: 'env_name' },
   },
 });
-test?.addJob('test', {
+
+// Job name matches a branch protection rule check configured elsewhere
+test?.addJob('integ', {
   permissions: {
     contents: github.workflows.JobPermission.READ,
     idToken: github.workflows.JobPermission.WRITE,

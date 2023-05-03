@@ -28,7 +28,7 @@ jobs:
       - name: Output the value
         id: output
         run: echo "env_name=$(cat .envname)" >> "$GITHUB_OUTPUT"
-  test:
+  integ:
     needs: determine_env
     runs-on: ubuntu-latest
     permissions:
