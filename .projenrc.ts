@@ -55,6 +55,10 @@ for (const f of readdirSync('./bin').filter(file => file.startsWith('publib'))) 
   project.addBins({ [shim]: './bin/jsii-release-shim' });
 }
 
+const integ = project.addTask('integ');
+// This replaces the 'testMatch' in package.json with a different glob
+integ.exec('jest --testMatch "<rootDir>/test/**/*.integ.ts"');
+
 //////////////////////////////////////////////////////////////////////
 
 const test = github.GitHub.of(project)?.addWorkflow('integ');
@@ -148,8 +152,7 @@ test?.addJob('test', {
     },
     {
       name: 'Run integration tests',
-      // Replace the 'testMatch' in package.json
-      run: 'npx jest --testMatch "<rootDir>/test/**/*.integ.ts"',
+      run: 'yarn integ',
     },
   ],
 });

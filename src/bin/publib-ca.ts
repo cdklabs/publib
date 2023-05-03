@@ -6,8 +6,8 @@ import * as yargs from 'yargs';
 import { CodeArtifactCli } from '../codeartifact/codeartifact-cli';
 import { header } from '../codeartifact/display';
 
-async function main() {
-  await yargs
+export async function main(argv: string[]) {
+  await yargs(argv)
     .usage('$0 <command>')
     .option('assume-role-arn', {
       description: 'Role to assume before doing CodeArtifact calls',
@@ -130,7 +130,7 @@ async function main() {
     .parse();
 }
 
-main().catch(e => {
+main(process.argv.slice(2)).catch(e => {
   // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;

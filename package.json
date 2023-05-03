@@ -30,6 +30,7 @@
     "default": "npx projen default",
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
+    "integ": "npx projen integ",
     "package": "npx projen package",
     "package-legacy": "npx projen package-legacy",
     "post-compile": "npx projen post-compile",

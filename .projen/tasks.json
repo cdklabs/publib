@@ -130,6 +130,14 @@
         }
       ]
     },
+    "integ": {
+      "name": "integ",
+      "steps": [
+        {
+          "exec": "jest --testMatch \"<rootDir>/test/**/*.integ.ts\""
+        }
+      ]
+    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",

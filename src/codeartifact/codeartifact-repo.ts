@@ -13,7 +13,7 @@ export interface CodeArtifactRepoOptions {
  * A CodeArtifact repository
  */
 export class CodeArtifactRepo {
-  public static readonly DEFAULT_DOMAIN = 'test-domain';
+  public static readonly DEFAULT_DOMAIN = 'publib-ca';
 
   /**
    * Create a CodeArtifact repo with a random name

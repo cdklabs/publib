@@ -54,4 +54,4 @@ jobs:
       - name: Yarn install
         run: yarn install --frozen-lockfile
       - name: Run integration tests
-        run: npx jest --testMatch "<rootDir>/test/**/*.integ.ts"
+        run: yarn integ
