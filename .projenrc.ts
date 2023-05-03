@@ -65,7 +65,7 @@ test?.on({
 // github.pull_request.user.login
 // Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
 // means of a file on disk, export it as an output afterwards.
-test?.addJob('targetenv', {
+test?.addJob('determine_env', {
   permissions: {
     contents: github.workflows.JobPermission.READ,
   },
@@ -80,12 +80,8 @@ test?.addJob('targetenv', {
       run: 'echo IntegTestCredentialsRequireApproval > .envname',
     },
     {
-      name: 'If maintainer, do not need approval',
-      if: [
-        'github.pull_request.author_association == \'OWNER\'',
-        'github.pull_request.author_association == \'MEMBER\'',
-        'github.pull_request.user.login == \'cdklabs-automation\'',
-      ].join(' || '),
+      name: 'If not from a fork, do not need approval',
+      if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
     },
     {
@@ -104,7 +100,7 @@ test?.addJob('test', {
     idToken: github.workflows.JobPermission.WRITE,
   },
   runsOn: ['ubuntu-latest'],
-  needs: ['targetenv'],
+  needs: ['determine_env'],
   environment: '${{needs.targetenv.outputs.env_name}}',
   steps: [
     {

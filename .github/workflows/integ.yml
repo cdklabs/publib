@@ -11,7 +11,7 @@ on:
       - ready_for_review
   merge_group: {}
 jobs:
-  targetenv:
+  determine_env:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,14 +22,14 @@ jobs:
         run: cat $GITHUB_EVENT_PATH
       - name: Start requiring approval
         run: echo IntegTestCredentialsRequireApproval > .envname
-      - name: If maintainer, do not need approval
-        if: github.pull_request.author_association == 'OWNER' || github.pull_request.author_association == 'MEMBER' || github.pull_request.user.login == 'cdklabs-automation'
+      - name: If not from a fork, do not need approval
+        if: "!github.pull_request.head.repo.fork"
         run: echo IntegTestCredentials > .envname
       - name: Output the value
         id: output
         run: echo "env_name=$(cat .envname)" >> "$GITHUB_OUTPUT"
   test:
-    needs: targetenv
+    needs: determine_env
     runs-on: ubuntu-latest
     permissions:
       contents: read
