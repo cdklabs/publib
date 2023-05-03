@@ -81,7 +81,7 @@ test?.addJob('determine_env', {
     },
     {
       name: 'If not from a fork, do not need approval',
-      if: '! github.pull_request.head.repo.fork',
+      if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
     },
     {
