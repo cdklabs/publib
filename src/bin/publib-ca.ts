@@ -6,8 +6,8 @@ import * as yargs from 'yargs';
 import { CodeArtifactCli } from '../codeartifact/codeartifact-cli';
 import { header } from '../codeartifact/display';
 
-export async function main(argv: string[]) {
-  await yargs(argv)
+export async function main() {
+  await yargs
     .usage('$0 <command>')
     .option('assume-role-arn', {
       description: 'Role to assume before doing CodeArtifact calls',
@@ -55,7 +55,6 @@ export async function main(argv: string[]) {
         description: 'Name of the repository to log in to',
         type: 'string',
         requiresArg: true,
-        demandOption: true,
       })
       .option('cmd', {
         alias: 'c',
@@ -130,7 +129,7 @@ export async function main(argv: string[]) {
     .parse();
 }
 
-main(process.argv.slice(2)).catch(e => {
+main().catch(e => {
   // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;

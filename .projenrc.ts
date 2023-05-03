@@ -21,6 +21,7 @@ const project = new typescript.TypeScriptProject({
     '@aws-sdk/client-sts',
     '@types/glob',
     '@types/node@^14.17.0',
+    '@types/yargs@^17',
   ],
   autoApproveUpgrades: true,
   minNodeVersion: '14.17.0',
@@ -29,7 +30,7 @@ const project = new typescript.TypeScriptProject({
     '@aws-sdk/credential-providers',
     '@aws-sdk/types',
     'glob',
-    'yargs',
+    'yargs@^17',
     'p-queue@6', // Last non-ESM version
   ],
 });

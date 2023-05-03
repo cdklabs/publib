@@ -1,9 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import * as path from 'path';
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
 import * as fs from 'fs-extra';
 import { inTemporaryDirectory } from './with-temporary-directory';
-import { main as publibCa } from '../src/bin/publib-ca';
 import { shell } from '../src/codeartifact/shell';
+
+jest.setTimeout(60_0000);
 
 test('this runs with AWS credentials', async () => {
   const sts = new STSClient({});
@@ -13,9 +15,10 @@ test('this runs with AWS credentials', async () => {
 
 test('can create an NPM package, publish and consume it from CodeArtifact', async () => {
   await inTemporaryDirectory(async () => {
-    await shell('npm init -y');
+    await shell('npm init -y', { captureStderr: false });
+    await fs.writeFile('index.js', 'console.log("It works!");');
     const packageName = (await fs.readJson('package.json')).name;
-    const tarball = await shell('npm pack');
+    const tarball = await shell('npm pack --loglevel=silent', { captureStderr: false });
 
     // Tarball needs to be in a 'js/' subdirectory
     await fs.mkdirp('dist/js');
@@ -37,12 +40,18 @@ test('can create an NPM package, publish and consume it from CodeArtifact', asyn
           [packageName]: '*',
         },
       });
-      await shell('npm install', {
-        cwd: 'consumer',
-      });
+
+      await publibCa(['login', '--cmd', '"cd consumer && npm install"']);
+      const output = await shell(`node -e "require('${packageName}');"`, { cwd: 'consumer', captureStderr: false });
+      expect(output).toContain('It works!');
     } finally {
       // Clean up
       await publibCa(['delete']);
     }
   });
 });
+
+async function publibCa(args: string[]) {
+  const cli = path.resolve(__dirname, '../src/bin/publib-ca.ts');
+  return shell(['ts-node', cli, ...args], { captureStderr: false });
+}
