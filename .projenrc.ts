@@ -19,6 +19,8 @@ const project = new typescript.TypeScriptProject({
   devDeps: [
     'ts-node',
     '@aws-sdk/client-sts',
+    '@types/glob',
+    '@types/node@^14.17.0',
   ],
   autoApproveUpgrades: true,
   minNodeVersion: '14.17.0',
@@ -29,10 +31,6 @@ const project = new typescript.TypeScriptProject({
     'glob',
     'yargs',
     'p-queue@6', // Last non-ESM version
-  ],
-  devDeps: [
-    '@types/glob',
-    '@types/node@^14.17.0',
   ],
 });
 
