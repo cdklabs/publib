@@ -14,7 +14,7 @@
     },
     {
       "name": "@types/node",
-      "version": "^14",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -30,6 +30,10 @@
     {
       "name": "@typescript-eslint/parser",
       "version": "^5",
+      "type": "build"
+    },
+    {
+      "name": "cdklabs-projen-project-types",
       "type": "build"
     },
     {

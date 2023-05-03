@@ -38,6 +38,7 @@
     "pre-compile": "npx projen pre-compile",
     "release": "npx projen release",
     "test": "npx projen test",
+    "test:update": "npx projen test:update",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
@@ -46,6 +47,7 @@
   },
   "author": {
     "name": "Amazon Web Services",
+    "email": "aws-cdk-dev@amazon.com",
     "url": "https://aws.amazon.com",
     "organization": true
   },
@@ -53,10 +55,11 @@
     "@aws-sdk/client-sts": "^3.325.0",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14",
+    "@types/node": "^16",
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
+    "cdklabs-projen-project-types": "^0.1.89",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.7",
     "eslint-import-resolver-typescript": "^2.7.1",
@@ -80,9 +83,6 @@
     "p-queue": "6",
     "shlex": "^2.1.2",
     "yargs": "^17"
-  },
-  "engines": {
-    "node": ">= 14.17.0"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",

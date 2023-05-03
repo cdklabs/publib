@@ -1,30 +1,26 @@
 import { readdirSync } from 'fs';
-import { typescript, github } from 'projen';
+import * as cdklabs from 'cdklabs-projen-project-types';
+import { github } from 'projen';
 
-const project = new typescript.TypeScriptProject({
+const project = new cdklabs.CdklabsTypeScriptProject({
+  private: false,
   projenrcTs: true,
   defaultReleaseBranch: 'main',
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
   releaseToNpm: true,
   repository: 'https://github.com/cdklabs/publib.git',
-  authorName: 'Amazon Web Services',
-  authorOrganization: true,
   authorUrl: 'https://aws.amazon.com',
   homepage: 'https://github.com/cdklabs/publib',
-  autoApproveOptions: {
-    allowedUsernames: ['cdklabs-automation'],
-    secret: 'GITHUB_TOKEN',
-  },
   devDeps: [
     'ts-node',
     '@aws-sdk/client-sts',
     '@types/glob',
     '@types/node@^14.17.0',
     '@types/yargs@^17',
+    'cdklabs-projen-project-types',
   ],
   autoApproveUpgrades: true,
-  minNodeVersion: '14.17.0',
   deps: [
     '@aws-sdk/client-codeartifact',
     '@aws-sdk/credential-providers',
@@ -33,6 +29,10 @@ const project = new typescript.TypeScriptProject({
     'yargs@^17',
     'p-queue@6', // Last non-ESM version
   ],
+  workflowNodeVersion: '16.x',
+  minNodeVersion: '16.0.0',
+  enablePRAutoMerge: true,
+  setNodeEngineVersion: false,
 });
 
 // we can't use 9.x because it doesn't work with node 10.
@@ -81,7 +81,7 @@ test?.on({
 // github.pull_request.user.login
 // Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
 // means of a file on disk, export it as an output afterwards.
-test?.addJob('targetenv', {
+test?.addJob('determine_env', {
   permissions: {
     contents: github.workflows.JobPermission.READ,
   },
@@ -96,12 +96,8 @@ test?.addJob('targetenv', {
       run: 'echo IntegTestCredentialsRequireApproval > .envname',
     },
     {
-      name: 'If maintainer, do not need approval',
-      if: [
-        'github.pull_request.author_association == \'OWNER\'',
-        'github.pull_request.author_association == \'MEMBER\'',
-        'github.pull_request.user.login == \'cdklabs-automation\'',
-      ].join(' || '),
+      name: 'If not from a fork, do not need approval',
+      if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
     },
     {
@@ -120,8 +116,8 @@ test?.addJob('test', {
     idToken: github.workflows.JobPermission.WRITE,
   },
   runsOn: ['ubuntu-latest'],
-  needs: ['targetenv'],
-  environment: '${{needs.targetenv.outputs.env_name}}',
+  needs: ['determine_env'],
+  environment: '${{needs.determine_env.outputs.env_name}}',
   steps: [
     {
       name: 'Federate into AWS',
