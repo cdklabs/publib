@@ -7,6 +7,7 @@
   },
   "bin": {
     "jsii-release": "./bin/jsii-release-shim",
+    "jsii-release-ca": "./bin/jsii-release-shim",
     "jsii-release-golang": "./bin/jsii-release-shim",
     "jsii-release-maven": "./bin/jsii-release-shim",
     "jsii-release-npm": "./bin/jsii-release-shim",
@@ -14,6 +15,7 @@
     "jsii-release-pypi": "./bin/jsii-release-shim",
     "jsii-release-shim": "bin/jsii-release-shim",
     "publib": "bin/publib",
+    "publib-ca": "bin/publib-ca",
     "publib-golang": "bin/publib-golang",
     "publib-maven": "bin/publib-maven",
     "publib-npm": "bin/publib-npm",
@@ -28,6 +30,7 @@
     "default": "npx projen default",
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
+    "integ": "npx projen integ",
     "package": "npx projen package",
     "package-legacy": "npx projen package-legacy",
     "post-compile": "npx projen post-compile",
@@ -50,8 +53,10 @@
   },
   "devDependencies": {
     "@aws-sdk/client-sts": "^3.325.0",
+    "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16",
+    "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "cdklabs-projen-project-types": "^0.1.89",
@@ -69,9 +74,15 @@
     "typescript": "~4.9.5"
   },
   "dependencies": {
+    "@aws-sdk/client-codeartifact": "^3.315.0",
+    "@aws-sdk/credential-providers": "^3.316.0",
+    "@aws-sdk/types": "^3.310.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
-    "shlex": "^2.1.2"
+    "glob": "10.0.0",
+    "p-queue": "6",
+    "shlex": "^2.1.2",
+    "yargs": "^17"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",

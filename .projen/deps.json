@@ -5,12 +5,21 @@
       "type": "build"
     },
     {
+      "name": "@types/glob",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "type": "build"
     },
     {
       "name": "@types/node",
       "version": "^16",
+      "type": "build"
+    },
+    {
+      "name": "@types/yargs",
+      "version": "^17",
       "type": "build"
     },
     {
@@ -80,6 +89,18 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-codeartifact",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/credential-providers",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/types",
+      "type": "runtime"
+    },
+    {
       "name": "@types/fs-extra",
       "version": "^8.0.0",
       "type": "runtime"
@@ -90,7 +111,22 @@
       "type": "runtime"
     },
     {
+      "name": "glob",
+      "version": "10.0.0",
+      "type": "runtime"
+    },
+    {
+      "name": "p-queue",
+      "version": "6",
+      "type": "runtime"
+    },
+    {
       "name": "shlex",
+      "type": "runtime"
+    },
+    {
+      "name": "yargs",
+      "version": "^17",
       "type": "runtime"
     }
   ],

@@ -15,7 +15,19 @@ const project = new cdklabs.CdklabsTypeScriptProject({
   devDeps: [
     'ts-node',
     '@aws-sdk/client-sts',
+    '@types/glob',
+    '@types/node@^14.17.0',
+    '@types/yargs@^17',
     'cdklabs-projen-project-types',
+  ],
+  autoApproveUpgrades: true,
+  deps: [
+    '@aws-sdk/client-codeartifact',
+    '@aws-sdk/credential-providers',
+    '@aws-sdk/types',
+    'glob@10.0.0', // Can't use a newer version of glob, it adds a CLI that depends on 'jackspeak' which has crazy dependencies
+    'yargs@^17',
+    'p-queue@6', // Last non-ESM version
   ],
   workflowNodeVersion: '16.x',
   minNodeVersion: '16.0.0',
@@ -43,6 +55,10 @@ for (const f of readdirSync('./bin').filter(file => file.startsWith('publib'))) 
   const shim = ['jsii-release', f.split('-')[1]].filter(x => x).join('-');
   project.addBins({ [shim]: './bin/jsii-release-shim' });
 }
+
+const integ = project.addTask('integ');
+// This replaces the 'testMatch' in package.json with a different glob
+integ.exec('jest --testMatch "<rootDir>/test/**/*.integ.ts"');
 
 //////////////////////////////////////////////////////////////////////
 
@@ -133,8 +149,7 @@ test?.addJob('test', {
     },
     {
       name: 'Run integration tests',
-      // Replace the 'testMatch' in package.json
-      run: 'npx jest --testMatch "<rootDir>/test/**/*.integ.ts"',
+      run: 'yarn integ',
     },
   ],
 });
