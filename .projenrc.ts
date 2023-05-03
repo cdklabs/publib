@@ -97,6 +97,7 @@ test?.addJob('determine_env', {
     },
     {
       name: 'If not from a fork, do not need approval',
+      // In a mergeGroup event, `github.pull_request` will not be set and `!undefined` also counts
       if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
     },
