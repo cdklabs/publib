@@ -25,7 +25,7 @@ const project = new cdklabs.CdklabsTypeScriptProject({
     '@aws-sdk/client-codeartifact',
     '@aws-sdk/credential-providers',
     '@aws-sdk/types',
-    'glob',
+    'glob@10.0.0', // Can't use a newer version of glob, it adds a CLI that depends on 'jackspeak' which has crazy dependencies
     'yargs@^17',
     'p-queue@6', // Last non-ESM version
   ],
