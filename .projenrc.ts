@@ -97,6 +97,7 @@ test?.addJob('determine_env', {
     },
     {
       name: 'If not from a fork, do not need approval',
+      // In a mergeGroup event, `github.pull_request` will not be set and `!undefined` also counts
       if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
     },
@@ -110,7 +111,9 @@ test?.addJob('determine_env', {
     env_name: { stepId: 'output', outputName: 'env_name' },
   },
 });
-test?.addJob('test', {
+
+// Job name matches a branch protection rule check configured elsewhere
+test?.addJob('integ', {
   permissions: {
     contents: github.workflows.JobPermission.READ,
     idToken: github.workflows.JobPermission.WRITE,
