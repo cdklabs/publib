@@ -28,7 +28,7 @@ const project = new typescript.TypeScriptProject({
     '@aws-sdk/client-codeartifact',
     '@aws-sdk/credential-providers',
     '@aws-sdk/types',
-    'glob',
+    'glob@10.0.0', // Need to put an explicit version here otherwise projen fails to add it to package.json (due to resolutions below?)
     'yargs',
     'p-queue@6', // Last non-ESM version
   ],
@@ -37,8 +37,10 @@ const project = new typescript.TypeScriptProject({
 project.package.addPackageResolutions(
   // glob 10.2.0 adds a CLI with a dependency on 'jackspeak' which has itself a busted
   // dependency on 'cliui' that causes jest to fail running with an ERR_ESM_REQUIRED error.
-  'read-package-json/glob@10.0.0',
-  'cacache/glob@10.0.0',
+  // https://github.com/isaacs/jackspeak/issues/5
+  '**/cliui@^7.0.0',
+  '**/read-package-json/glob@10.0.0',
+  '**/cacache/glob@10.0.0',
 );
 
 // we can't use 9.x because it doesn't work with node 10.
