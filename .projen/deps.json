@@ -103,7 +103,6 @@
     },
     {
       "name": "glob",
-      "version": "10.0.0",
       "type": "runtime"
     },
     {

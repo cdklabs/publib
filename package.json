@@ -74,7 +74,7 @@
     "@aws-sdk/types": "^3.310.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
-    "glob": "10.0.0",
+    "glob": "^10.0.0",
     "p-queue": "6",
     "shlex": "^2.1.2",
     "yargs": "^17.7.1"

@@ -28,7 +28,7 @@ const project = new typescript.TypeScriptProject({
     '@aws-sdk/client-codeartifact',
     '@aws-sdk/credential-providers',
     '@aws-sdk/types',
-    'glob@10.0.0', // Need to put an explicit version here otherwise projen fails to add it to package.json (due to resolutions below?)
+    'glob',
     'yargs',
     'p-queue@6', // Last non-ESM version
   ],
