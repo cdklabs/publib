@@ -22,7 +22,7 @@ jobs:
         run: cat $GITHUB_EVENT_PATH
       - name: Start requiring approval
         run: echo IntegTestCredentialsRequireApproval > .envname
-      - name: If not from a fork, do not need approval
+      - name: If not forked, run automatically
         if: "!github.pull_request.head.repo.fork"
         run: echo IntegTestCredentials > .envname
       - name: Output the value
