@@ -1,4 +1,4 @@
-import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand, ResourceNotFoundException } from '@aws-sdk/client-codeartifact';
+import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand, ResourceNotFoundException, ThrottlingException } from '@aws-sdk/client-codeartifact';
 import { AwsCredentialIdentityProvider, Command, MetadataBearer } from '@aws-sdk/types';
 import { sleep } from '../help/sleep';
 
@@ -309,9 +309,12 @@ async function retryThrottled<A>(block: () => Promise<A>) {
       return await block();
     } catch (e: any) {
       // eslint-disable-next-line no-console
-      console.debug(e.message);
-      if (e.code !== 'ThrottlingException') { throw e; }
-      if (attempts-- === 0) { throw e; }
+      console.debug(e);
+
+      if (!(e instanceof ThrottlingException) || --attempts === 0) {
+        throw e;
+      }
+
       await sleep(Math.floor(Math.random() * time));
       time *= 2;
     }

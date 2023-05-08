@@ -76,9 +76,9 @@ test?.on({
   mergeGroup: {},
 });
 
-// Select `IntegTestCredentials` or `IntegTestCredentialsRequireApproval` depending on the author of the PR
-// github.pull_request.author_association in ['OWNER', 'COLLABORATOR', 'MEMBER', 'NONE']
-// github.pull_request.user.login
+// Select `IntegTestCredentials` or `IntegTestCredentialsRequireApproval` depending on whether this is
+// a PR from a fork or not (assumption: writers can be trusted, forkers cannot).
+//
 // Because we have an 'if/else' condition that is quite annoying to encode with outputs, have a mutable variable by
 // means of a file on disk, export it as an output afterwards.
 test?.addJob('determine_env', {
@@ -96,7 +96,7 @@ test?.addJob('determine_env', {
       run: 'echo IntegTestCredentialsRequireApproval > .envname',
     },
     {
-      name: 'If not from a fork, do not need approval',
+      name: 'If not forked, run automatically',
       // In a mergeGroup event, `github.pull_request` will not be set and `!undefined` also counts
       if: '!github.pull_request.head.repo.fork',
       run: 'echo IntegTestCredentials > .envname',
