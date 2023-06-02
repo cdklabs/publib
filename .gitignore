@@ -50,5 +50,4 @@ junit.xml
 /dist/
 !/.eslintrc.json
 !/.github/workflows/auto-merge.yml
-!/.github/workflows/upgrade-cdklabs-projen-project-types-main.yml
 !/.github/workflows/integ.yml

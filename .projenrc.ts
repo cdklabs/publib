@@ -136,6 +136,8 @@ test?.addJob('integ', {
       uses: 'actions/checkout@v3',
       with: {
         ref: '${{ github.event.pull_request.head.ref }}',
+        // Need this because we are running on pull_request_target
+        repository: '${{ github.event.pull_request.head.repo.full_name }}',
       },
     },
     {
