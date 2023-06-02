@@ -96,9 +96,9 @@ test?.addJob('determine_env', {
       run: 'echo IntegTestCredentialsRequireApproval > .envname',
     },
     {
-      name: 'If not forked, run automatically',
-      // In a mergeGroup event, `github.pull_request` will not be set and `!undefined` also counts
-      if: '!github.pull_request.head.repo.fork',
+      name: 'Run automatically if in a mergeGroup or PR created from this repo',
+      // In a mergeGroup event, or a non-forked request, run without confirmation
+      if: "${{ github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name == github.repository }}",
       run: 'echo IntegTestCredentials > .envname',
     },
     {
