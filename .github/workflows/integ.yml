@@ -22,8 +22,8 @@ jobs:
         run: cat $GITHUB_EVENT_PATH
       - name: Start requiring approval
         run: echo IntegTestCredentialsRequireApproval > .envname
-      - name: If not forked, run automatically
-        if: "!github.pull_request.head.repo.fork"
+      - name: Run automatically if in a mergeGroup or PR created from this repo
+        if: ${{ github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: echo IntegTestCredentials > .envname
       - name: Output the value
         id: output
@@ -46,6 +46,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:

@@ -96,9 +96,9 @@ test?.addJob('determine_env', {
       run: 'echo IntegTestCredentialsRequireApproval > .envname',
     },
     {
-      name: 'If not forked, run automatically',
-      // In a mergeGroup event, `github.pull_request` will not be set and `!undefined` also counts
-      if: '!github.pull_request.head.repo.fork',
+      name: 'Run automatically if in a mergeGroup or PR created from this repo',
+      // In a mergeGroup event, or a non-forked request, run without confirmation
+      if: "${{ github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name == github.repository }}",
       run: 'echo IntegTestCredentials > .envname',
     },
     {
@@ -136,6 +136,8 @@ test?.addJob('integ', {
       uses: 'actions/checkout@v3',
       with: {
         ref: '${{ github.event.pull_request.head.ref }}',
+        // Need this because we are running on pull_request_target
+        repository: '${{ github.event.pull_request.head.repo.full_name }}',
       },
     },
     {
