@@ -199,7 +199,7 @@ deploy_central() {
 
     staging_output="${workdir}/deploy-output.txt"
     $mvn --settings=${mvn_settings}                                                    \
-        org.sonatype.plugins:nexus-staging-maven-plugin:1.6.5:deploy-staged-repository \
+        org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
         -DrepositoryDirectory=${staging}                                               \
         -DnexusUrl=${MAVEN_ENDPOINT:-https://oss.sonatype.org}                         \
         -DserverId=${server_id}                                                        \
