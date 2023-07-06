@@ -1,5 +1,5 @@
 import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand, ResourceNotFoundException, ThrottlingException } from '@aws-sdk/client-codeartifact';
-import { AwsCredentialIdentityProvider, Command, MetadataBearer } from '@aws-sdk/types';
+import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { sleep } from '../help/sleep';
 
 const COLLECT_BY_TAG = 'collect-by';
@@ -84,12 +84,16 @@ export class CodeArtifactRepo {
   private readonly codeArtifact;
 
   private _loginInformation: LoginInformation | undefined;
+  private readonly send: CodeartifactClient['send'];
 
   private constructor(
     public readonly repositoryName: string,
     options: CodeArtifactRepoOptions = {},
   ) {
     this.codeArtifact = new CodeartifactClient({ credentials: options.credentials });
+
+    // Letting the compiler infer the types in this way is the only way to get it to typecheck
+    this.send = (command) => retryThrottled(() => this.codeArtifact.send(command));
   }
 
   /**
@@ -279,11 +283,6 @@ export class CodeArtifactRepo {
         nextToken: response.nextToken,
       }));
     }
-  }
-
-  // eslint-disable-next-line max-len
-  private send<ClientInput extends object, InputType extends ClientInput, ClientOutput extends MetadataBearer, OutputType extends ClientOutput>(command: Command<ClientInput, InputType, ClientOutput, OutputType, any>): Promise<OutputType> {
-    return retryThrottled(() => this.codeArtifact.send(command as any));
   }
 }
 
