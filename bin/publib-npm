@@ -11,6 +11,8 @@ set -eu
 #
 # NPM_TOKEN (optional): registry authentication token (either from npmjs or a GitHub personal access token), not used for AWS CodeArtifact
 # NPM_REGISTRY (optional): the registry URL (defaults to "registry.npmjs.org")
+# NPM_DRYRUN (optional): Set to "true" for a dry run
+# NPM_AUTH_TYPE (optional): Can be "authToken" (default) or "auth" depending on the type of NPM_TOKEN used for the NPM_REGISTRY
 # AWS_ACCESS_KEY_ID (optional): If AWS CodeArtifact is used as registry, an AWS access key can be spedified.
 # AWS_SECRET_ACCESS_KEY (optional): Secret access key that belongs to the AWS access key.
 # AWS_ROLE_TO_ASSUME (optional): If AWS CodeArtifact is used as registry and need to assume role.
@@ -20,13 +22,12 @@ set -eu
 
 dir="${1:-"dist/js"}"
 
-
 if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws.com ]]; then
   codeartifact_account="$(echo $NPM_REGISTRY | cut -d. -f1 | rev | cut -d- -f1 | rev)"
   codeartifact_subdomain="$(echo $NPM_REGISTRY | cut -d. -f1)"
   codeartifact_domain="$(echo $codeartifact_subdomain | cut -b -$((${#codeartifact_subdomain}-${#codeartifact_account}-1)))"
   codeartifact_region="$(echo $NPM_REGISTRY | cut -d. -f4)"
-  export AWS_DEFAULT_REGION="$(echo $codeartifact_region)" 
+  export AWS_DEFAULT_REGION="$(echo $codeartifact_region)"
   if [ -n "${AWS_ROLE_TO_ASSUME:-}" ]; then
     credentials=`aws sts assume-role --role-session-name "publib-code-artifact" --role-arn ${AWS_ROLE_TO_ASSUME} --output text | sed -n '2 p'`
     export AWS_ACCESS_KEY_ID="$(echo $credentials | cut -d' ' -f2)"
@@ -38,9 +39,6 @@ elif [ -z "${NPM_TOKEN:-}" ]; then
   echo "NPM_TOKEN is required"
   exit 1
 fi
-
-NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
-echo "//${NPM_REGISTRY%%/}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 
 # this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
 # which requires `yarn login`. but since we are logging in through ~/.npmrc, we must make sure we publish directly to npm.
@@ -57,6 +55,12 @@ if [ -n "${NPM_DIST_TAG:-}" ]; then
   echo "Publishing under the following dist-tag: ${NPM_DIST_TAG}"
 fi
 
+dry=""
+if [ -n "${NPM_DRYRUN:-}" ]; then
+  dry="--dry-run"
+  echo "Attempting to dry run publish"
+fi
+
 # access level
 access=""
 if [ -n "${NPM_ACCESS_LEVEL:-}" ]; then
@@ -69,29 +73,55 @@ if [ -n "${NPM_ACCESS_LEVEL:-}" ]; then
   echo "Publishing package with access level: ${NPM_ACCESS_LEVEL}"
 fi
 
-log=$(mktemp -d)/npmlog.txt
+# some registries you might want to use basic auth instead of tokens
+NPM_AUTH_TYPE="${NPM_AUTH_TYPE:-authToken}"
+if [[ "$NPM_AUTH_TYPE" != "auth" && "$NPM_AUTH_TYPE" != "authToken" ]]; then
+  echo "Error: Invalid value for NPM_AUTH_TYPE. Allowed options are 'auth' or 'authToken'."
+  exit 1
+fi
 
-for file in ${dir}/**.tgz; do
-  npm publish ${tag} ${access} ${file} 2>&1 | tee ${log}
+temp_dir=$(mktemp -d)
+cwd=$(pwd)
+log=$temp_dir/npmlog.txt
+
+NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
+registry_without_protocol="${NPM_REGISTRY#*://}"
+echo "//${registry_without_protocol%%/}/:_$NPM_AUTH_TYPE=$NPM_TOKEN" > "$temp_dir/.npmrc"
+
+# move into temporary directory to use generated npmrc file
+cd "$temp_dir"
+
+for file in "$dir"/**.tgz; do
+  npm publish ${tag} ${access} ${file} ${dry} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
 
   if [ ${exit_code} -ne 0 ]; then
 
     # error returned from npmjs
-    if cat ${log} | grep -q "You cannot publish over the previously published versions"; then
+    if grep -q "You cannot publish over the previously published versions" "$log"; then
       echo "SKIPPING: already published"
       continue
     fi
 
     # error returned from github packages
-    if cat ${log} | grep -q "Cannot publish over existing version"; then
+    if grep -q "Cannot publish over existing version" "$log"; then
       echo "SKIPPING: already published"
       continue
     fi
+
+    rm "$temp_dir/.npmrc"
 
     echo "ERROR"
     exit 1
   fi
 done
+
+# move back to original working directory
+cd "$cwd"
+
+# clean up temp files and folder
+rm "$log"
+rm "$temp_dir/.npmrc"
+rm -d "$temp_dir"
 
 echo "SUCCESS"
