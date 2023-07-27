@@ -192,26 +192,7 @@ sign_artifacts() {
     done
 }
 
-deploy_central() {
-    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo " Deploying and closing repository..."
-    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-
-    staging_output="${workdir}/deploy-output.txt"
-    $mvn --settings=${mvn_settings}                                                    \
-        org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
-        -DrepositoryDirectory=${staging}                                               \
-        -DnexusUrl=${MAVEN_ENDPOINT:-https://oss.sonatype.org}                         \
-        -DserverId=${server_id}                                                        \
-        -DautoReleaseAfterClose=true                                                   \
-        -DstagingProgressTimeoutMinutes=30                                             \
-        -DstagingProfileId=${MAVEN_STAGING_PROFILE_ID} | tee ${staging_output}
-
-    # we need to consule PIPESTATUS sinec "tee" is the last command
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        error "Repository deployment failed"
-    fi
-
+release() {
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo " Releasing repository"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -220,10 +201,10 @@ deploy_central() {
     # This is because "deploy-staged-repository" doesn't seem to support autoReleaseAfterClose
     # See https://issues.sonatype.org/browse/OSSRH-42487
     if $dry_run; then
-        echo 'Closing staging repository with ID "dummyrepo"' > ${staging_output}
+        echo 'Closing staging repository with ID "dummyrepo"' > $1
     fi
 
-    repository_id="$(cat ${staging_output} | grep "Closing staging repository with ID" | cut -d'"' -f2)"
+    repository_id="$(cat $1 | grep "Closing staging repository with ID" | cut -d'"' -f2)"
     if [ -z "${repository_id}" ]; then
         echo "❌ Unable to extract repository ID from deploy-staged-repository output."
         echo "This means it failed to close or there was an unexpected problem."
@@ -265,6 +246,38 @@ HERE
         else
             error "Release failed"
         fi
+    fi
+}
+
+deploy_central() {
+    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    echo " Deploying and closing repository..."
+    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+    staging_plugin="org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository"
+    existing_artifact_error="Failed to execute goal ${staging_plugin} (default-cli) on project standalone-pom: Execution default-cli of goal ${staging_plugin} failed: 403 - Forbidden -> [Help 1]"
+
+    staging_output="${workdir}/deploy-output.txt"
+    $mvn --settings=${mvn_settings}                                                    \
+        ${staging_plugin}                                                              \
+        -DrepositoryDirectory=${staging}                                               \
+        -DnexusUrl=${MAVEN_ENDPOINT:-https://oss.sonatype.org}                         \
+        -DserverId=${server_id}                                                        \
+        -DautoReleaseAfterClose=true                                                   \
+        -DstagingProgressTimeoutMinutes=30                                             \
+        -DstagingProfileId=${MAVEN_STAGING_PROFILE_ID} | tee ${staging_output}
+
+    # we need to consule PIPESTATUS sinec "tee" is the last command
+    # If staging fails, it may be because the version has already published
+    # Per https://central.sonatype.org/faq/403-error/, we should see the error message above
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        if cat ${staging_output} | grep ${existing_artifact_error}; then
+            echo "⚠️ Artifact already published. Skipping"
+        else
+            error "Repository deployment failed"
+        fi
+    else
+        release ${staging_output}
     fi
 }
 
