@@ -281,7 +281,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade"
+          "exec": "yarn upgrade @aws-sdk/client-sts @types/glob @types/jest @types/node @types/yargs @typescript-eslint/eslint-plugin @typescript-eslint/parser cdklabs-projen-project-types eslint-import-resolver-node eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit npm-check-updates projen standard-version ts-jest ts-node typescript @aws-sdk/client-codeartifact @aws-sdk/credential-providers @aws-sdk/types @types/fs-extra fs-extra glob p-queue shlex yargs"
         },
         {
           "exec": "npx projen"
@@ -299,7 +299,7 @@
       },
       "steps": [
         {
-          "exec": "yarn upgrade npm-check-updates"
+          "exec": "yarn upgrade "
         },
         {
           "exec": "npm-check-updates --filter=cdklabs-projen-project-types,projen --upgrade"
@@ -308,7 +308,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade cdklabs-projen-project-types projen"
+          "exec": "yarn upgrade "
         },
         {
           "exec": "npx projen"
