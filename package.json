@@ -67,7 +67,7 @@
     "jest": "^27.5.1",
     "jest-junit": "^15",
     "npm-check-updates": "^16",
-    "projen": "^0.72.19",
+    "projen": "^0.72.21",
     "standard-version": "^9",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.1",
@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-codeartifact": "^3.395.0",
-    "@aws-sdk/credential-providers": "^3.395.0",
+    "@aws-sdk/credential-providers": "^3.397.0",
     "@aws-sdk/types": "^3.391.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
