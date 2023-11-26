@@ -60,7 +60,7 @@
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
-    "cdklabs-projen-project-types": "^0.1.180",
+    "cdklabs-projen-project-types": "^0.1.182",
     "constructs": "^10.0.0",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^2.7.1",
