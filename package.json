@@ -53,7 +53,7 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.485.0",
+    "@aws-sdk/client-sts": "^3.489.0",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16",
@@ -67,7 +67,7 @@
     "eslint-plugin-import": "^2.29.1",
     "jest": "^27.5.1",
     "jest-junit": "^15",
-    "projen": "^0.77.6",
+    "projen": "^0.79.0",
     "standard-version": "^9",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.2",
@@ -121,11 +121,13 @@
         }
       ]
     ],
-    "preset": "ts-jest",
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.dev.json"
-      }
+    "transform": {
+      "^.+\\.[t]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.dev.json"
+        }
+      ]
     }
   },
   "types": "lib/index.d.ts",
