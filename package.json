@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-codeartifact": "^3.504.0",
-    "@aws-sdk/credential-providers": "^3.504.0",
+    "@aws-sdk/credential-providers": "^3.504.1",
     "@aws-sdk/types": "^3.502.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",

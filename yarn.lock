@@ -414,10 +414,10 @@
     "@smithy/types" "^2.9.1"
     tslib "^2.5.0"
 
-"@aws-sdk/credential-providers@^3.504.0":
-  version "3.504.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.504.0.tgz#f9441517b13ed4140065e241b6dd6e9bc4c3dca7"
-  integrity sha512-E55Iu70VWyJBsqe1kh+Bo8z47MpDJssUb7FMFotpEgFtixxBDRjUvPhScFWRTC7aFm3UWcQmhyJM1XEBo1MC4g==
+"@aws-sdk/credential-providers@^3.504.1":
+  version "3.504.1"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.504.1.tgz#cdca40b79f1b8d1e7476e6fde3196015f4f16596"
+  integrity sha512-D/ef7ZVxJVXC1qe6ZMS0dOWM92LNHJRHn9Biz5eRqRvRhNL+Rq68ZULlc0TQTVY71Fcc5TJ8OwFhaboPUiqWXA==
   dependencies:
     "@aws-sdk/client-cognito-identity" "3.504.0"
     "@aws-sdk/client-sso" "3.502.0"
