@@ -53,14 +53,14 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.504.0",
+    "@aws-sdk/client-sts": "^3.507.0",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16",
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
-    "cdklabs-projen-project-types": "^0.1.187",
+    "cdklabs-projen-project-types": "^0.1.188",
     "constructs": "^10.0.0",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^2.7.1",
