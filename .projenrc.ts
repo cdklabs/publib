@@ -29,8 +29,6 @@ const project = new cdklabs.CdklabsTypeScriptProject({
     'yargs@^17',
     'p-queue@6', // Last non-ESM version
   ],
-  workflowNodeVersion: '16.x',
-  minNodeVersion: '16.0.0',
   enablePRAutoMerge: true,
   setNodeEngineVersion: false,
 });
@@ -144,8 +142,7 @@ test?.addJob('integ', {
       name: 'Setup Node.js',
       uses: 'actions/setup-node@v3',
       with: {
-        'node-version': '16.16.0',
-        'cache': 'yarn',
+        cache: 'yarn',
       },
     },
     {
