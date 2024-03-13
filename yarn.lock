@@ -1244,7 +1244,7 @@
     "@smithy/util-hex-encoding" "^2.1.1"
     tslib "^2.5.0"
 
-"@smithy/fetch-http-handler@^2.4.3", "@smithy/fetch-http-handler@^2.4.4", "@smithy/fetch-http-handler@^2.4.5":
+"@smithy/fetch-http-handler@^2.4.3", "@smithy/fetch-http-handler@^2.4.5":
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/@smithy/fetch-http-handler/-/fetch-http-handler-2.4.5.tgz#e036f6653259e742841d10280fc049c337e739e8"
   integrity sha512-FR1IMGdo0yRFs1tk71zRGSa1MznVLQOVNaPjyNtx6dOcy/u0ovEnXN5NVz6slw5KujFlg3N1w4+UbO8F3WyYUg==
@@ -1343,7 +1343,7 @@
     "@smithy/types" "^2.11.0"
     tslib "^2.5.0"
 
-"@smithy/node-http-handler@^2.4.1", "@smithy/node-http-handler@^2.4.2", "@smithy/node-http-handler@^2.4.3":
+"@smithy/node-http-handler@^2.4.1", "@smithy/node-http-handler@^2.4.3":
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/@smithy/node-http-handler/-/node-http-handler-2.4.3.tgz#f9cc5a2197098a78be5a31776829b82a01b34276"
   integrity sha512-bD5zRdEl1u/4vAAMeQnGEUNbH1seISV2Z0Wnn7ltPRl/6B2zND1R9XzTfsOnH1R5jqghpochF/mma8u7uXz0qQ==
@@ -1444,7 +1444,7 @@
     "@smithy/types" "^2.11.0"
     tslib "^2.5.0"
 
-"@smithy/util-base64@^2.1.1", "@smithy/util-base64@^2.2.0", "@smithy/util-base64@^2.2.1":
+"@smithy/util-base64@^2.1.1", "@smithy/util-base64@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@smithy/util-base64/-/util-base64-2.2.1.tgz#215634c4ab9dd48abf4dad6bb328fadc14c488c3"
   integrity sha512-troGfokrpoqv8TGgsb8p4vvM71vqor314514jyQ0i9Zae3qs0jUVbSMCIBB1tseVynXFRcZJAZ9hPQYlifLD5A==
@@ -1539,21 +1539,7 @@
     "@smithy/types" "^2.11.0"
     tslib "^2.5.0"
 
-"@smithy/util-stream@^2.1.3":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@smithy/util-stream/-/util-stream-2.1.4.tgz#4d7b3a99f5ad5ba0469aebcdbef7bf9bbabb829a"
-  integrity sha512-CiWaFPXstoR7v/PGHddFckovkhJb28wgQR7LwIt6RsQCJeRIHvUTVWhXw/Pco6Jm6nz/vfzN9FFdj/JN7RTkxQ==
-  dependencies:
-    "@smithy/fetch-http-handler" "^2.4.4"
-    "@smithy/node-http-handler" "^2.4.2"
-    "@smithy/types" "^2.11.0"
-    "@smithy/util-base64" "^2.2.0"
-    "@smithy/util-buffer-from" "^2.1.1"
-    "@smithy/util-hex-encoding" "^2.1.1"
-    "@smithy/util-utf8" "^2.2.0"
-    tslib "^2.5.0"
-
-"@smithy/util-stream@^2.1.5":
+"@smithy/util-stream@^2.1.3", "@smithy/util-stream@^2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@smithy/util-stream/-/util-stream-2.1.5.tgz#8fa752e55b30209de47d00aed40f93b9b781fae1"
   integrity sha512-FqvBFeTgx+QC4+i8USHqU8Ifs9nYRpW/OBfksojtgkxPIQ2H7ypXDEbnQRAV7PwoNHWcSwPomLYi0svmQQG5ow==
@@ -1710,9 +1696,9 @@
   integrity sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==
 
 "@types/node@*":
-  version "20.11.26"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.26.tgz#3fbda536e51d5c79281e1d9657dcb0131baabd2d"
-  integrity sha512-YwOMmyhNnAWijOBQweOJnQPl068Oqd4K3OFbTc6AHJwzweUwwWG3GIFY74OKks2PJUDkQPeddOQES9mLn1CTEQ==
+  version "20.11.27"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.27.tgz#debe5cfc8a507dd60fe2a3b4875b1604f215c2ac"
+  integrity sha512-qyUZfMnCg1KEz57r7pzFtSGt49f6RPkPBis3Vo4PbS7roQEDn22hiHzl/Lo1q4i4hDEgBJmBF/NTNg2XR0HbFg==
   dependencies:
     undici-types "~5.26.4"
 
