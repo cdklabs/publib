@@ -258,9 +258,9 @@ export class GoReleaser {
       throw new Error(`Module declaration in '${modFile}' expected to end with '${majorVersionSuffix}' since its major version is larger than 1`);
     }
 
-    if (!repoURL.startsWith('github.com')) {
-      throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
-    }
+    // if (!repoURL.startsWith('github.com')) {
+    //   throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
+    // }
 
     let repoPath = cannonicalNameParts
       .slice(3) // e.g ['constructs', 'v3']

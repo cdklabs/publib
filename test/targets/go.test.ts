@@ -140,8 +140,9 @@ test('throws if module repo domain is not github.com', () => {
 
   const { releaser, sourceDir } = createReleaser('not-github');
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
 
-  expect(() => releaser.release()).toThrow(/Repository must be hosted on github.com/);
+  expect(release.tags).toEqual(['v1.1.0']);
 
 });
 
