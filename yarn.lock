@@ -1211,12 +1211,12 @@
     tslib "^2.6.2"
 
 "@smithy/core@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@smithy/core/-/core-1.4.0.tgz#5f9f86b681b9cbf23904041dad6f0531efe8375e"
-  integrity sha512-uu9ZDI95Uij4qk+L6kyFjdk11zqBkcJ3Lv0sc6jZrqHvLyr0+oeekD3CnqMafBn/5PRI6uv6ulW3kNLRBUHeVw==
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@smithy/core/-/core-1.4.1.tgz#42d1413ccade7c9a5418d739df68f5f6a039a7c0"
+  integrity sha512-jCnbEQHvTOUQXxXOS110FIMc83dCXUlrqiG/q0QzUSYhglDj9bJVPFjXmxc6qUfARe0mEb8h9LeVoh7FUYHuUg==
   dependencies:
     "@smithy/middleware-endpoint" "^2.5.0"
-    "@smithy/middleware-retry" "^2.2.0"
+    "@smithy/middleware-retry" "^2.3.0"
     "@smithy/middleware-serde" "^2.3.0"
     "@smithy/protocol-http" "^3.3.0"
     "@smithy/smithy-client" "^2.5.0"
@@ -1303,10 +1303,10 @@
     "@smithy/util-middleware" "^2.2.0"
     tslib "^2.6.2"
 
-"@smithy/middleware-retry@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@smithy/middleware-retry/-/middleware-retry-2.2.0.tgz#ff48ac01ad57394eeea15a0146a86079cf6364b7"
-  integrity sha512-PsjDOLpbevgn37yJbawmfVoanru40qVA8UEf2+YA1lvOefmhuhL6ZbKtGsLAWDRnE1OlAmedsbA/htH6iSZjNA==
+"@smithy/middleware-retry@^2.2.0", "@smithy/middleware-retry@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@smithy/middleware-retry/-/middleware-retry-2.3.0.tgz#b7b9a279f364b43e097cf96ca7a4192f361f3776"
+  integrity sha512-5H7kD0My2RkZryvYIWA4C9w6t/pdJfbgEdq+fcZhbnZsqHm/4vYFVjDsOzb5pC7PEpksuijoM9fGbM6eN4rLSg==
   dependencies:
     "@smithy/node-config-provider" "^2.3.0"
     "@smithy/protocol-http" "^3.3.0"
@@ -1316,7 +1316,7 @@
     "@smithy/util-middleware" "^2.2.0"
     "@smithy/util-retry" "^2.2.0"
     tslib "^2.6.2"
-    uuid "^8.3.2"
+    uuid "^9.0.1"
 
 "@smithy/middleware-serde@^2.3.0":
   version "2.3.0"
@@ -4585,7 +4585,7 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
-minimatch@9.0.3, minimatch@^9.0.0:
+minimatch@9.0.3:
   version "9.0.3"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.3.tgz#a6e00c3de44c3a542bfaae70abfc22420a6da825"
   integrity sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==
@@ -4603,6 +4603,13 @@ minimatch@^5.0.1:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
   integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
+  dependencies:
+    brace-expansion "^2.0.1"
+
+minimatch@^9.0.0:
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.4.tgz#8e49c731d1749cbec05050ee5145147b32496a51"
+  integrity sha512-KqWh+VchfxcMNRAJjj2tnsSJdNbHsVgnkBhTNrW7AjVo6OvLtxw8zfT9oLw1JSohlFzJ8jCoTgaoXvJ+kHt6fw==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -5882,6 +5889,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 v8-compile-cache-lib@^3.0.1:
   version "3.0.1"
