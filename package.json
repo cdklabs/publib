@@ -53,7 +53,7 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.540.0",
+    "@aws-sdk/client-sts": "^3.549.0",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^18",
@@ -67,7 +67,7 @@
     "eslint-plugin-import": "^2.29.1",
     "jest": "^27.5.1",
     "jest-junit": "^15",
-    "projen": "^0.80.17",
+    "projen": "^0.80.18",
     "standard-version": "^9",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.2",
