@@ -261,7 +261,7 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=prod --filter=@aws-sdk/client-codeartifact,@aws-sdk/credential-providers,@aws-sdk/types,glob,p-queue,shlex"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=prod --filter=@aws-sdk/client-codeartifact,@aws-sdk/credential-providers,@aws-sdk/types,shlex"
         },
         {
           "exec": "yarn install --check-files"
