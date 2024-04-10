@@ -122,7 +122,7 @@ test?.addJob('integ', {
   steps: [
     {
       name: 'Federate into AWS',
-      uses: 'aws-actions/configure-aws-credentials@v2',
+      uses: 'aws-actions/configure-aws-credentials@v4',
       with: {
         'aws-region': 'us-east-1',
         'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
@@ -131,16 +131,16 @@ test?.addJob('integ', {
     },
     {
       name: 'Checkout',
-      uses: 'actions/checkout@v3',
+      uses: 'actions/checkout@v4',
       with: {
-        ref: '${{ github.event.pull_request.head.ref }}',
+        ref: '${{ github.event.pull_request.head.sha }}',
         // Need this because we are running on pull_request_target
         repository: '${{ github.event.pull_request.head.repo.full_name }}',
       },
     },
     {
       name: 'Setup Node.js',
-      uses: 'actions/setup-node@v3',
+      uses: 'actions/setup-node@v4',
       with: {
         cache: 'yarn',
       },
