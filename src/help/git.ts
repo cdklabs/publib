@@ -13,10 +13,19 @@ export function clone(repositoryUrl: string, targetDir: string) {
     shell.run(`git clone git@${sshRepositoryUrl}.git ${targetDir}`);
   } else {
     const gitHubToken = process.env.GITHUB_TOKEN;
-    if (!gitHubToken) {
-      throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+    if (gitHubToken) {
+      shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
+    } else {
+      if (process.env.GITHUB_API_URL && process.env.GITHUB_API_URL?.trim().toLowerCase()!= 'https://api.github.com') {
+        const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ? process.env.GITHUB_ENTERPRISE_TOKEN : undefined;
+        const githubEnterpriseHost = process.env.GH_HOST;
+        if (githubEnterpiseToken && githubEnterpriseHost) {
+          shell.run(`git clone https://${githubEnterpiseToken}@${repositoryUrl}.git ${targetDir}`);
+        }
+      } else {
+        throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+      }
     }
-    shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
   }
 }
 

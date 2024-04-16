@@ -40,3 +40,21 @@ test('throw exception without token or ssh', () => {
   const t = () => git.clone('github.com/cdklabs/publib', 'target');
   expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
 });
+
+test('throw exception without ghe authentication for github enterprise repo', () => {
+  const t = () => git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
+  expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+});
+
+test('throw exception with incomplete ghe authentication for github enterprise repo', () => {
+  process.env.GITHUB_ENTERPRISE_TOKEN = 'valid-token';
+  const t = () => git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
+  expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+});
+
+test('clone with provided ghe authentication for github enterprise repo', () => {
+  process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
+  process.env.GH_HOST = 'github.corporate-enterprise.com';
+  const t = () => git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
+  expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+});
