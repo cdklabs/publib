@@ -52,9 +52,18 @@ test('throw exception with incomplete ghe authentication for github enterprise r
   expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
 });
 
-test('clone with provided ghe authentication for github enterprise repo', () => {
+test('clone with provided ghe authentication for github enterprise repo but no set github api url', () => {
   process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
   process.env.GH_HOST = 'github.corporate-enterprise.com';
   const t = () => git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
   expect(t).toThrow('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+});
+
+test('clone with provided ghe authentication for github enterprise repo and with non-public github api url', () => {
+  process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
+  process.env.GH_HOST = 'github.corporate-enterprise.com';
+  process.env.GITHUB_API_URL = 'https://api.github.corporate-enterprise.com';
+  git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
+  expect(mockedShellRun.mock.calls).toHaveLength(1);
+  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone https://valid-token@github.corporate-enterprise.com/cdklabs/publib.git target']);
 });

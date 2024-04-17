@@ -7,26 +7,61 @@ import * as shell from './shell';
  * @param targetDir the clone directory.
  */
 export function clone(repositoryUrl: string, targetDir: string) {
-  const gitHubUseSsh = process.env.GITHUB_USE_SSH;
+  const gitHubUseSsh = detectSSH();
   if (gitHubUseSsh) {
     const sshRepositoryUrl = repositoryUrl.replace('/', ':');
     shell.run(`git clone git@${sshRepositoryUrl}.git ${targetDir}`);
   } else {
-    const gitHubToken = process.env.GITHUB_TOKEN;
-    if (gitHubToken) {
-      shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
-    } else {
-      if (process.env.GITHUB_API_URL && process.env.GITHUB_API_URL?.trim().toLowerCase()!= 'https://api.github.com') {
-        const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ? process.env.GITHUB_ENTERPRISE_TOKEN : undefined;
-        const githubEnterpriseHost = process.env.GH_HOST;
-        if (githubEnterpiseToken && githubEnterpriseHost) {
-          shell.run(`git clone https://${githubEnterpiseToken}@${repositoryUrl}.git ${targetDir}`);
-        }
-      } else {
-        throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
-      }
+    const gitHubToken = getToken(detectGHE());
+    if (!gitHubToken) {
+      throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+    }
+    shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
+
+  }
+}
+
+/**
+ * Checks if the GitHub API URL set in the GitHub Actions workflow is not the public GitHub API URL.
+ * https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+ *
+ * @return True if GITHUB_API_URL env var is defined and not equal to public github API URL, false,
+ */
+export function detectGHE(): boolean {
+  const githubApiUrl = process.env.GITHUB_API_URL;
+  if (!githubApiUrl) {
+    return false;
+  }
+  return githubApiUrl!.trim().toLowerCase()!= 'https://api.github.com';
+
+}
+
+/**
+ * Checks for the presence of GITHUB_TOKEN set in the GitHub Actions workflow, as well as if there are GHE related env vars set.
+ * https://cli.github.com/manual/gh_help_environment
+ *
+ * @return either GH_ENTERPRISE_TOKEN or GITHUB_ENTERPRISE_TOKEN if one of the two and the GH_HOST env var is set, otherwise returns GITHUB_TOKEN env var.
+ */
+
+export function getToken(isGHE: boolean): (string | undefined) {
+  if (isGHE) {
+    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ? process.env.GH_ENTERPRISE_TOKEN : process.env.GITHUB_ENTERPRISE_TOKEN;
+    const githubEnterpriseHost = process.env.GH_HOST;
+    if (githubEnterpiseToken && githubEnterpriseHost) {
+      return githubEnterpiseToken;
     }
   }
+  return process.env.GITHUB_TOKEN;
+}
+
+/**
+ * Checks for the presence of SSH-related env vars in the GitHub Actions workflow to see if SSH should be used to clone repo.
+ * @return GIT_USE_SSH env var if it's defined, otherwise returns GITHUB_USE_SSH env var.
+ */
+
+export function detectSSH(): (string | undefined) {
+  const gitHubUseSsh = process.env.GIT_USE_SSH ? process.env.GIT_USE_SSH: process.env.GITHUB_USE_SSH;
+  return gitHubUseSsh;
 }
 
 /**

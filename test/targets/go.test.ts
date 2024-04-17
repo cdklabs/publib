@@ -147,7 +147,7 @@ test('uses global version', () => {
 
 });
 
-test('throws if module repo domain is not github.com without SSL', () => {
+test('throws if module repo domain is not github.com without SSH', () => {
 
   const { releaser, sourceDir } = createReleaser('not-github');
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
@@ -155,7 +155,7 @@ test('throws if module repo domain is not github.com without SSL', () => {
 
 });
 
-test('does not throw if module repo domain is not github.com with SSL', () => {
+test('does not throw if module repo domain is not github.com with SSH', () => {
 
   process.env.GITHUB_USE_SSH = '1';
   const { releaser, sourceDir } = createReleaser('not-github');
@@ -179,6 +179,8 @@ test('does not throw if module repo domain is not github.com with complete GHE a
 
   process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
   process.env.GH_HOST = 'github.corporate-enterprise.com';
+
+  process.env.GITHUB_API_URL = 'https://api.github.corporate-enterprise.com';
 
   const { releaser, sourceDir } = createReleaser('github-enterprise');
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');

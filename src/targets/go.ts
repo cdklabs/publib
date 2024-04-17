@@ -259,10 +259,10 @@ export class GoReleaser {
     }
 
     if (!repoURL.startsWith('github.com')) {
-      if (!(process.env.GITHUB_USE_SSH || process.env.GIT_USE_SSH)) {
-        if (!((process.env.GH_ENTERPRISE_TOKEN || process.env.GITHUB_ENTERPRISE_TOKEN) && process.env.GH_HOST)) {
-          throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
-        }
+      console.log(git.detectGHE());
+      console.log(git.detectSSH());
+      if (!git.detectSSH() && !git.detectGHE()) {
+        throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
       }
     }
     let repoPath = cannonicalNameParts
