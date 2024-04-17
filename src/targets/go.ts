@@ -259,9 +259,7 @@ export class GoReleaser {
     }
 
     if (!repoURL.startsWith('github.com')) {
-      console.log(git.detectGHE());
-      console.log(git.detectSSH());
-      if (!git.detectSSH() && !git.detectGHE()) {
+      if (!(git.detectSSH() || git.detectGHE())) {
         throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
       }
     }

@@ -45,7 +45,7 @@ export function detectGHE(): boolean {
 
 export function getToken(isGHE: boolean): (string | undefined) {
   if (isGHE) {
-    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ? process.env.GH_ENTERPRISE_TOKEN : process.env.GITHUB_ENTERPRISE_TOKEN;
+    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ?? process.env.GITHUB_ENTERPRISE_TOKEN;
     const githubEnterpriseHost = process.env.GH_HOST;
     if (githubEnterpiseToken && githubEnterpriseHost) {
       return githubEnterpiseToken;
@@ -60,7 +60,7 @@ export function getToken(isGHE: boolean): (string | undefined) {
  */
 
 export function detectSSH(): (string | undefined) {
-  const gitHubUseSsh = process.env.GIT_USE_SSH ? process.env.GIT_USE_SSH: process.env.GITHUB_USE_SSH;
+  const gitHubUseSsh = process.env.GIT_USE_SSH ?? process.env.GITHUB_USE_SSH;
   return gitHubUseSsh;
 }
 
