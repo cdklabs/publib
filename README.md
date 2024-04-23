@@ -221,7 +221,7 @@ Repository tags will be in the following format:
 
 |Option|Required|Description|
 |------|--------|-----------|
-|`GITHUB_TOKEN`|Required if either `GITHUB_USE_SSH`\\`GIT_USE_SSH` and combination of `GH_ENTERPRISE_TOKEN`\\`GITHUB_ENTERPISE_TOKEN` and `GH_HOST` is not specified|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
+|`GITHUB_TOKEN`|Required when not using SSH mode, see `GIT_USE_SSH`|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
 |`GIT_USE_SSH`|Optional|Set to a non-falsy value to use SSH with [deploy keys](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) or your private SSH key. Your system must ready to use the key as publib will not set it up.|
 |`GITHUB_USE_SSH`| Deprecated | Legacy alias for `GIT_USE_SSH`.|
 |`GH_ENTERPRISE_TOKEN`|Optional|[Custom Authentication token for API requests to GitHub Enterprise](https://cli.github.com/manual/gh_help_environment).|
