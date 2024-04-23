@@ -33,9 +33,9 @@ export function clone(repositoryUrl: string, targetDir: string) {
 export function detectGHE(): boolean {
   const githubApiUrl = process.env.GITHUB_API_URL;
   const ghHost = process.env.GH_HOST;
-  
-  return (ghHost && ghHost!.trim().toLowerCase() != 'github.com')
-    || (githubApiUrl && githubApiUrl!.trim().toLowerCase() != 'https://api.github.com')
+
+  return (Boolean(ghHost) && ghHost!.trim().toLowerCase() != 'github.com')
+    || (Boolean(githubApiUrl) && githubApiUrl!.trim().toLowerCase() != 'https://api.github.com');
 }
 
 /**
@@ -53,8 +53,8 @@ export function getToken(isGHE: boolean): (string | undefined) {
 }
 
 /**
- * Checks if SSH should be used to clone repo. 
- * This checks the presence and values of the GIT_USE_SSH env variable and the deprecated GITHUB_USE_SSH for legacy reason. Returns true if either of these env vars are defined and not falsey.
+ * Checks if SSH should be used to clone repo.
+ * This checks the presence and values of the GIT_USE_SSH env variable and the deprecated GITHUB_USE_SSH for legacy reason. Returns true if either of these env vars are defined and not falsy.
  */
 
 export function detectSSH(): boolean {
