@@ -222,11 +222,12 @@ Repository tags will be in the following format:
 |Option|Required|Description|
 |------|--------|-----------|
 |`GITHUB_TOKEN`|Required if either `GITHUB_USE_SSH`\\`GIT_USE_SSH` and combination of `GH_ENTERPRISE_TOKEN`\\`GITHUB_ENTERPISE_TOKEN` and `GH_HOST` is not specified|[GitHub personal access token.](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)|
-|`GIT_USE_SSH`|Required if `GITHUB_TOKEN` and combination of `GH_ENTERPRISE_TOKEN`\\`GITHUB_ENTERPISE_TOKEN` and `GH_HOST`is not specified|Set any value to use SSH with [deploy keys](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) or your private SSH key. Your system must ready to use the key as publib will not set it up.|
+|`GIT_USE_SSH`|Optional|Set to a non-falsy value to use SSH with [deploy keys](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) or your private SSH key. Your system must ready to use the key as publib will not set it up.|
 |`GITHUB_USE_SSH`| Deprecated | Legacy alias for `GIT_USE_SSH`.|
-|`GH_ENTERPRISE_TOKEN` or  `GITHUB_ENTERPRISE_TOKEN`|Required if `GITHUB_TOKEN` and `GITHUB_USE_SSH`\\`GIT_USE_SSH`is not specified|[Authenticationt token for API requests to GitHub Entperise](https://cli.github.com/manual/gh_help_environment).|
-|`GH_HOST`|Required if either `GITHUB_ENTERPRISE_TOKEN` or `GH_ENTPERISE_TOKEN` is specified|[Hostname for GitHub Enterprise](https://cli.github.com/manual/gh_help_environment).|
-|`GITHUB_API_URL`|Optional| API URL for instance of GitHub to target. This is specified by default in [GitHub Actions workflow](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).|
+|`GH_ENTERPRISE_TOKEN`|Optional|[Custom Authentication token for API requests to GitHub Enterprise](https://cli.github.com/manual/gh_help_environment).|
+|`GITHUB_ENTERPRISE_TOKEN`|Optional|[Custom Authentication token for API requests to GitHub Enterprise](https://cli.github.com/manual/gh_help_environment).|
+|`GH_HOST`| Optional | Force use of a different [Hostname for GitHub Enterprise](https://cli.github.com/manual/gh_help_environment).|
+|`GITHUB_API_URL`| Optional | If present, used to detect the GitHub instance to target. This is specified by default in [GitHub Actions workflow](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables) and should not be set manually.|
 |`VERSION`|Optional|Module version. Defaults to the value in the 'version' file of the module directory. Fails if it doesn't exist.|
 |`GIT_BRANCH`|Optional|Branch to push to. Defaults to 'main'.|
 |`GIT_USER_NAME`|Optional|Username to perform the commit with. Defaults to the git user.name config in the current directory. Fails if it doesn't exist.|
