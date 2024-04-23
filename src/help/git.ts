@@ -46,7 +46,7 @@ export function detectGHE(): boolean {
 
 export function getToken(isGHE: boolean): (string | undefined) {
   if (isGHE) {
-    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ?? process.env.GITHUB_ENTERPRISE_TOKEN ?? process.env. GITHUB_TOKEN;
+    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ?? process.env.GITHUB_ENTERPRISE_TOKEN ?? process.env.GITHUB_TOKEN;
     return githubEnterpiseToken;
   }
   return process.env.GITHUB_TOKEN;
