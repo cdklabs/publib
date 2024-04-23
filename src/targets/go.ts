@@ -259,9 +259,10 @@ export class GoReleaser {
     }
 
     if (!repoURL.startsWith('github.com')) {
-      throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
+      if (!(git.detectSSH() || git.detectGHE())) {
+        throw new Error(`Repository must be hosted on github.com. Found: '${repoURL}' in ${modFile}`);
+      }
     }
-
     let repoPath = cannonicalNameParts
       .slice(3) // e.g ['constructs', 'v3']
       .join('/'); // e.g 'constructs/v3'

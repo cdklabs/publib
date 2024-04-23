@@ -7,17 +7,58 @@ import * as shell from './shell';
  * @param targetDir the clone directory.
  */
 export function clone(repositoryUrl: string, targetDir: string) {
-  const gitHubUseSsh = process.env.GITHUB_USE_SSH;
+  const gitHubUseSsh = detectSSH();
   if (gitHubUseSsh) {
     const sshRepositoryUrl = repositoryUrl.replace('/', ':');
     shell.run(`git clone git@${sshRepositoryUrl}.git ${targetDir}`);
   } else {
-    const gitHubToken = process.env.GITHUB_TOKEN;
+    const gitHubToken = getToken(detectGHE());
     if (!gitHubToken) {
       throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
     }
     shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
+
   }
+}
+
+/**
+ * Checks if the current environment is an GHE environment.
+ *
+ * This check is using GITHUB_API_URL set in GitHub Actions workflow, as well as common gh cli env variables.
+ * https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+ * https://cli.github.com/manual/gh_help_environment
+ *
+ * @return - `true` if GH_HOST or GITHUB_API_URL env var are defined and not equal to the public github endpoint, otherwise `false`
+ */
+export function detectGHE(): boolean {
+  const githubApiUrl = process.env.GITHUB_API_URL;
+  const ghHost = process.env.GH_HOST;
+
+  return (Boolean(ghHost) && ghHost!.trim().toLowerCase() != 'github.com')
+    || (Boolean(githubApiUrl) && githubApiUrl!.trim().toLowerCase() != 'https://api.github.com');
+}
+
+/**
+ * Returns an appropriate github token from the environment.
+ *
+ * @return GH_ENTERPRISE_TOKEN or GITHUB_ENTERPRISE_TOKEN or GITHUB_TOKEN if in an GHE environment, otherwise GITHUB_TOKEN
+ */
+
+export function getToken(isGHE: boolean): (string | undefined) {
+  if (isGHE) {
+    const githubEnterpiseToken = process.env.GH_ENTERPRISE_TOKEN ?? process.env.GITHUB_ENTERPRISE_TOKEN ?? process.env.GITHUB_TOKEN;
+    return githubEnterpiseToken;
+  }
+  return process.env.GITHUB_TOKEN;
+}
+
+/**
+ * Checks if SSH should be used to clone repo.
+ * This checks the presence and values of the GIT_USE_SSH env variable and the deprecated GITHUB_USE_SSH for legacy reason. Returns true if either of these env vars are defined and not falsy.
+ */
+
+export function detectSSH(): boolean {
+  return Boolean(process.env.GIT_USE_SSH ?? process.env.GITHUB_USE_SSH);
 }
 
 /**

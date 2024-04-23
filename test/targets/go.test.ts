@@ -8,6 +8,17 @@ import * as shell from '../../src/help/shell';
 interface Initializers {
   postInit?: (repoDir: string) => void;
 }
+// restore env after each test
+const OLD_ENV = process.env;
+
+beforeEach(() => {
+  jest.resetModules(); // Most important - it clears the cache
+  process.env = { ...OLD_ENV }; // Make a copy
+});
+
+afterAll(() => {
+  process.env = OLD_ENV; // Restore old environment
+});
 
 function initRepo(repoDir: string, postInit?: (repoDir: string) => void) {
   const cwd = process.cwd();
@@ -136,14 +147,49 @@ test('uses global version', () => {
 
 });
 
-test('throws if module repo domain is not github.com', () => {
+test('throws if module repo domain is not github.com without SSH', () => {
 
   const { releaser, sourceDir } = createReleaser('not-github');
   fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
-
   expect(() => releaser.release()).toThrow(/Repository must be hosted on github.com/);
 
 });
+
+test('does not throw if module repo domain is not github.com with SSH', () => {
+
+  process.env.GITHUB_USE_SSH = '1';
+  const { releaser, sourceDir } = createReleaser('not-github');
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['v1.1.0']);
+
+});
+
+test('throws if module repo domain is not github.com with incomplete GHE auth', () => {
+
+  process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
+  const { releaser, sourceDir } = createReleaser('github-enterprise');
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  expect(() => releaser.release()).toThrow(/Repository must be hosted on github.com/);
+
+});
+
+test('does not throw if module repo domain is not github.com with complete GHE auth', () => {
+
+  process.env.GH_ENTERPRISE_TOKEN = 'valid-token';
+  process.env.GH_HOST = 'github.corporate-enterprise.com';
+
+  process.env.GITHUB_API_URL = 'https://api.github.corporate-enterprise.com';
+
+  const { releaser, sourceDir } = createReleaser('github-enterprise');
+  fs.writeFileSync(path.join(sourceDir, 'file'), 'test');
+  const release = releaser.release();
+
+  expect(release.tags).toEqual(['v1.1.0']);
+
+});
+
 
 test('considers deleted files', () => {
 
