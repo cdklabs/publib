@@ -56,10 +56,10 @@
     "@aws-sdk/util-utf8-browser" "^3.0.0"
     tslib "^1.11.1"
 
-"@aws-sdk/client-codeartifact@^3.565.0":
-  version "3.565.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-codeartifact/-/client-codeartifact-3.565.0.tgz#941acc94c2494f57b59bff5f9115ecf993e579b6"
-  integrity sha512-0xVCy3Ecx1qYGy5J9gbvHi7Eg9NWyNrGUTeiic9aialIrLd2S0vbaEP8SxeFPhpMQFs7//AGdOjF8ldJRfDPKw==
+"@aws-sdk/client-codeartifact@^3.566.0":
+  version "3.566.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-codeartifact/-/client-codeartifact-3.566.0.tgz#a34ed8503b0700c89ee9fb57303552152c6fbc2b"
+  integrity sha512-SINIcGhuydO2V0mczz3C7UuB/rhEpSnIXO+m525pNtWC08JjSrAOWGkN6USLRNQL2KaDNX0poh/VMfjB+oYUhQ==
   dependencies:
     "@aws-crypto/sha256-browser" "3.0.0"
     "@aws-crypto/sha256-js" "3.0.0"
