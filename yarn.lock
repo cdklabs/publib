@@ -1386,9 +1386,9 @@
     tslib "^2.6.2"
 
 "@smithy/signature-v4@^3.0.0":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@smithy/signature-v4/-/signature-v4-3.0.1.tgz#8542bfe127f93a8c2c5bcdc05c3e489b9cd16ed5"
-  integrity sha512-ARAmD+E7j6TIEhKLjSZxdzs7wceINTMJRN2BXPM09BiUmJhkXAF1ZZtDXH6fhlk7oehBZeh37wGiPOqtdKjLeg==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@smithy/signature-v4/-/signature-v4-3.1.0.tgz#cc819568c4fcbadce107901680a96e662bccc86a"
+  integrity sha512-m0/6LW3IQ3/JBcdhqjpkpABPTPhcejqeAn0U877zxBdNLiWAnG2WmCe5MfkUyVuvpFTPQnQwCo/0ZBR4uF5kxg==
   dependencies:
     "@smithy/is-array-buffer" "^3.0.0"
     "@smithy/types" "^3.1.0"
