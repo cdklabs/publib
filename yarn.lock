@@ -48,10 +48,10 @@
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-codeartifact@^3.600.0":
-  version "3.600.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-codeartifact/-/client-codeartifact-3.600.0.tgz#92e4d21d12c164df11ff5ce3bb432c7dad3e4db5"
-  integrity sha512-HxjTTY2ihdH5HnOY/GAXwIVKiTQg6MR/QYKw/99nFaIFcXlcM1vSbYieQQeA3fOc6A3U8tAureGk/Fuy//+GPg==
+"@aws-sdk/client-codeartifact@^3.602.0":
+  version "3.602.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-codeartifact/-/client-codeartifact-3.602.0.tgz#2fd43284f61198ebd140ee046f28ca96e3ff7648"
+  integrity sha512-4wmx50dSBWJln0llBSbMZTBWltHInor8KyBcZfquKuYEdtAbK7mPSurblXozMnhuhq9QQE0OModq8ByHnDiiJA==
   dependencies:
     "@aws-crypto/sha256-browser" "5.2.0"
     "@aws-crypto/sha256-js" "5.2.0"
