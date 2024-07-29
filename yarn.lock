@@ -751,9 +751,9 @@
     "@babel/types" "^7.25.0"
 
 "@babel/traverse@^7.24.7", "@babel/traverse@^7.24.8", "@babel/traverse@^7.25.0", "@babel/traverse@^7.7.2":
-  version "7.25.0"
-  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.25.0.tgz#e8533c0a57ed97921d1e5b20dd3db63d3efaebf5"
-  integrity sha512-ubALThHQy4GCf6mbb+5ZRNmLLCI7bJ3f8Q6LHBSRlSKSWj5a7dSUzJBLv3VuIhFrFPgjF4IzPF567YG/HSCdZA==
+  version "7.25.1"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.25.1.tgz#64dbc31effc5f3fa3cf10d19df0e6310214743f5"
+  integrity sha512-LrHHoWq08ZpmmFqBAzN+hUdWwy5zt7FGa/hVwMcOqW6OVtwqaoD5utfuGYU87JYxdZgLUvktAsn37j/sYR9siA==
   dependencies:
     "@babel/code-frame" "^7.24.7"
     "@babel/generator" "^7.25.0"
@@ -5758,9 +5758,9 @@ typescript@~4.9.5:
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 uglify-js@^3.1.4:
-  version "3.19.0"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.19.0.tgz#6d45f1cad2c54117fa2fabd87fc2713a83e3bf7b"
-  integrity sha512-wNKHUY2hYYkf6oSFfhwwiHo4WCHzHmzcXsqXYTN9ja3iApYIFbb2U6ics9hBcYLHcYGQoAlwnZlTrf3oF+BL/Q==
+  version "3.19.1"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.19.1.tgz#2d5df6a0872c43da43187968308d7741d44b8056"
+  integrity sha512-y/2wiW+ceTYR2TSSptAhfnEtpLaQ4Ups5zrjB2d3kuVxHj16j/QJwPl5PvuGy9uARb39J0+iKxcRPvtpsx4A4A==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
