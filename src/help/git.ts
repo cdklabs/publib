@@ -136,7 +136,7 @@ export function push(ref: string) {
 export function checkout(branch: string, options: { createIfMissing?: boolean } ) {
   if (options.createIfMissing) {
     try {
-      shell.run(`git show-branch origin/${branch}`);
+      shell.run(`git show-branch origin/${branch}`, { capture: true });
     } catch (e) {
       if (e instanceof Error && e.message.includes('fatal: bad sha1 reference')) {
         console.log('Remote branch not found, creating new branch.');
