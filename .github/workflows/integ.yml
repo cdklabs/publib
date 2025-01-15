@@ -51,6 +51,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: yarn
+          node-version: "20"
       - name: Yarn install
         run: yarn install --frozen-lockfile
       - name: Run integration tests
