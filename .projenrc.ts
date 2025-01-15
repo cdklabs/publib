@@ -142,7 +142,8 @@ test?.addJob('integ', {
       name: 'Setup Node.js',
       uses: 'actions/setup-node@v4',
       with: {
-        cache: 'yarn',
+        'cache': 'yarn',
+        'node-version': '20',
       },
     },
     {
