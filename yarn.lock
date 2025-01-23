@@ -369,10 +369,10 @@
     "@smithy/types" "^4.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-providers@^3.731.1":
-  version "3.731.1"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.731.1.tgz#5b6484caa0649f99f3ee0a6ae4b19e7e6f846554"
-  integrity sha512-Rjb14vXPa3flBJu9YDZkld0pYuR15DESMWGvCtQgGhcgpY8QH7vzxPU2C224SgYYkP0JM+7SRfadbcI5seTFuw==
+"@aws-sdk/credential-providers@^3.733.0":
+  version "3.733.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/credential-providers/-/credential-providers-3.733.0.tgz#d2c0ed8ce117235dbd368cb1e3c55fea968d481a"
+  integrity sha512-ad+crUwRD5NdfXuXjC8nj0hk4SxZWrCIgTppVjBz9U2bNs17vQN1uNPoO8VzcBvKf0SApuQ1FsCPfZyoTTJF7g==
   dependencies:
     "@aws-sdk/client-cognito-identity" "3.731.1"
     "@aws-sdk/core" "3.731.0"
@@ -1709,9 +1709,9 @@
   integrity sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==
 
 "@types/node@*":
-  version "22.10.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.10.7.tgz#14a1ca33fd0ebdd9d63593ed8d3fbc882a6d28d7"
-  integrity sha512-V09KvXxFiutGp6B7XkpaDXlNadZxrzajcY50EuoLIpQ6WWYCSvf19lVIazzfIzQvhUN2HjX12spLojTnhuKlGg==
+  version "22.10.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.10.10.tgz#85fe89f8bf459dc57dfef1689bd5b52ad1af07e6"
+  integrity sha512-X47y/mPNzxviAGY5TcYPtYL8JsY3kAq2n8fMmKoRCxq/c4v4pyGNCzM2R6+M5/umG4ZfHuT+sgqDYqWc9rJ6ww==
   dependencies:
     undici-types "~6.20.0"
 
