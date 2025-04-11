@@ -53,7 +53,7 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.782.0",
+    "@aws-sdk/client-sts": "^3.787.0",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^18",
