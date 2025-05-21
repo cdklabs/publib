@@ -329,7 +329,7 @@ export class GoReleaser {
     if (repos.size > 1) {
       throw new Error('Multiple repositories found in module files');
     }
-    return repos.values().next().value;
+    return repos.values().next().value!;
   }
 
   private extractVersion(moduleDirectory: string): string {

@@ -54,24 +54,25 @@
   },
   "devDependencies": {
     "@aws-sdk/client-sts": "^3.806.0",
+    "@stylistic/eslint-plugin": "^2",
     "@types/glob": "^8.1.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^18",
+    "@types/node": "^18.17.0",
     "@types/yargs": "^17",
-    "@typescript-eslint/eslint-plugin": "^7",
-    "@typescript-eslint/parser": "^7",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
     "cdklabs-projen-project-types": "^0.1.204",
     "commit-and-tag-version": "^12",
     "constructs": "^10.0.0",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.31.0",
     "jest": "^27.5.1",
-    "jest-junit": "^15",
-    "projen": "^0.87.4",
+    "jest-junit": "^16",
+    "projen": "^0.92.6",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.2",
-    "typescript": "~4.9.5"
+    "typescript": "~5.7"
   },
   "dependencies": {
     "@aws-sdk/client-codeartifact": "^3.804.0",
@@ -82,7 +83,11 @@
     "glob": "10.0.0",
     "p-queue": "6",
     "shlex": "^2.1.2",
-    "yargs": "^17"
+    "yargs": "^17",
+    "zx": "^8.5.4"
+  },
+  "resolutions": {
+    "lru-cache": "^11"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
