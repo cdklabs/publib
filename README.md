@@ -105,7 +105,7 @@ npx publib-maven [DIR]
 
 The server type is selected using the `MAVEN_SERVER_ID` variable.
 
-- `MAVEN_SERVER_ID=ossrh`; this is currently the default but will stop working in July 2025. Publish to the old OSSRH Neux server.
+- `MAVEN_SERVER_ID=ossrh`; this is currently the default but will stop working in July 2025. Publish to the old OSSRH Nexus server.
 - `MAVEN_SERVER_ID=central-ossrh`; publish to the new Central Publishing platform using a service endpoint more-or-less compatible with the old OSSRH Nexus server. This is required to publish to Maven Central starting July 2025.
 - `MAVEN_SERVER_ID=<anything else>`; publish to a custom Nexus server.
 
