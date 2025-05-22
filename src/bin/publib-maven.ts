@@ -113,8 +113,8 @@ interface CustomNexusPublishOptions extends SharedPublishOptions {
 }
 
 type PrivateKey =
-  | { type: 'file', fileName: string; passPhrase: string }
-  | { type: 'material', keyMaterial: string; passPhrase: string }
+  | { type: 'file'; fileName: string; passPhrase: string }
+  | { type: 'material'; keyMaterial: string; passPhrase: string }
   ;
 
 type MavenPublishOptions = LegacyOssrhPublishOptions | CompatOssrhPublishOptions| CustomNexusPublishOptions;
@@ -127,7 +127,7 @@ async function mavenPublish(options: MavenPublishOptions) {
   await using workDir = autoCleanDir();
   const maven = new Maven(workDir.dir, options.verbose, options.dryRun);
 
-  const x = options.type
+  const x = options.type;
   switch (x) {
     case 'legacy-ossrh':
       await deployLegacyOssrh(maven, options);
@@ -506,7 +506,7 @@ class Maven {
       lines.push(
         '    <server>',
         '      <id>gpg.passphrase</id>',
-      // Maven will read these, surrounding code has already made sure they are set
+        // Maven will read these, surrounding code has already made sure they are set
         '      <passphrase>${env.MAVEN_GPG_PRIVATE_KEY_PASSPHRASE}</passphrase>',
         '    </server>',
       );
@@ -576,7 +576,7 @@ export function autoCleanDir() {
 }
 
 function assertNever(value: never) {
-  throw new Error("Unexpected value: " + value);
+  throw new Error('Unexpected value: ' + value);
 }
 
 // A 'zx' primer
