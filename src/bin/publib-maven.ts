@@ -1,3 +1,29 @@
+/**
+ * Legacy vs compatibility endpoint
+ * ==================================
+ *
+ * This script talks about legacy vs compatibility endpoint a bunch.
+ *
+ * Both implement the Nexus 2 protocol, however:
+ *
+ * - The "legacy" endpoint is the Sonatype OSSRH endpoint that was deprecated June 2025.
+ * - The "compatibility" endpoint is a Nexus 2-compatible endpoint stood up for the new
+ *   publishing service, Central Publishing.
+ *
+ * It should be the same protocol but of course there are subtle differences
+ * between them (in how they signal error when you try to republish an already
+ * published version, and even in the wire protocol accepted) so we have to
+ * treat them differently here.
+ *
+ * There is also an "official new" protocol for the new publishing mechanism,
+ * but the Maven plugin they supply for that doesn't support that. In their words:
+ *
+ * > it appears that you are using the "two stage"[1] deployment process, which is
+ * > not yet supported by the new plugin. You are the first publisher to have
+ * > requested this, so we were not familiar with this specific usecase when
+ * > building the new plugin
+ * > [1] <https://github.com/sonatype/nexus-maven-plugins/blob/43a9940b134c3f87ebe4daa82552e844d9c578b8/staging/maven-plugin/WORKFLOWS.md#two-shots>
+ */
 import { promises as fs } from 'fs';
 import { $, cd, echo, glob, os, path, ProcessOutput, quote, tmpdir } from 'zx';
 
@@ -153,11 +179,25 @@ async function deployLegacyOssrh(maven: Maven, options: LegacyOssrhPublishOption
   const staged = await deployStagedRepository(maven, {
     ...options,
     endpoint: options.endpoint ?? defaultEndpoint,
+    republishWill400: false,
   });
 
   if (staged.type !== 'success') {
     return;
   }
+
+  /*
+  const released = await releaseRepo({
+    serverUrl: options.endpoint ?? defaultEndpoint,
+    username: options.username,
+    password: options.password,
+    repositoryId: staged.repositoryId,
+  });
+
+  if (released) {
+    return;
+  }
+  */
 
   // Send a remote release command to the repository
   const releaseOutput = await maven.exec(`${NEXUS_MAVEN_STAGING_PLUGIN}:rc-release`, {
@@ -204,6 +244,7 @@ async function deployCompatOssrh(maven: Maven, options: CompatOssrhPublishOption
   const staged = await deployStagedRepository(maven, {
     ...options,
     endpoint,
+    republishWill400: true,
   });
 
   if (staged.type !== 'success') {
@@ -257,8 +298,17 @@ type DeployStagedRepoResult =
 
 /**
  * Create the staging repository. This is the same between the legacy and compat endpoints.
+ *
+ * `republishWill400`: in the compatibility endpoint, staging a version that has already
+ * been published will lead to a `400 Bad Request`, with no further info. We needed to have
+ * run the Maven command with `--debug` logging to see the actual error message in the output.
+ *
+ * In the legacy endpoint, staging takes multiple minutes, and Maven will poll
+ * every 3s and print the output. We therefore don't use verbose mode to avoid
+ * stdout spam. In the legacy endpoint, duplicate version publishing gets
+ * reported during the 'release' step anyway, not during staging.
  */
-async function deployStagedRepository(maven: Maven, options: Omit<LegacyOssrhPublishOptions | CompatOssrhPublishOptions, 'endpoint'> & { endpoint: string }): Promise<DeployStagedRepoResult> {
+async function deployStagedRepository(maven: Maven, options: Omit<LegacyOssrhPublishOptions | CompatOssrhPublishOptions, 'endpoint'> & { endpoint: string; republishWill400: boolean }): Promise<DeployStagedRepoResult> {
   const serverId = 'ossrh';
 
   await maven.writeSettingsFile(serverId, true);
@@ -283,9 +333,7 @@ async function deployStagedRepository(maven: Maven, options: Omit<LegacyOssrhPub
       stagingProfileId: options.stagingProfileId,
     },
     nothrow: true,
-    // This is necessary because the reason for a potential HTTP failure (like "Component already exists")
-    // is normally hidden, and only shown in verbose mode. This makes the output extremely messy, but c'est la vie.
-    verbose: true,
+    verbose: options.republishWill400,
   });
   // FIXME: New staging API throws an error here on duplicate versions
   if (stageOutput === undefined) {
@@ -293,7 +341,7 @@ async function deployStagedRepository(maven: Maven, options: Omit<LegacyOssrhPub
     return { type: 'dry-run' };
   }
 
-  if (stageOutput.text().match(/Component with package url.*already exists/)) {
+  if (options.republishWill400 && stageOutput.text().match(/Component with package url.*already exists/)) {
     // We've seen this fail with the above error message on the OSSRH compatibility API when trying to republish
     // an already-published version.
     //
@@ -338,6 +386,9 @@ async function deployStagedRepository(maven: Maven, options: Omit<LegacyOssrhPub
  * that.
  *
  * The endpoint also supports JSON, which we prefer over XML.
+ *
+ * This endpoint will never return an error, even if the publish didn't happen because
+ * of duplicate version publishing (not for the legacy, nor for the compatibility endpoint).
  *
  * @see https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/
  * @see https://support.sonatype.com/hc/en-us/articles/213465448-Automatically-dropping-old-staging-repositories
@@ -532,8 +583,24 @@ class Maven {
       echo(`[DRY-RUN] mvn ${args.map(quote).join(' ')}`);
       return undefined;
     }
+    const env = {
+      ...process.env,
+      MAVEN_OPTS: [
+        ...process.env.MAVEN_OPTS ? [process.env.MAVEN_OPTS] : [],
+        // If we don't add this, we'll get an error like the following during the nexus-staging-maven-plugin:rc-release mojo.
+        // Don't know where this is coming from all of a sudden.
+        //
+        // [ERROR] message             : No converter available
+        // [ERROR] type                : java.util.Arrays$ArrayList
+        // [ERROR] converter           : com.thoughtworks.xstream.converters.reflection.ReflectionConverter
+        // [ERROR] message[1]          : Unable to make field protected transient int java.util.AbstractList.modCount accessible: module java.base does not "opens java.util" to unnamed module @7c8d5312
+        '--add-opens=java.base/java.util=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.invoke=ALL-UNNAMED',
+      ].join(' '),
+    };
 
-    return $({ verbose: true, nothrow: options.nothrow })`mvn ${args}`;
+    return $({ verbose: true, nothrow: options.nothrow, env })`mvn ${args}`;
   }
 }
 
