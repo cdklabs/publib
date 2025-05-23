@@ -19,7 +19,7 @@ export class MemoryStream extends stream.Writable {
     this.parts.splice(0, this.parts.length);
   }
 
-  public async flushTo(strm: NodeJS.WritableStream) {
+  public async flushTo(strm: NodeJS.WritableStream): Promise<void> {
     const flushed = strm.write(this.buffer());
     if (!flushed) {
       return new Promise(ok => strm.once('drain', ok));
