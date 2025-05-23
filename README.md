@@ -84,7 +84,8 @@ Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven
 > [!IMPORTANT]
 > Starting July 2025 you must switch over to the new Maven Central Publisher. Follow these steps:
 >
-> * Configure `MAVEN_SERVER_ID=central-ossrh`,
+> * Configure `MAVEN_SERVER_ID=central-ossrh`.
+> * Unset any `MAVEN_ENDPOINT`.
 > * Log in to <https://central.sonatype.com/>
 > * Generate a new username and password on the new publisher using the **Generate User Token** feature.
 > * Configure `MAVEN_STAGING_PROFILE_ID` with your package namespace (register it first if necessary)
