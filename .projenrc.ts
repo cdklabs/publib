@@ -32,10 +32,18 @@ const project = new cdklabs.CdklabsTypeScriptProject({
   ],
   enablePRAutoMerge: true,
   setNodeEngineVersion: false,
+  tsconfig: {
+    compilerOptions: {
+      // Conflict between `commit-and-tag-version@12` and modern TypeScript.
+      // `commit-and-tag-version` depends on an old version of lru-cache, which TypeScript
+      // doesn't agree with the typings of. Skip checking those files to make the build succeed.
+      skipLibCheck: true,
+    },
+  },
 });
 
 // Necessary to work around a typing issue in transitive dependency lru-cache@10 now that we've moved to a modern TS
-project.package.addPackageResolutions('lru-cache@^11');
+// project.package.addPackageResolutions('lru-cache@^11');
 
 // we can't use 9.x because it doesn't work with node 10.
 const fsExtraVersion = '^8.0.0';
