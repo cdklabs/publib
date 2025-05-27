@@ -16,7 +16,7 @@ const project = new cdklabs.CdklabsTypeScriptProject({
     'ts-node',
     '@aws-sdk/client-sts',
     '@types/glob',
-    '@types/node@^14.17.0',
+    '@types/node@^18.17.0',
     '@types/yargs@^17',
     'cdklabs-projen-project-types',
   ],
@@ -27,11 +27,15 @@ const project = new cdklabs.CdklabsTypeScriptProject({
     '@aws-sdk/types',
     'glob@10.0.0', // Can't use a newer version of glob, it adds a CLI that depends on 'jackspeak' which has crazy dependencies
     'yargs@^17',
+    'zx',
     'p-queue@6', // Last non-ESM version
   ],
   enablePRAutoMerge: true,
   setNodeEngineVersion: false,
 });
+
+// Necessary to work around a typing issue in transitive dependency lru-cache@10 now that we've moved to a modern TS
+project.package.addPackageResolutions('lru-cache@^11');
 
 // we can't use 9.x because it doesn't work with node 10.
 const fsExtraVersion = '^8.0.0';

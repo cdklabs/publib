@@ -5,6 +5,11 @@
       "type": "build"
     },
     {
+      "name": "@stylistic/eslint-plugin",
+      "version": "^2",
+      "type": "build"
+    },
+    {
       "name": "@types/glob",
       "type": "build"
     },
@@ -14,7 +19,7 @@
     },
     {
       "name": "@types/node",
-      "version": "^18",
+      "version": "^18.17.0",
       "type": "build"
     },
     {
@@ -24,12 +29,12 @@
     },
     {
       "name": "@typescript-eslint/eslint-plugin",
-      "version": "^7",
+      "version": "^8",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/parser",
-      "version": "^7",
+      "version": "^8",
       "type": "build"
     },
     {
@@ -56,7 +61,7 @@
     },
     {
       "name": "eslint",
-      "version": "^8",
+      "version": "^9",
       "type": "build"
     },
     {
@@ -65,7 +70,7 @@
     },
     {
       "name": "jest-junit",
-      "version": "^15",
+      "version": "^16",
       "type": "build"
     },
     {
@@ -83,6 +88,11 @@
     {
       "name": "typescript",
       "type": "build"
+    },
+    {
+      "name": "lru-cache",
+      "version": "^11",
+      "type": "override"
     },
     {
       "name": "@aws-sdk/client-codeartifact",
@@ -123,6 +133,10 @@
     {
       "name": "yargs",
       "version": "^17",
+      "type": "runtime"
+    },
+    {
+      "name": "zx",
       "type": "runtime"
     }
   ],
