@@ -585,8 +585,7 @@ class Maven {
     }
     const env = {
       ...process.env,
-      MAVEN_OPTS: [
-        ...process.env.MAVEN_OPTS ? [process.env.MAVEN_OPTS] : [],
+      JDK_JAVA_OPTIONS: [
         // If we don't add this, we'll get an error like the following during the nexus-staging-maven-plugin:rc-release mojo.
         // Don't know where this is coming from all of a sudden.
         //
