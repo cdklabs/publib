@@ -485,7 +485,9 @@ async function importGpgKey(key: PrivateKey) {
   // GnuPG will occasionally bail out with "gpg: <whatever> failed: Inappropriate ioctl for device", the following attempts to fix
   const gpgHome = autoCleanDir();
   try {
-    const tty = (await $({ stdio: ['inherit', 'pipe', 'pipe'] })`tty`).stdout;
+    // In CI environments there will be no tty, and we don't want this to stop the script.
+    // The variable will be populated with a nonsensical string ("not a tty") but that doesn't seem to matter.
+    const tty = (await $({ stdio: ['inherit', 'pipe', 'pipe'], nothrow: true })`tty`).stdout;
 
     let privateKeyFile;
     const type = key.type;
