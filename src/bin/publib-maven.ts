@@ -70,7 +70,8 @@ async function main() {
       options = {
         type: 'compat-ossrh',
         ...sharedOptions,
-        stagingProfileId: envVar('MAVEN_STAGING_PROFILE_ID'),
+        // Not required by the new endpoint: can be any value (maybe never was required to begin with?)
+        stagingProfileId: 'publib',
         endpoint: process.env.MAVEN_ENDPOINT,
         privateKey: parsePrivateKeyFromEnv(),
       };
