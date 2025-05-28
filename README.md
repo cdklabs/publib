@@ -84,11 +84,12 @@ Publishes all Maven modules in the `DIR` to [Maven Central](https://search.maven
 > [!IMPORTANT]
 > Starting July 2025 you must switch over to the new Maven Central Publisher. Follow these steps:
 >
+> * Log in to <https://central.sonatype.com/> with your existing username and password.
+> * Under your account, click **View Namespaces**, then click **Migrate Namespace** for your target namespaces.
+> * Generate a new username and password on the new publisher using the **Generate User Token** feature.
 > * Configure `MAVEN_SERVER_ID=central-ossrh`.
 > * Unset any `MAVEN_ENDPOINT`.
-> * Log in to <https://central.sonatype.com/>
-> * Generate a new username and password on the new publisher using the **Generate User Token** feature.
-> * Configure `MAVEN_STAGING_PROFILE_ID` with your package namespace (register it first if necessary)
+> * Configure the new `MAVEN_USERNAME` and `MAVEN_PASSWORD`.
 
 If you are still on Nexus and you signed up at SonaType after February 2021, you
 need to use this URL: `https://s01.oss.sonatype.org`
@@ -118,7 +119,6 @@ The server type is selected using the `MAVEN_SERVER_ID` variable.
 | (all)                | `MAVEN_DRYRUN`                          | No                   | Set to "true" for a dry run |
 | (all)                | `MAVEN_VERBOSE`                         | No                   | Make Maven print debug output if set to `true` |
 | `central-ossrh`      | `MAVEN_GPG_PRIVATE_KEY[_FILE]` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE` | Yes        | GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below |
-| `central-ossrh`      | `MAVEN_STAGING_PROFILE_ID`                                            | Yes        | Maven Central (sonatype) staging profile ID (e.g. 68a05363083174). Staging profile ID can be found **in the URL** of the "Releases" staging profile under "Staging Profiles" in <https://oss.sonatype.org> or <https://s01.oss.sonatype.org> if you are logged in (e.g. `https://oss.sonatype.org/#stagingProfiles;68a05363083174`). |
 | `central-ossrh`      | `MAVEN_ENDPOINT`                                                      | No         | URL of Nexus repository. Defaults to `https://ossrh-staging-api.central.sonatype.com/`. |
 | `<custom>`           | `MAVEN_REPOSITORY_URL`                                                | No         | Deployment repository when not deploying to Maven Central |
 | `ossrh` (deprecated) | `MAVEN_GPG_PRIVATE_KEY[_FILE]` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE` | Yes        | GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below |
