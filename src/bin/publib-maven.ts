@@ -577,6 +577,7 @@ class Maven {
   public async exec(mojo: string, options: MavenExecOptions): Promise<ProcessOutput | undefined> {
     const args = [
       `--settings=${this.settingsFile}`,
+      '--batch-mode',
       ...(options.verbose ?? this.verbose ? ['-X'] : []),
       mojo,
       ...Object.entries(options.properties).map(([k, v]) => `-D${k}=${v}`),
