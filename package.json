@@ -75,8 +75,8 @@
     "typescript": "~5.7"
   },
   "dependencies": {
-    "@aws-sdk/client-codeartifact": "^3.828.0",
-    "@aws-sdk/credential-providers": "^3.828.0",
+    "@aws-sdk/client-codeartifact": "^3.830.0",
+    "@aws-sdk/credential-providers": "^3.834.0",
     "@aws-sdk/types": "^3.821.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
@@ -84,7 +84,7 @@
     "p-queue": "6",
     "shlex": "^2.1.2",
     "yargs": "^17",
-    "zx": "^8.5.5"
+    "zx": "^8.6.0"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
