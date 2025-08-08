@@ -125,7 +125,7 @@ The server type is selected using the `MAVEN_SERVER_ID` variable.
 | `ossrh` (deprecated) | `MAVEN_STAGING_PROFILE_ID`                                            | Yes               | Central Publisher (sonatype) staging profile ID, corresponding to namespace (e.g. `com.sonatype.software`).                                                                                                                                                                                                                                                               |
 | `ossrh` (deprecated) | `MAVEN_ENDPOINT`                                                      | No                | URL of Nexus repository. Defaults to `https://central.sonatype.com`.                                                                                                                                                                                                                                                                                                      |
 
-**How to create a GPG key**
+### How to create a GPG key
 
 Install [GnuPG](https://gnupg.org/).
 
@@ -214,11 +214,31 @@ npx publib-pypi [DIR]
 
 **Options (environment variables):**
 
-| Option                 | Required | Description                                                    |
-| ---------------------- | -------- | -------------------------------------------------------------- |
-| `TWINE_USERNAME`       | Required | PyPI username ([register](https://pypi.org/account/register/)) |
-| `TWINE_PASSWORD`       | Required | PyPI password                                                  |
-| `TWINE_REPOSITORY_URL` | Optional | The registry URL (defaults to Twine default)                   |
+| Option                      | Required | Description                                                                                                                                                                        |
+| --------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TWINE_USERNAME`            | Optional | PyPI username ([register](https://pypi.org/account/register/)). Not required when using Trusted Publishers.                                                                        |
+| `TWINE_PASSWORD`            | Optional | PyPI password or API token. Not required when using Trusted Publishers.                                                                                                            |
+| `TWINE_REPOSITORY`          | Optional | The repository to upload the package to. Defaults to `pypi`, set `testpypi` to publish to the testing index.                                                                       |
+| `TWINE_REPOSITORY_URL`      | Optional | A custom repository URL, overrides `TWINE_REPOSITORY`.                                                                                                                             |
+| `PYPI_TRUSTED_PUBLISHER`    | Optional | Set to any value to use PyPI [Trusted Publisher](https://docs.pypi.org/trusted-publishers/) authentication (OIDC). Requires a supported ambient identity (i.e. CI/CD environment). |
+| `PYPI_DISABLE_ATTESTATIONS` | Optional | Set to any value to disable [PyPI attestations](https://docs.pypi.org/attestations/producing-attestations/) (enabled by default with Trusted Publishers).                          |
+
+### Trusted Publishers and Attestations
+
+PyPI [Trusted Publishers](https://docs.pypi.org/trusted-publishers/) allows publishing without API tokens by using OpenID Connect (OIDC) authentication between a trusted third-party service and PyPI.
+Typically these are CI/CD providers like GitHub Actions or Gitlab CI/CD.
+PyPI attestations provide cryptographic proof of package provenance and integrity and are **enabled by default when using Trusted Publishers**. Attestations are only available when using Trusted Publisher authentication.
+
+**Trusted Publisher Setup:**
+
+1. Configure your PyPI project to use a [Trusted Publisher](https://docs.pypi.org/trusted-publishers/adding-a-publisher/)
+2. Set `PYPI_TRUSTED_PUBLISHER=1` in your workflow environment
+3. No `TWINE_USERNAME` or `TWINE_PASSWORD` needed
+
+**Requirements:**
+
+* **GitHub Actions**: Your workflow must have `id-token: write` permission.
+* **Gitlab CI/CD**: The keyword `id_tokens` is used to request an OIDC token from GitLab with name `PYPI_ID_TOKEN` and audience `pypi`.
 
 ## Golang
 
