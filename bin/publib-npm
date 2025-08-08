@@ -10,6 +10,7 @@ set -eu
 # DIR: directory where npm tarballs are found (default is `dist/js`).
 #
 # NPM_TOKEN (optional): registry authentication token (either from npmjs or a GitHub personal access token), not used for AWS CodeArtifact
+# NPM_TRUSTED_PUBLISHER (optional): use a Trusted Publisher configuration instead of tokens, any value 
 # NPM_REGISTRY (optional): the registry URL (defaults to "registry.npmjs.org")
 # AWS_ACCESS_KEY_ID (optional): If AWS CodeArtifact is used as registry, an AWS access key can be spedified.
 # AWS_SECRET_ACCESS_KEY (optional): Secret access key that belongs to the AWS access key.
@@ -34,13 +35,19 @@ if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws
     export AWS_SESSION_TOKEN="$(echo $credentials | cut -d' ' -f5)"
   fi
   NPM_TOKEN=`aws codeartifact get-authorization-token --domain $codeartifact_domain --domain-owner $codeartifact_account --region $codeartifact_region --query authorizationToken --output text`
-elif [ -z "${NPM_TOKEN:-}" ]; then
-  echo "NPM_TOKEN is required"
+elif [ -z "${NPM_TOKEN:-}" ] && [ -z "${NPM_TRUSTED_PUBLISHER:-}" ]; then
+  echo "NPM_TOKEN=<token> or NPM_TRUSTED_PUBLISHER=true is required"
   exit 1
 fi
 
+if ! [ -z "${NPM_TRUSTED_PUBLISHER:-}" ]; then
+  unset NPM_TOKEN
+fi
+
 NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
-echo "//${NPM_REGISTRY%%/}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+if ! [ -z "${NPM_TOKEN:-}" ]; then
+  echo "//${NPM_REGISTRY%%/}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+fi
 
 # this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
 # which requires `yarn login`. but since we are logging in through ~/.npmrc, we must make sure we publish directly to npm.
