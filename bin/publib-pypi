@@ -9,27 +9,74 @@ set -euo pipefail
 #
 # DIR is where *.whl files are looked up (default is "dist/python")
 #
-# TWINE_USERNAME (required)
-# TWINE_PASSWORD (required)
+# TWINE_USERNAME (optional, ignored when using Trusted Publishers)
+# TWINE_PASSWORD (optional, ignored when using Trusted Publishers)
+# PYPI_TRUSTED_PUBLISHER (optional) - set to any value to use Trusted Publisher authentication
+# PYPI_DISABLE_ATTESTATIONS (optional) - set to any value to disable attestations
 #
 ###
 
 cd "${1:-"dist/python"}"
-
-[ -z "${TWINE_USERNAME:-}" ] && {
-  echo "Missing TWINE_USERNAME"
-  exit 1
-}
-
-[ -z "${TWINE_PASSWORD:-}" ] && {
-  echo "Missing TWINE_PASSWORD"
-  exit 1
-}
 
 if [ -z "$(ls *.whl)" ]; then
   echo "cannot find any .whl files in $PWD"
   exit 1
 fi
 
-python3 -m pip install --user --upgrade twine
-python3 -m twine upload --verbose --skip-existing *
+# Validate credentials before installing packages
+if [ -z "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+  [ -z "${TWINE_USERNAME:-}" ] && {
+    echo "Missing TWINE_USERNAME (required when not using Trusted Publishers)"
+    exit 1
+  }
+  
+  [ -z "${TWINE_PASSWORD:-}" ] && {
+    echo "Missing TWINE_PASSWORD (required when not using Trusted Publishers)"
+    exit 1
+  }
+fi
+
+# Install required packages
+packages="twine"
+if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+  packages="$packages id"
+fi
+if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
+  packages="$packages pypi-attestations"
+fi
+python3 -m pip install --user --upgrade $packages
+
+# Check for Trusted Publisher
+if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+  echo "Using PyPI Trusted Publisher authentication"
+  
+  # Determine audience based on repository
+  audience="pypi"
+  mint_url="https://pypi.org/_/oidc/mint-token"
+  if [ "${TWINE_REPOSITORY:-}" = "testpypi" ]; then
+    audience="testpypi"
+    mint_url="https://test.pypi.org/_/oidc/mint-token"
+  fi
+  
+  # Generate OIDC token and mint API token
+  oidc_token=$(python3 -m id "$audience")
+  resp=$(curl -s -X POST "$mint_url" -d "{\"token\": \"${oidc_token}\"}")
+  api_token=$(jq -r '.token' <<< "${resp}")
+  
+  export TWINE_USERNAME="__token__"
+  export TWINE_PASSWORD="$api_token"
+fi
+
+if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
+  echo "Signing packages with pypi-attestations"
+  python3 -m pypi_attestations sign *
+fi
+
+# Build upload command with optional attestations
+upload_opts="--verbose --skip-existing"
+if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
+  upload_opts="$upload_opts --attestations"
+fi
+
+echo "Uploading packages to PyPI"
+python3 -m twine upload $upload_opts *
