@@ -36,13 +36,20 @@ if [ -z "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
   }
 fi
 
+# Basic upload command options
+upload_opts="--verbose --skip-existing"
+
 # Install required packages
 packages="twine"
 if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
   packages="$packages id"
-fi
-if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
-  packages="$packages pypi-attestations"
+
+  if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
+    # add attestations package
+    packages="$packages pypi-attestations"
+    # add attestations opt to upload command 
+    upload_opts="$upload_opts --attestations"
+  fi
 fi
 python3 -m pip install --user --upgrade $packages
 
@@ -65,17 +72,11 @@ if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
   
   export TWINE_USERNAME="__token__"
   export TWINE_PASSWORD="$api_token"
-fi
 
-if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
-  echo "Signing packages with pypi-attestations"
-  python3 -m pypi_attestations sign *
-fi
-
-# Build upload command with optional attestations
-upload_opts="--verbose --skip-existing"
-if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
-  upload_opts="$upload_opts --attestations"
+  if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
+    echo "Signing packages with pypi-attestations"
+    python3 -m pypi_attestations sign *
+  fi
 fi
 
 echo "Uploading packages to PyPI"
