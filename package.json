@@ -30,7 +30,7 @@
     "default": "npx projen default",
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
-    "integ": "npx projen integ",
+    "integ": "npx projen integ && aws sts get-caller-identity && echo \"Running actual integration tests\" && node tests/run-integration-tests.js",
     "package": "npx projen package",
     "package-legacy": "npx projen package-legacy",
     "post-compile": "npx projen post-compile",
