@@ -40,7 +40,7 @@ fi
 upload_opts="--verbose --skip-existing"
 
 # Install required packages
-packages="'twine<6.2.0'"
+packages="twine<6.2.0"
 if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
   packages="$packages id"
 
