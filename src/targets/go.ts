@@ -76,6 +76,15 @@ export interface GoReleaserProps {
    * The message to use for the commit marking the release.
    */
   readonly message?: string;
+
+  /**
+   * The git clone depth.
+   *
+   * Usually only the latest commit is required.
+   *
+   * @default 1
+   */
+  readonly cloneDepth?: number;
 }
 
 /**
@@ -168,7 +177,17 @@ export class GoReleaser {
 
     const repoURL = this.extractRepoURL(modules);
     const repoDir = path.join(os.mkdtempSync(), 'repo');
-    git.clone(repoURL, repoDir);
+
+    const branchExists = git.branchExistsOnRemote(repoURL, this.gitBranch);
+    if (!branchExists) {
+      console.log(`Remote branch '${this.gitBranch}' not found, continuing with default branch.`);
+    }
+    const cloneOptions = {
+      tags: true, // we need to know about all tags to not re-create an existing one
+      branch: branchExists ? this.gitBranch : undefined,
+    };
+
+    git.clone(repoURL, repoDir, cloneOptions);
 
     const cwd = process.cwd();
     try {
@@ -308,13 +327,13 @@ export class GoReleaser {
       // so we just empty it out
       fs.readdirSync(repoDir)
         .filter(f => f !== '.git')
-        .forEach(f => fs.removeSync(path.join(repoDir, f)));
+        .forEach(f => git.rm(path.join(repoDir, f), { recursive: true }));
     } else {
       // otherwise, we selectively remove the submodules only.
       for (const p of fs.readdirSync(repoDir)) {
         const submodule = path.join(repoDir, p, 'go.mod');
         if (fs.existsSync(submodule)) {
-          fs.removeSync(path.join(repoDir, p));
+          git.rm(path.join(repoDir, p), { recursive: true });
         }
       }
     }

@@ -67,6 +67,22 @@ export function run(command: string, options: RunOptions = {}): string {
 }
 
 /**
+ * Run a shell command and return a boolean indicating success or failure.
+ *
+ * Use this is when the result of the command informs a decision but is otherwise inconsequential.
+ *
+ * @param command command (e.g 'git ls-remote --exit-code')
+ */
+export function check(command: string, options: RunOptions = {}): boolean {
+  try {
+    run(command, options);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
  * Return the path under which a program is available.
  * Empty string if the program is not installed.
  *

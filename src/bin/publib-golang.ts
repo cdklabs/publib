@@ -8,6 +8,7 @@ const releaser = new go.GoReleaser({
   email: process.env.GIT_USER_EMAIL,
   username: process.env.GIT_USER_NAME,
   version: process.env.VERSION,
+  cloneDepth: process.env.GIT_CLONE_DEPTH ? parseInt(process.env.GIT_CLONE_DEPTH) || 1 : 1,
 });
 
 releaser.release();

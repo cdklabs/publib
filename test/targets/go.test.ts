@@ -60,6 +60,11 @@ function createReleaser(
     initRepo(targetDir, initializers.postInit);
   };
 
+  (git as any).branchExistsOnRemote = function() {
+    // skip logic for comparing against remote since we don't have one
+    return true;
+  };
+
   (git as any).checkout = function(branch: string, options: { createIfMissing?: boolean }) {
     // skip logic for comparing against remote since we don't have one
     if (options.createIfMissing) {
