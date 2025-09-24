@@ -1,24 +1,61 @@
 import * as shell from './shell';
 
+export interface CloneOptions {
+  /**
+   * @default 1
+   */
+  readonly depth?: number;
+
+  /**
+   * @default false
+   */
+  readonly tags?: boolean;
+
+  /**
+   * @default - default branch
+   */
+  readonly branch?: string;
+}
+
 /**
  * Clones a repository from GitHub. Requires a `GITHUB_TOKEN` env variable.
  *
  * @param repositoryUrl the repository to clone.
  * @param targetDir the clone directory.
  */
-export function clone(repositoryUrl: string, targetDir: string) {
+export function clone(repositoryUrl: string, targetDir: string, { depth = 1, tags = false, branch }: CloneOptions = {}) {
+  const cmd = ['git', 'clone'];
+
+  if (depth) {
+    cmd.push(`--depth ${depth}`);
+  }
+
+  if (branch) {
+    cmd.push(`--branch ${branch}`);
+  }
+
+  if (tags) {
+    cmd.push('--tags');
+  }
+
+  cmd.push(tryDetectRepositoryUrl(repositoryUrl));
+  cmd.push(targetDir);
+
+  shell.run(cmd.join(' '));
+}
+
+function tryDetectRepositoryUrl(repositoryUrl: string): string {
   const gitHubUseSsh = detectSSH();
   if (gitHubUseSsh) {
     const sshRepositoryUrl = repositoryUrl.replace('/', ':');
-    shell.run(`git clone git@${sshRepositoryUrl}.git ${targetDir}`);
-  } else {
-    const gitHubToken = getToken(detectGHE());
-    if (!gitHubToken) {
-      throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
-    }
-    shell.run(`git clone https://${gitHubToken}@${repositoryUrl}.git ${targetDir}`);
-
+    return `git@${sshRepositoryUrl}.git`;
   }
+
+  const gitHubToken = getToken(detectGHE());
+  if (!gitHubToken) {
+    throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
+  }
+  return `https://${gitHubToken}@${repositoryUrl}.git`;
 }
 
 /**
@@ -82,6 +119,22 @@ export function diffIndex(): boolean {
  */
 export function add(p: string) {
   shell.run(`git add ${p}`);
+}
+
+/**
+ * Remove files from the working tree and from the index
+ *
+ * @param p the path.
+ */
+export function rm(p: string, options: { recursive?: boolean } = {}) {
+  const cmd = ['git', 'rm'];
+  if (options.recursive) {
+    cmd.push('-r');
+  }
+
+  cmd.push(p);
+
+  shell.run(cmd.join(' '));
 }
 
 /**
@@ -187,4 +240,11 @@ export function email() {
 export function identify(user: string, address: string) {
   shell.run(`git config user.name "${user}"`);
   shell.run(`git config user.email "${address}"`);
+}
+
+/**
+ * Does the given branch exists on the remote.
+ */
+export function branchExistsOnRemote(repositoryUrl: string, branch: string): boolean {
+  return shell.check(`git ls-remote --exit-code --heads ${tryDetectRepositoryUrl(repositoryUrl)} ${branch}`, { capture: true });
 }
