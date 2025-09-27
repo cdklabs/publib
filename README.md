@@ -200,7 +200,6 @@ npx publib-nuget [DIR]
 ### Trusted Publishers
 
 NuGet [Trusted Publishers](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) allows publishing without API keys by using OpenID Connect (OIDC) authentication between a trusted third-party service and NuGet.org.
-Supports multiple CI/CD providers including GitHub Actions, GitLab CI/CD, Google Cloud, Buildkite, and CircleCI.
 
 **Trusted Publisher Setup:**
 
@@ -212,7 +211,6 @@ Supports multiple CI/CD providers including GitHub Actions, GitLab CI/CD, Google
 **Requirements:**
 
 * **GitHub Actions**: Your workflow must have `id-token: write` permission.
-* **GitLab CI/CD**: The keyword `id_tokens` is used to request an OIDC token from GitLab with name `NUGET_ID_TOKEN` and audience `https://www.nuget.org`.
 * **Python 3**: Required when using Trusted Publishers without providing `NUGET_API_KEY`. The `id` package is automatically installed.
 
 **Publish to GitHub Packages**\
