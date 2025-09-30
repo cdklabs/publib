@@ -188,14 +188,14 @@ npx publib-nuget [DIR]
 
 **Options (environment variables):**
 
-| Option                   | Required                                         | Description                                                                                                                                                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `NUGET_API_KEY`          | Optional                                         | [NuGet API Key](https://www.nuget.org/account/apikeys) with "Push" permissions. Not required when using Trusted Publishers. When using Trusted Publishers, if provided, this key will be used instead of generating a temporary one. |
-| `NUGET_TRUSTED_PUBLISHER` | Optional                                         | Set to any value to use NuGet [Trusted Publisher](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) authentication (OIDC). Requires a supported ambient identity (i.e. CI/CD environment). |
-| `NUGET_USERNAME`         | Required when using Trusted Publishers           | NuGet.org username (profile name, not email address) for Trusted Publisher authentication.                                                                         |
-| `NUGET_SERVER`           | Optional                                         | NuGet Server URL (defaults to nuget.org)                                                                                                                           |
-| `NUGET_AUDIENCE`         | Optional                                         | OIDC audience for token generation (defaults to `https://www.nuget.org`)                                                                                           |
-| `NUGET_TOKEN_SERVICE_URL` | Optional                                         | NuGet token service endpoint (defaults to `https://www.nuget.org/api/v2/token`)                                                                                   |
+| Option                    | Required                   | Description                                                                                                                                                                                                       |
+| ------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NUGET_TRUSTED_PUBLISHER` | Optional                   | Set to any value to use NuGet [Trusted Publisher](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) authentication (OIDC). Requires a supported ambient identity (i.e. CI/CD environment).    |
+| `NUGET_USERNAME`          | for Trusted Publisher auth | NuGet.org username (profile name, not email address) for Trusted Publisher authentication.                                                                                                                        |
+| `NUGET_AUDIENCE`          | Optional                   | OIDC audience for token generation (defaults to `https://www.nuget.org`)                                                                                                                                          |
+| `NUGET_TOKEN_SERVICE_URL` | Optional                   | NuGet token service endpoint (defaults to `https://www.nuget.org/api/v2/token`)                                                                                                                                   |
+| `NUGET_API_KEY`           | Optional                   | [NuGet API Key](https://www.nuget.org/account/apikeys) with "Push" permissions. Not required when using Trusted Publishers. Also set to use a short-lived NuGet API key via e.g. <https://github.com/NuGet/login> |
+| `NUGET_SERVER`            | Optional                   | NuGet Server URL (defaults to nuget.org)                                                                                                                                                                          |
 
 ### Trusted Publishers
 

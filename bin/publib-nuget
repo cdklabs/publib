@@ -10,12 +10,20 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # DIR is a directory with *.nupkg files (default is 'dist/dotnet')
 #
-# NUGET_API_KEY (optional): API key for nuget (ignored when using Trusted Publishers)
-# NUGET_TRUSTED_PUBLISHER (optional): set to any value to use Trusted Publisher authentication
-# NUGET_USERNAME (required when using Trusted Publishers): NuGet.org username
-# NUGET_AUDIENCE (optional): OIDC audience for token generation (defaults to https://www.nuget.org)
-# NUGET_TOKEN_SERVICE_URL (optional): NuGet token service endpoint (defaults to https://www.nuget.org/api/v2/token)
+# Two publishing modes are supported: Trusted Publisher (recommended) and API key (legacy).
+# Set environment variables accordingly.
 #
+# Trusted Publisher (recommended):
+# - NUGET_TRUSTED_PUBLISHER (required): set to any value
+# - NUGET_USERNAME (required): the NuGet.org username of the package owner
+# - NUGET_AUDIENCE (optional): OIDC audience for token generation (defaults to https://www.nuget.org)
+# - NUGET_TOKEN_SERVICE_URL (optional): NuGet token service endpoint (defaults to https://www.nuget.org/api/v2/token)#
+#
+# API Key:
+# - NUGET_API_KEY (required): API key for your account, created on nuget.org or use https://github.com/NuGet/login
+#
+# Generic options:
+# - NUGET_SERVER (optional): different NuGet server URL to use
 ###
 
 cd "${1:-"dist/dotnet"}"
@@ -29,32 +37,27 @@ if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ]; then
         exit 1
     fi
     
-    # Use provided API key if available, otherwise generate one
-    if [ -n "${NUGET_API_KEY:-}" ]; then
-        echo "Using provided NUGET_API_KEY"
-    else
-        # Install required packages
-        python3 -m pip install --user --upgrade id
-        
-        # Generate OIDC token using the id package
-        nuget_audience="${NUGET_AUDIENCE:-https://www.nuget.org}"
-        oidc_token=$(python3 -m id "$nuget_audience")
-        
-        # Exchange OIDC token for NuGet API key
-        nuget_token_service_url="${NUGET_TOKEN_SERVICE_URL:-https://www.nuget.org/api/v2/token}"
-        token_request_body=$(jq -n --arg username "$NUGET_USERNAME" '{username: $username, tokenType: "ApiKey"}')
-        
-        NUGET_API_KEY=$(curl -s -X POST \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${oidc_token}" \
-            -H "User-Agent: publib/nuget-publisher" \
-            -d "$token_request_body" \
-            "$nuget_token_service_url" | jq -r '.apiKey')
-        
-        if [ "$NUGET_API_KEY" = "null" ] || [ -z "$NUGET_API_KEY" ]; then
-            echo "Failed to exchange OIDC token for NuGet API key"
-            exit 1
-        fi
+    # Install required packages
+    python3 -m pip install --user --upgrade id
+    
+    # Generate OIDC token using the id package
+    nuget_audience="${NUGET_AUDIENCE:-https://www.nuget.org}"
+    oidc_token=$(python3 -m id "$nuget_audience")
+    
+    # Exchange OIDC token for NuGet API key
+    nuget_token_service_url="${NUGET_TOKEN_SERVICE_URL:-https://www.nuget.org/api/v2/token}"
+    token_request_body=$(jq -n --arg username "$NUGET_USERNAME" '{username: $username, tokenType: "ApiKey"}')
+    
+    NUGET_API_KEY=$(curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${oidc_token}" \
+        -H "User-Agent: publib/nuget-publisher" \
+        -d "$token_request_body" \
+        "$nuget_token_service_url" | jq -r '.apiKey')
+    
+    if [ "$NUGET_API_KEY" = "null" ] || [ -z "$NUGET_API_KEY" ]; then
+        echo "Failed to exchange OIDC token for NuGet API key"
+        exit 1
     fi
 elif [ -z "${NUGET_API_KEY:-}" ]; then
     echo "NUGET_API_KEY is required or set NUGET_TRUSTED_PUBLISHER=1 with NUGET_USERNAME"
