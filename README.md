@@ -188,10 +188,30 @@ npx publib-nuget [DIR]
 
 **Options (environment variables):**
 
-| Option          | Required | Description                                                                    |
-| --------------- | -------- | ------------------------------------------------------------------------------ |
-| `NUGET_API_KEY` | Required | [NuGet API Key](https://www.nuget.org/account/apikeys) with "Push" permissions |
-| `NUGET_SERVER`  | Optional | NuGet Server URL (defaults to nuget.org)                                       |
+| Option                    | Required                   | Description                                                                                                                                                                                                       |
+| ------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NUGET_TRUSTED_PUBLISHER` | Optional                   | Set to any value to use NuGet [Trusted Publisher](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) authentication (OIDC). Requires a supported ambient identity (i.e. CI/CD environment).    |
+| `NUGET_USERNAME`          | for Trusted Publisher auth | NuGet.org username (profile name, not email address) for Trusted Publisher authentication.                                                                                                                        |
+| `NUGET_AUDIENCE`          | Optional                   | OIDC audience for token generation (defaults to `https://www.nuget.org`)                                                                                                                                          |
+| `NUGET_TOKEN_SERVICE_URL` | Optional                   | NuGet token service endpoint (defaults to `https://www.nuget.org/api/v2/token`)                                                                                                                                   |
+| `NUGET_API_KEY`           | Optional                   | [NuGet API Key](https://www.nuget.org/account/apikeys) with "Push" permissions. Not required when using Trusted Publishers. Also set to use a short-lived NuGet API key via e.g. <https://github.com/NuGet/login> |
+| `NUGET_SERVER`            | Optional                   | NuGet Server URL (defaults to nuget.org)                                                                                                                                                                          |
+
+### Trusted Publishers
+
+NuGet [Trusted Publishers](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) allows publishing without API keys by using OpenID Connect (OIDC) authentication between a trusted third-party service and NuGet.org.
+
+**Trusted Publisher Setup:**
+
+1. Configure your NuGet.org project to use a [Trusted Publisher](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+2. Set `NUGET_TRUSTED_PUBLISHER=1` in your workflow environment
+3. Set `NUGET_USERNAME` to your NuGet.org username (profile name)
+4. No `NUGET_API_KEY` needed
+
+**Requirements:**
+
+* **GitHub Actions**: Your workflow must have `id-token: write` permission.
+* **Python 3**: Required when using Trusted Publishers without providing `NUGET_API_KEY`. The `id` package is automatically installed.
 
 **Publish to GitHub Packages**\
 You can publish to GitHub Packages instead, with the following options:

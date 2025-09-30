@@ -10,14 +10,57 @@ set -eu # we don't want "pipefail" to implement idempotency
 #
 # DIR is a directory with *.nupkg files (default is 'dist/dotnet')
 #
-# NUGET_API_KEY (required): API key for nuget
+# Two publishing modes are supported: Trusted Publisher (recommended) and API key (legacy).
+# Set environment variables accordingly.
 #
+# Trusted Publisher (recommended):
+# - NUGET_TRUSTED_PUBLISHER (required): set to any value
+# - NUGET_USERNAME (required): the NuGet.org username of the package owner
+# - NUGET_AUDIENCE (optional): OIDC audience for token generation (defaults to https://www.nuget.org)
+# - NUGET_TOKEN_SERVICE_URL (optional): NuGet token service endpoint (defaults to https://www.nuget.org/api/v2/token)#
+#
+# API Key:
+# - NUGET_API_KEY (required): API key for your account, created on nuget.org or use https://github.com/NuGet/login
+#
+# Generic options:
+# - NUGET_SERVER (optional): different NuGet server URL to use
 ###
 
 cd "${1:-"dist/dotnet"}"
 
-if [ -z "${NUGET_API_KEY:-}" ]; then
-    echo "NUGET_API_KEY is required"
+# Check for Trusted Publisher authentication
+if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ]; then
+    echo "Using NuGet Trusted Publisher authentication"
+    
+    if [ -z "${NUGET_USERNAME:-}" ]; then
+        echo "NUGET_USERNAME is required when using Trusted Publishers"
+        exit 1
+    fi
+    
+    # Install required packages
+    python3 -m pip install --user --upgrade id
+    
+    # Generate OIDC token using the id package
+    nuget_audience="${NUGET_AUDIENCE:-https://www.nuget.org}"
+    oidc_token=$(python3 -m id "$nuget_audience")
+    
+    # Exchange OIDC token for NuGet API key
+    nuget_token_service_url="${NUGET_TOKEN_SERVICE_URL:-https://www.nuget.org/api/v2/token}"
+    token_request_body=$(jq -n --arg username "$NUGET_USERNAME" '{username: $username, tokenType: "ApiKey"}')
+    
+    NUGET_API_KEY=$(curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer ${oidc_token}" \
+        -H "User-Agent: publib/nuget-publisher" \
+        -d "$token_request_body" \
+        "$nuget_token_service_url" | jq -r '.apiKey')
+    
+    if [ "$NUGET_API_KEY" = "null" ] || [ -z "$NUGET_API_KEY" ]; then
+        echo "Failed to exchange OIDC token for NuGet API key"
+        exit 1
+    fi
+elif [ -z "${NUGET_API_KEY:-}" ]; then
+    echo "NUGET_API_KEY is required or set NUGET_TRUSTED_PUBLISHER=1 with NUGET_USERNAME"
     exit 1
 fi
 
