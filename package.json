@@ -75,8 +75,8 @@
     "typescript": "~5.7"
   },
   "dependencies": {
-    "@aws-sdk/client-codeartifact": "^3.946.0",
-    "@aws-sdk/credential-providers": "^3.946.0",
+    "@aws-sdk/client-codeartifact": "^3.948.0",
+    "@aws-sdk/credential-providers": "^3.948.0",
     "@aws-sdk/types": "^3.936.0",
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "^8.0.0",
