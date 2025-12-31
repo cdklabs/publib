@@ -41,7 +41,7 @@ elif [ -z "${NPM_TOKEN:-}" ] && [ -z "${NPM_TRUSTED_PUBLISHER:-}" ]; then
 fi
 
 # Check if trusted publisher is enabled (ignore if explicitly set to false)
-if ! [ -z "${NPM_TRUSTED_PUBLISHER:-}" ] && [ "${NPM_TRUSTED_PUBLISHER}" != "false" ]; then
+if [ -n "${NPM_TRUSTED_PUBLISHER:-}" ] && [ "${NPM_TRUSTED_PUBLISHER}" != "false" ]; then
   unset NPM_TOKEN
 fi
 
