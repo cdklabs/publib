@@ -21,6 +21,11 @@ set -eu
 
 dir="${1:-"dist/js"}"
 
+# Evaluate trusted publisher flag once as boolean
+use_trusted_publisher=false
+if [ -n "${NPM_TRUSTED_PUBLISHER:-}" ] && [ "${NPM_TRUSTED_PUBLISHER}" != "false" ]; then
+  use_trusted_publisher=true
+fi
 
 if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws.com ]]; then
   codeartifact_account="$(echo $NPM_REGISTRY | cut -d. -f1 | rev | cut -d- -f1 | rev)"
@@ -35,13 +40,12 @@ if ! [ -z "${NPM_REGISTRY:-}" ] && [[ $NPM_REGISTRY =~ .codeartifact.*.amazonaws
     export AWS_SESSION_TOKEN="$(echo $credentials | cut -d' ' -f5)"
   fi
   NPM_TOKEN=`aws codeartifact get-authorization-token --domain $codeartifact_domain --domain-owner $codeartifact_account --region $codeartifact_region --query authorizationToken --output text`
-elif [ -z "${NPM_TOKEN:-}" ] && [ -z "${NPM_TRUSTED_PUBLISHER:-}" ]; then
+elif [ -z "${NPM_TOKEN:-}" ] && [ "$use_trusted_publisher" = "false" ]; then
   echo "NPM_TOKEN=<token> or NPM_TRUSTED_PUBLISHER=true is required"
   exit 1
 fi
 
-# Check if trusted publisher is enabled (ignore if explicitly set to false)
-if [ -n "${NPM_TRUSTED_PUBLISHER:-}" ] && [ "${NPM_TRUSTED_PUBLISHER}" != "false" ]; then
+if [ "$use_trusted_publisher" = "true" ]; then
   unset NPM_TOKEN
 fi
 

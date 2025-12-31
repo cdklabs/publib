@@ -28,8 +28,14 @@ set -eu # we don't want "pipefail" to implement idempotency
 
 cd "${1:-"dist/dotnet"}"
 
-# Check for Trusted Publisher authentication
+# Evaluate trusted publisher flag once as boolean
+use_trusted_publisher=false
 if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ] && [ "${NUGET_TRUSTED_PUBLISHER}" != "false" ]; then
+  use_trusted_publisher=true
+fi
+
+# Check for Trusted Publisher authentication
+if [ "$use_trusted_publisher" = "true" ]; then
     echo "Using NuGet Trusted Publisher authentication"
     
     if [ -z "${NUGET_USERNAME:-}" ]; then
@@ -59,7 +65,7 @@ if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ] && [ "${NUGET_TRUSTED_PUBLISHER}" != "f
         echo "Failed to exchange OIDC token for NuGet API key"
         exit 1
     fi
-elif [ -z "${NUGET_API_KEY:-}" ]; then
+elif [ -z "${NUGET_API_KEY:-}" ] && [ "$use_trusted_publisher" = "false" ]; then
     echo "NUGET_API_KEY is required or set NUGET_TRUSTED_PUBLISHER=1 with NUGET_USERNAME"
     exit 1
 fi
