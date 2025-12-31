@@ -18,13 +18,19 @@ set -euo pipefail
 
 cd "${1:-"dist/python"}"
 
+# Evaluate trusted publisher flag once as boolean
+use_trusted_publisher=false
+if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ] && [ "${PYPI_TRUSTED_PUBLISHER}" != "false" ]; then
+  use_trusted_publisher=true
+fi
+
 if [ -z "$(ls *.whl)" ]; then
   echo "cannot find any .whl files in $PWD"
   exit 1
 fi
 
 # Validate credentials before installing packages
-if [ -z "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ "$use_trusted_publisher" = "false" ]; then
   [ -z "${TWINE_USERNAME:-}" ] && {
     echo "Missing TWINE_USERNAME (required when not using Trusted Publishers)"
     exit 1
@@ -41,7 +47,7 @@ upload_opts="--verbose --skip-existing"
 
 # Install required packages
 packages="twine<6.2.0"
-if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ "$use_trusted_publisher" = "true" ]; then
   packages="$packages id"
 
   if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
@@ -54,7 +60,7 @@ fi
 python3 -m pip install --user --upgrade $packages
 
 # Check for Trusted Publisher
-if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ "$use_trusted_publisher" = "true" ]; then
   echo "Using PyPI Trusted Publisher authentication"
   
   # Determine audience based on repository
