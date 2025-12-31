@@ -24,7 +24,7 @@ if [ -z "$(ls *.whl)" ]; then
 fi
 
 # Validate credentials before installing packages
-if [ -z "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ -z "${PYPI_TRUSTED_PUBLISHER:-}" ] || [ "${PYPI_TRUSTED_PUBLISHER}" = "false" ]; then
   [ -z "${TWINE_USERNAME:-}" ] && {
     echo "Missing TWINE_USERNAME (required when not using Trusted Publishers)"
     exit 1
@@ -41,7 +41,7 @@ upload_opts="--verbose --skip-existing"
 
 # Install required packages
 packages="twine<6.2.0"
-if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ] && [ "${PYPI_TRUSTED_PUBLISHER}" != "false" ]; then
   packages="$packages id"
 
   if [ -z "${PYPI_DISABLE_ATTESTATIONS:-}" ]; then
@@ -54,7 +54,7 @@ fi
 python3 -m pip install --user --upgrade $packages
 
 # Check for Trusted Publisher
-if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ]; then
+if [ -n "${PYPI_TRUSTED_PUBLISHER:-}" ] && [ "${PYPI_TRUSTED_PUBLISHER}" != "false" ]; then
   echo "Using PyPI Trusted Publisher authentication"
   
   # Determine audience based on repository

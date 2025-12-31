@@ -29,7 +29,7 @@ set -eu # we don't want "pipefail" to implement idempotency
 cd "${1:-"dist/dotnet"}"
 
 # Check for Trusted Publisher authentication
-if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ]; then
+if [ -n "${NUGET_TRUSTED_PUBLISHER:-}" ] && [ "${NUGET_TRUSTED_PUBLISHER}" != "false" ]; then
     echo "Using NuGet Trusted Publisher authentication"
     
     if [ -z "${NUGET_USERNAME:-}" ]; then
