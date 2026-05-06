@@ -48,7 +48,7 @@ async function main() {
   const sharedOptions: SharedPublishOptions = {
     username: envVar('MAVEN_USERNAME'),
     password: envVar('MAVEN_PASSWORD'),
-    dryRun: process.env.MAVEN_DRYRUN === 'true',
+    dryRun: process.env.MAVEN_DRYRUN === 'true' || process.env.PUBLIB_DRYRUN === 'true',
     verbose: process.env.MAVEN_VERBOSE === 'true',
     poms,
   };

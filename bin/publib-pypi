@@ -85,5 +85,15 @@ if [ "$use_trusted_publisher" = "true" ]; then
   fi
 fi
 
+# Check for dry run
+if [ "${PUBLIB_DRYRUN:-}" = "true" ]; then
+  echo "🏜️ Dry run: skipping PyPI upload"
+  for file in *.whl; do
+    echo "  (would upload ${file})"
+  done
+  echo "SUCCESS (dry run)"
+  exit 0
+fi
+
 echo "Uploading packages to PyPI"
 python3 -m twine upload $upload_opts *
