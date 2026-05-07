@@ -78,6 +78,16 @@ fi
 
 echo "Publishing NuGet packages..."
 
+# Check for dry run
+if [ "${PUBLIB_DRYRUN:-}" = "true" ]; then
+  echo "🏜️ Dry run: skipping NuGet publish"
+  for package_dir in ${packages}; do
+    echo "  (would publish ${package_dir})"
+  done
+  echo "✅ All Done! (dry run)"
+  exit 0
+fi
+
 nuget_source="${NUGET_SERVER:-"https://api.nuget.org/v3/index.json"}"
 nuget_symbol_source="https://nuget.smbsrc.net/"
 

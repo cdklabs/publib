@@ -50,6 +50,15 @@ You can also execute individual publishers:
 * `publib-pypi`
 * `publib-golang`
 
+## Dry Run
+
+All publishers support a dry run mode via the `PUBLIB_DRYRUN` environment variable.
+Set `PUBLIB_DRYRUN=true` to skip actual publishing across all targets:
+
+```shell
+PUBLIB_DRYRUN=true publib
+```
+
 ## npm
 
 Publishes all `*.tgz` files from `DIR` to [npmjs](npmjs.com), [GitHub Packages](https://github.com/features/packages) or [AWS CodeArtifact](https://aws.amazon.com/codeartifact/).
@@ -116,7 +125,7 @@ The server type is selected using the `MAVEN_SERVER_ID` variable.
 | -------------------- | --------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | (all)                | `MAVEN_SERVER_ID`                                                     | Yes going forward | Either `ossrh` (default but deprecated), `central-ossrh`, or any other string for a custom Nexus server.                                                                                                                                                                                                                                                                  |
 | (all)                | `MAVEN_USERNAME` and `MAVEN_PASSWORD`                                 | Yes               | Username and password for maven repository. For Maven Central, you will need to [Create JIRA account](https://issues.sonatype.org/secure/Signup!default.jspa) and then request a [new project](https://issues.sonatype.org/secure/CreateIssue.jspa?issuetype=21&pid=10134). Read the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for more details. |
-| (all)                | `MAVEN_DRYRUN`                                                        | No                | Set to "true" for a dry run                                                                                                                                                                                                                                                                                                                                               |
+| (all)                | `MAVEN_DRYRUN`                                                        | No                | Deprecated. Use `PUBLIB_DRYRUN` instead. Set to "true" for a dry run                                                                                                                                                                                                                                                                                                      |
 | (all)                | `MAVEN_VERBOSE`                                                       | No                | Make Maven print debug output if set to `true`                                                                                                                                                                                                                                                                                                                            |
 | `central-ossrh`      | `MAVEN_GPG_PRIVATE_KEY[_FILE]` and `MAVEN_GPG_PRIVATE_KEY_PASSPHRASE` | Yes               | GPG private key or file that includes it. This is used to sign your Maven packages. See instructions below                                                                                                                                                                                                                                                                |
 | `central-ossrh`      | `MAVEN_ENDPOINT`                                                      | No                | URL of Nexus repository. Defaults to `https://ossrh-staging-api.central.sonatype.com/`.                                                                                                                                                                                                                                                                                   |
@@ -295,7 +304,7 @@ Repository tags will be in the following format:
 | `GIT_USER_EMAIL`                                      | Optional                                         | Email to perform the commit with. Defaults to the git user.email config in the current directory. Fails if it doesn't exist.                                                                                                                         |
 | `GIT_COMMIT_MESSAGE`                                  | Optional                                         | The commit message. Defaults to 'chore(release): $VERSION'.                                                                                                                                                                                          |
 | `GIT_CLONE_DEPTH`                                     | Optional                                         | The git clone depth. Usually only the latest commit is required. Defaults to 1.                                                                                                                                                                      |
-| `DRYRUN`                                              | Optional                                         | Set to "true" for a dry run.                                                                                                                                                                                                                         |
+| `DRYRUN`                                              | Optional                                         | Deprecated. Use `PUBLIB_DRYRUN` instead. Set to "true" for a dry run.                                                                                                                                                                                |
 
 ## Publish to CodeArtifact for testing
 

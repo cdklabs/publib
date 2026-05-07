@@ -83,6 +83,16 @@ fi
 
 log=$(mktemp -d)/npmlog.txt
 
+# Check for dry run
+if [ "${PUBLIB_DRYRUN:-}" = "true" ]; then
+  echo "🏜️ Dry run: skipping npm publish"
+  for file in ${dir}/**.tgz; do
+    echo "  (would publish ${file})"
+  done
+  echo "SUCCESS (dry run)"
+  exit 0
+fi
+
 for file in ${dir}/**.tgz; do
   npm publish ${tag} ${access} ${file} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
