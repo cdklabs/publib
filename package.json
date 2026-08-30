@@ -23,28 +23,29 @@
     "publib-pypi": "bin/publib-pypi"
   },
   "scripts": {
-    "build": "npx projen build",
-    "bump": "npx projen bump",
-    "clobber": "npx projen clobber",
-    "compile": "npx projen compile",
-    "default": "npx projen default",
-    "eject": "npx projen eject",
-    "eslint": "npx projen eslint",
-    "integ": "npx projen integ",
-    "package": "npx projen package",
-    "package-legacy": "npx projen package-legacy",
-    "post-compile": "npx projen post-compile",
-    "post-upgrade": "npx projen post-upgrade",
-    "pre-compile": "npx projen pre-compile",
-    "release": "npx projen release",
-    "test": "npx projen test",
-    "test:watch": "npx projen test:watch",
-    "unbump": "npx projen unbump",
-    "upgrade": "npx projen upgrade",
-    "upgrade-cdklabs-projen-project-types": "npx projen upgrade-cdklabs-projen-project-types",
-    "upgrade-dev-deps": "npx projen upgrade-dev-deps",
-    "watch": "npx projen watch",
-    "projen": "npx projen"
+    "build": "projen build",
+    "bump": "projen bump",
+    "bump:releasable-commits": "projen bump:releasable-commits",
+    "clobber": "projen clobber",
+    "compile": "projen compile",
+    "default": "projen default",
+    "eject": "projen eject",
+    "eslint": "projen eslint",
+    "integ": "projen integ",
+    "package": "projen package",
+    "package-legacy": "projen package-legacy",
+    "post-compile": "projen post-compile",
+    "post-upgrade": "projen post-upgrade",
+    "pre-compile": "projen pre-compile",
+    "release": "projen release",
+    "test": "projen test",
+    "test:watch": "projen test:watch",
+    "unbump": "projen unbump",
+    "upgrade": "projen upgrade",
+    "upgrade-cdklabs-projen-project-types": "projen upgrade-cdklabs-projen-project-types",
+    "upgrade-dev-deps": "projen upgrade-dev-deps",
+    "watch": "projen watch",
+    "projen": "projen"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -54,37 +55,41 @@
   },
   "devDependencies": {
     "@aws-sdk/client-sts": "^3.1117.0",
+    "@smithy/types": "^4.17.2",
     "@stylistic/eslint-plugin": "^2",
-    "@types/glob": "^8.1.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^18.17.0",
+    "@types/fs-extra": "^8.1.5",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "cdklabs-projen-project-types": "^0.3.12",
+    "cdklabs-projen-project-types": "^0.6.13",
     "commit-and-tag-version": "^12",
     "constructs": "^10.0.0",
     "eslint": "^9",
-    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
-    "jest": "^27.5.1",
-    "jest-junit": "^16",
-    "projen": "^0.98.32",
-    "ts-jest": "^27.1.5",
-    "ts-node": "^10.9.2",
-    "typescript": "~5.7"
+    "jest": "^30",
+    "jest-junit": "^17",
+    "projen": "^0.103.11",
+    "ts-jest": "^29.4.12",
+    "tsx": "^4.23.13",
+    "typescript": "~6.0"
   },
   "dependencies": {
-    "@aws-sdk/client-codeartifact": "^3.1116.0",
-    "@aws-sdk/credential-providers": "^3.1116.0",
-    "@aws-sdk/types": "^3.974.5",
-    "@types/fs-extra": "^8.0.0",
-    "fs-extra": "^8.0.0",
-    "glob": "10.0.0",
+    "@aws-sdk/client-codeartifact": "^3.1119.0",
+    "@aws-sdk/credential-providers": "^3.1119.0",
+    "fs-extra": "^8.1.0",
     "p-queue": "6",
     "shlex": "^2.1.2",
     "yargs": "^17",
     "zx": "^8.8.5"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "onFail": "ignore"
+    }
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
@@ -129,11 +134,13 @@
         }
       ]
     ],
-    "preset": "ts-jest",
-    "globals": {
-      "ts-jest": {
-        "tsconfig": "tsconfig.dev.json"
-      }
+    "transform": {
+      "^.+\\.[t]sx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "test/tsconfig.json"
+        }
+      ]
     }
   },
   "types": "lib/index.d.ts",

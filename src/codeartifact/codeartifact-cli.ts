@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
-import * as glob from 'glob';
+import { glob } from 'zx';
 import { CodeArtifactRepo, CodeArtifactRepoOptions, LoginInformation } from './codeartifact-repo';
 import { shell } from './shell';
 import { uploadJavaPackages, mavenLogin } from './staging/maven';

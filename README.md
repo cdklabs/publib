@@ -14,9 +14,8 @@ Supports:
 
 ## Usage
 
-This is an npm module. You can install it using `yarn add publib` or
-`npm install publib`. In most cases it will be installed as a `devDependency`
-in your `package.json`.
+This is an npm module. You can install it using `npm install publib`.
+In most cases it will be installed as a `devDependency` in your `package.json`.
 
 This tool expects to find a distribution directory (default name is `dist`)
 which contains "ready-to-publish" artifacts for each package manager.
