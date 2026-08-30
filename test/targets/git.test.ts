@@ -33,3 +33,41 @@ function withTmpDir(fn: (tmpDir: string) => void) {
     process.chdir(cwd);
   }
 }
+
+test.each([
+  ['https://github.com/cdklabs/publib.git', 'cdklabs/publib'],
+  ['https://github.com/cdklabs/publib', 'cdklabs/publib'],
+  ['git@github.com:cdklabs/publib.git', 'cdklabs/publib'],
+  ['ssh://git@github.com/cdklabs/publib.git', 'cdklabs/publib'],
+  ['https://github.corporate-enterprise.com/cdklabs/publib.git', 'cdklabs/publib'],
+  ['not-a-url', undefined],
+  ['', undefined],
+])('parseRepositorySlug(%s) returns %s', (url, expected) => {
+  expect(git.parseRepositorySlug(url)).toBe(expected);
+});
+
+test('repositorySlug reads the origin remote', () => {
+  shellRunSpy.mockReturnValue('git@github.com:cdklabs/publib.git');
+  expect(git.repositorySlug()).toBe('cdklabs/publib');
+  expect(shellRunSpy).toHaveBeenCalledWith('git remote get-url origin', { capture: true });
+});
+
+test('repositorySlug returns undefined outside a git repository', () => {
+  shellRunSpy.mockImplementation(() => {
+    throw new Error('fatal: not a git repository');
+  });
+  expect(git.repositorySlug()).toBeUndefined();
+});
+
+test('head returns the current commit hash', () => {
+  shellRunSpy.mockReturnValue('abc123');
+  expect(git.head()).toBe('abc123');
+  expect(shellRunSpy).toHaveBeenCalledWith('git rev-parse HEAD', { capture: true });
+});
+
+test('head returns undefined outside a git repository', () => {
+  shellRunSpy.mockImplementation(() => {
+    throw new Error('fatal: not a git repository');
+  });
+  expect(git.head()).toBeUndefined();
+});
