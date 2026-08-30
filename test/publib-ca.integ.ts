@@ -53,5 +53,5 @@ test('can create an NPM package, publish and consume it from CodeArtifact', asyn
 
 async function publibCa(args: string[]) {
   const cli = path.resolve(__dirname, '../src/bin/publib-ca.ts');
-  return shell(['ts-node', cli, ...args], { captureStderr: false });
+  return shell(['tsx', cli, ...args], { captureStderr: false });
 }
