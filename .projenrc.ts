@@ -1,54 +1,55 @@
-import { readdirSync } from 'fs';
 import * as cdklabs from 'cdklabs-projen-project-types';
-import { github } from 'projen';
+import { readdirSync } from 'fs-extra';
+import { github, javascript } from 'projen';
+import { TypeScriptRunner } from 'projen/lib/typescript';
 
 const project = new cdklabs.CdklabsTypeScriptProject({
-  private: false,
-  projenrcTs: true,
-  defaultReleaseBranch: 'main',
   name: 'publib',
   description: 'Release jsii modules to multiple package managers',
-  releaseToNpm: true,
   repository: 'https://github.com/cdklabs/publib.git',
   authorUrl: 'https://aws.amazon.com',
   homepage: 'https://github.com/cdklabs/publib',
+
+  private: false,
+  releaseToNpm: true,
+  setNodeEngineVersion: false,
+
+  projenrcTs: true,
+  packageManager: javascript.NodePackageManager.NPM,
+  runner: TypeScriptRunner.tsx(),
+
   devDeps: [
-    'ts-node',
     '@aws-sdk/client-sts',
-    '@types/glob',
-    '@types/node@^18.17.0',
+    '@smithy/types',
+    '@types/fs-extra',
+    '@types/node@^20',
     '@types/yargs@^17',
     'cdklabs-projen-project-types',
   ],
-  autoApproveUpgrades: true,
   deps: [
     '@aws-sdk/client-codeartifact',
     '@aws-sdk/credential-providers',
-    '@aws-sdk/types',
-    'glob@10.0.0', // Can't use a newer version of glob, it adds a CLI that depends on 'jackspeak' which has crazy dependencies
+    'fs-extra',
+    'p-queue@6', // Last non-ESM version
+    'shlex',
     'yargs@^17',
     'zx',
-    'p-queue@6', // Last non-ESM version
   ],
+
   enablePRAutoMerge: true,
-  setNodeEngineVersion: false,
+  autoApproveUpgrades: true,
+  depsUpgradeOptions: {
+    workflowOptions: {
+      schedule: javascript.UpgradeDependenciesSchedule.WEEKLY,
+    },
+  },
+
   tsconfig: {
     compilerOptions: {
-      // Conflict between `commit-and-tag-version@12` and modern TypeScript.
-      // `commit-and-tag-version` depends on an old version of lru-cache, which TypeScript
-      // doesn't agree with the typings of. Skip checking those files to make the build succeed.
       skipLibCheck: true,
     },
   },
 });
-
-// Necessary to work around a typing issue in transitive dependency lru-cache@10 now that we've moved to a modern TS
-// project.package.addPackageResolutions('lru-cache@^11');
-
-// we can't use 9.x because it doesn't work with node 10.
-const fsExtraVersion = '^8.0.0';
-
-project.addDeps('shlex', `fs-extra@${fsExtraVersion}`, `@types/fs-extra@${fsExtraVersion}`);
 
 const legacy = project.addTask('package-legacy');
 legacy.exec('cp package.json package.json.bak');
@@ -134,7 +135,7 @@ test?.addJob('integ', {
   steps: [
     {
       name: 'Federate into AWS',
-      uses: 'aws-actions/configure-aws-credentials@v4',
+      uses: 'aws-actions/configure-aws-credentials@v6',
       with: {
         'aws-region': 'us-east-1',
         'role-to-assume': '${{ secrets.AWS_ROLE_TO_ASSUME }}',
@@ -143,7 +144,7 @@ test?.addJob('integ', {
     },
     {
       name: 'Checkout',
-      uses: 'actions/checkout@v4',
+      uses: 'actions/checkout@v7',
       with: {
         ref: '${{ github.event.pull_request.head.sha }}',
         // Need this because we are running on pull_request_target
@@ -152,19 +153,19 @@ test?.addJob('integ', {
     },
     {
       name: 'Setup Node.js',
-      uses: 'actions/setup-node@v4',
+      uses: 'actions/setup-node@v7.0.0',
       with: {
-        'cache': 'yarn',
-        'node-version': '20',
+        'node-version': 'lts/-1',
+        'package-manager-cache': false,
       },
     },
     {
-      name: 'Yarn install',
-      run: 'yarn install --frozen-lockfile',
+      name: 'npm install',
+      run: 'npm ci',
     },
     {
       name: 'Run integration tests',
-      run: 'yarn integ',
+      run: 'npm run integ',
     },
   ],
 });

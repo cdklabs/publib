@@ -1,5 +1,5 @@
 import { AssociateExternalConnectionCommand, CodeartifactClient, CreateDomainCommand, CreateRepositoryCommand, DeleteRepositoryCommand, DescribeDomainCommand, DescribeRepositoryCommand, GetAuthorizationTokenCommand, GetRepositoryEndpointCommand, ListPackagesCommand, ListPackagesCommandInput, ListRepositoriesCommand, ListTagsForResourceCommand, PutPackageOriginConfigurationCommand, ResourceNotFoundException, ThrottlingException } from '@aws-sdk/client-codeartifact';
-import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
+import type { AwsCredentialIdentityProvider } from '@smithy/types';
 import { sleep } from '../help/sleep';
 
 const COLLECT_BY_TAG = 'collect-by';

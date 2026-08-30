@@ -131,8 +131,17 @@
       "steps": [
         {
           "execArgs": [
-            "ts-node",
-            "--project",
+            "tsc",
+            "--noEmit",
+            "-p",
+            "projenrc/tsconfig.json"
+          ],
+          "name": "typecheck"
+        },
+        {
+          "execArgs": [
+            "tsx",
+            "--tsconfig",
             "projenrc/tsconfig.json",
             ".projenrc.ts"
           ]
@@ -182,7 +191,7 @@
       "description": "Install project dependencies and update lockfile (non-frozen)",
       "steps": [
         {
-          "exec": "yarn install --check-files"
+          "exec": "npm install"
         }
       ]
     },
@@ -191,7 +200,7 @@
       "description": "Install project dependencies using frozen lockfile",
       "steps": [
         {
-          "exec": "yarn install --check-files --frozen-lockfile"
+          "exec": "npm ci"
         }
       ]
     },
@@ -340,7 +349,8 @@
       "name": "upgrade",
       "description": "upgrade dependencies",
       "env": {
-        "CI": "0"
+        "CI": "0",
+        "NPM_CONFIG_BEFORE": "$(node -p \"new Date(Date.now()-259200000).toISOString()\")"
       },
       "steps": [
         {
@@ -349,25 +359,23 @@
             "npm-check-updates@20",
             "--upgrade",
             "--target=minor",
+            "--cooldown=3",
             "--peer",
             "--no-deprecated",
             "--dep=prod",
-            "--filter=@aws-sdk/client-codeartifact,@aws-sdk/credential-providers,@aws-sdk/types,shlex,zx"
+            "--filter=@aws-sdk/client-codeartifact,@aws-sdk/credential-providers,fs-extra,shlex,zx"
           ]
         },
         {
-          "exec": "yarn install --check-files"
+          "exec": "npm install"
         },
         {
           "execArgs": [
-            "yarn",
-            "upgrade",
+            "npm",
+            "update",
             "@aws-sdk/client-codeartifact",
             "@aws-sdk/credential-providers",
-            "@aws-sdk/types",
-            "@types/fs-extra",
             "fs-extra",
-            "glob",
             "p-queue",
             "shlex",
             "yargs",
@@ -402,12 +410,12 @@
           ]
         },
         {
-          "exec": "yarn install --check-files"
+          "exec": "npm install"
         },
         {
           "execArgs": [
-            "yarn",
-            "upgrade",
+            "npm",
+            "update",
             "cdklabs-projen-project-types",
             "projen"
           ]
@@ -424,7 +432,8 @@
       "name": "upgrade-dev-deps",
       "description": "upgrade dev dependencies",
       "env": {
-        "CI": "0"
+        "CI": "0",
+        "NPM_CONFIG_BEFORE": "$(node -p \"new Date(Date.now()-259200000).toISOString()\")"
       },
       "steps": [
         {
@@ -433,22 +442,24 @@
             "npm-check-updates@20",
             "--upgrade",
             "--target=minor",
+            "--cooldown=3",
             "--peer",
             "--no-deprecated",
             "--dep=dev",
-            "--filter=@aws-sdk/client-sts,@types/glob,@types/jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,ts-jest,ts-node,typescript"
+            "--filter=@aws-sdk/client-sts,@smithy/types,@types/fs-extra,@types/jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,ts-jest,tsx,typescript"
           ]
         },
         {
-          "exec": "yarn install --check-files"
+          "exec": "npm install"
         },
         {
           "execArgs": [
-            "yarn",
-            "upgrade",
+            "npm",
+            "update",
             "@aws-sdk/client-sts",
+            "@smithy/types",
             "@stylistic/eslint-plugin",
-            "@types/glob",
+            "@types/fs-extra",
             "@types/jest",
             "@types/node",
             "@types/yargs",
@@ -462,7 +473,7 @@
             "jest",
             "jest-junit",
             "ts-jest",
-            "ts-node",
+            "tsx",
             "typescript"
           ]
         },

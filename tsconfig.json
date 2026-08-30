@@ -27,11 +27,10 @@
     "stripInternal": true,
     "target": "ES2020",
     "types": [
-      "glob",
+      "fs-extra",
       "jest",
       "node",
-      "yargs",
-      "fs-extra"
+      "yargs"
     ],
     "skipLibCheck": true
   },

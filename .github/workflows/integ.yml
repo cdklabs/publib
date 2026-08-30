@@ -41,26 +41,26 @@ jobs:
     steps:
       - name: Federate into AWS
         id: federate_into_aws
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: publib-integ-test
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Setup Node.js
         id: setup_node_js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.0.0
         with:
-          cache: yarn
-          node-version: "20"
-      - name: Yarn install
-        id: yarn_install
-        run: yarn install --frozen-lockfile
+          node-version: lts/-1
+          package-manager-cache: false
+      - name: npm install
+        id: npm_install
+        run: npm ci
       - name: Run integration tests
         id: run_integration_tests
-        run: yarn integ
+        run: npm run integ
