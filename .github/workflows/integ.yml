@@ -19,10 +19,13 @@ jobs:
       env_name: ${{ steps.output.outputs.env_name }}
     steps:
       - name: Print event output for debugging in case the condition is incorrect
+        id: print_event_output_for_debugging_in_case_the_condition_is_incorrect
         run: cat $GITHUB_EVENT_PATH
       - name: Start requiring approval
+        id: start_requiring_approval
         run: echo IntegTestCredentialsRequireApproval > .envname
       - name: Run automatically if in a mergeGroup or PR created from this repo
+        id: run_automatically_if_in_a_mergegroup_or_pr_created_from_this_repo
         if: ${{ github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name == github.repository }}
         run: echo IntegTestCredentials > .envname
       - name: Output the value
@@ -37,22 +40,27 @@ jobs:
     environment: ${{needs.determine_env.outputs.env_name}}
     steps:
       - name: Federate into AWS
+        id: federate_into_aws
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: publib-integ-test
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Setup Node.js
+        id: setup_node_js
         uses: actions/setup-node@v4
         with:
           cache: yarn
           node-version: "20"
       - name: Yarn install
+        id: yarn_install
         run: yarn install --frozen-lockfile
       - name: Run integration tests
+        id: run_integration_tests
         run: yarn integ

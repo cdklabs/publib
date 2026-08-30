@@ -26,10 +26,19 @@
     "strictPropertyInitialization": true,
     "stripInternal": true,
     "target": "ES2020",
+    "types": [
+      "glob",
+      "jest",
+      "node",
+      "yargs",
+      "fs-extra"
+    ],
     "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "node_modules"
+  ]
 }
