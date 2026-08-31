@@ -248,3 +248,55 @@ export function identify(user: string, address: string) {
 export function branchExistsOnRemote(repositoryUrl: string, branch: string): boolean {
   return shell.check(`git ls-remote --exit-code --heads ${tryDetectRepositoryUrl(repositoryUrl)} ${branch}`, { capture: true });
 }
+
+/**
+ * Returns the `owner/repo` slug of the `origin` remote in the current
+ * directory, or undefined if it cannot be determined (e.g. not in a git
+ * repository, or no `origin` remote configured).
+ */
+export function repositorySlug(): string | undefined {
+  try {
+    const url = shell.run('git remote get-url origin', { capture: true });
+    return parseRepositorySlug(url);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Extracts the `owner/repo` slug from a git remote URL.
+ *
+ * Supports HTTPS (`https://github.com/owner/repo.git`), SSH
+ * (`git@github.com:owner/repo.git`, `ssh://git@github.com/owner/repo.git`)
+ * and URLs without a `.git` suffix.
+ *
+ * @returns the `owner/repo` slug, or undefined if it cannot be determined
+ */
+export function parseRepositorySlug(url: string): string | undefined {
+  const path = url
+    .trim()
+    .replace(/\.git$/, '')
+    // drop the scheme (https://, ssh://, git+ssh://, ...)
+    .replace(/^[a-z+]+:\/\//, '')
+    // normalize scp-like ssh syntax (git@host:owner/repo) to a path
+    .replace(/^git@[^:/]+[:/]/, '')
+    // strip a leading host segment (github.com/owner/repo)
+    .replace(/^[^/]+\.[^/]+\//, '');
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length !== 2) {
+    return undefined;
+  }
+  return parts.join('/');
+}
+
+/**
+ * Returns the commit hash of HEAD in the current directory, or undefined if
+ * it cannot be determined (e.g. not in a git repository).
+ */
+export function head(): string | undefined {
+  try {
+    return shell.run('git rev-parse HEAD', { capture: true });
+  } catch {
+    return undefined;
+  }
+}

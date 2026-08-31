@@ -48,6 +48,7 @@ You can also execute individual publishers:
 * `publib-npm`
 * `publib-pypi`
 * `publib-golang`
+* `publib-github`
 
 ## Dry Run
 
@@ -304,6 +305,34 @@ Repository tags will be in the following format:
 | `GIT_COMMIT_MESSAGE`                                  | Optional                                         | The commit message. Defaults to 'chore(release): $VERSION'.                                                                                                                                                                                          |
 | `GIT_CLONE_DEPTH`                                     | Optional                                         | The git clone depth. Usually only the latest commit is required. Defaults to 1.                                                                                                                                                                      |
 | `DRYRUN`                                              | Optional                                         | Deprecated. Use `PUBLIB_DRYRUN` instead. Set to "true" for a dry run.                                                                                                                                                                                |
+
+## GitHub Releases
+
+Creates a [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) for a tag.
+
+If a release for the tag already exists, the command succeeds without touching
+the existing release, so that re-running a (partially failed) release workflow
+is a no-op rather than a failure.
+
+**Usage:**
+
+```shell
+npx publib-github
+```
+
+**Options (environment variables):**
+
+| Option                    | Required                                             | Description                                                                                                                                                                                             |
+| ------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GITHUB_TOKEN`            | Required                                             | Token used to authenticate against the GitHub API. Requires `contents: write` permission.                                                                                                               |
+| `GITHUB_REPOSITORY`       | Required                                             | The repository to release to, in `owner/repo` format. Set automatically in [GitHub Actions workflows](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables). |
+| `GITHUB_RELEASE_TAG`      | Either this or `GITHUB_RELEASE_TAG_FILE` is required | The tag to release (e.g. `v1.2.3`).                                                                                                                                                                     |
+| `GITHUB_RELEASE_TAG_FILE` | Either this or `GITHUB_RELEASE_TAG` is required      | A file containing the tag to release (e.g. `dist/releasetag.txt`).                                                                                                                                      |
+| `GITHUB_CHANGELOG_FILE`   | Optional                                             | A markdown file used as the release notes (e.g. `dist/changelog.md`).                                                                                                                                   |
+| `GITHUB_SHA`              | Optional                                             | The commit to tag if the tag doesn't exist yet. Ignored if the tag already exists. Defaults to the repository's default branch. Set automatically in GitHub Actions workflows.                          |
+| `GITHUB_PRERELEASE`       | Optional                                             | Set to "true" to mark the release as a prerelease.                                                                                                                                                      |
+| `GITHUB_MARK_LATEST`      | Optional                                             | `true` to explicitly mark the release as the latest release, `false` to explicitly not mark it as latest. Defaults to GitHub determining the latest release.                                            |
+| `GITHUB_API_URL`          | Optional                                             | Base URL of the GitHub API, for GitHub Enterprise instances. Defaults to `https://api.github.com`. Set automatically in GitHub Actions workflows.                                                       |
 
 ## Publish to CodeArtifact for testing
 
