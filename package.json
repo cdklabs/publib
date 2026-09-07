@@ -79,8 +79,8 @@
     "typescript": "~6.0"
   },
   "dependencies": {
-    "@aws-sdk/client-codeartifact": "^3.1120.0",
-    "@aws-sdk/credential-providers": "^3.1120.0",
+    "@aws-sdk/client-codeartifact": "^3.1126.0",
+    "@aws-sdk/credential-providers": "^3.1126.0",
     "fs-extra": "^8.1.0",
     "p-queue": "6",
     "shlex": "^2.1.2",
