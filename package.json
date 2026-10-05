@@ -56,7 +56,7 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-sdk/client-sts": "^3.1140.0",
+    "@aws-sdk/client-sts": "^3.1145.0",
     "@smithy/types": "^4.19.0",
     "@stylistic/eslint-plugin": "^2",
     "@types/fs-extra": "^8.1.5",
@@ -74,7 +74,7 @@
     "jest": "^30",
     "jest-junit": "^17",
     "projen": "^0.103.27",
-    "ts-jest": "^29.4.13",
+    "ts-jest": "^29.4.14",
     "tsx": "^4.23.15",
     "typescript": "~6.0"
   },
