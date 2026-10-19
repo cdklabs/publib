@@ -65,7 +65,7 @@
     "@types/yargs": "^17",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "cdklabs-projen-project-types": "^0.6.17",
+    "cdklabs-projen-project-types": "^0.6.18",
     "commit-and-tag-version": "^13",
     "constructs": "^10.0.0",
     "eslint": "^9",
@@ -73,7 +73,7 @@
     "eslint-plugin-import": "^2.32.0",
     "jest": "^30",
     "jest-junit": "^17",
-    "projen": "^0.104.4",
+    "projen": "^0.104.8",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "~6.0"
