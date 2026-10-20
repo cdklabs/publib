@@ -24,7 +24,7 @@ test('clone with token', () => {
   git.clone('github.com/cdklabs/publib', 'target');
 
   expect(mockedShellRun.mock.calls).toHaveLength(1);
-  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://my-token@github.com/cdklabs/publib.git target']);
+  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://x-access-token:my-token@github.com/cdklabs/publib.git target']);
 });
 
 test('clone with ssh', () => {
@@ -57,7 +57,7 @@ test('clone with provided ghe authentication for github enterprise repo but no s
   process.env.GH_HOST = 'github.corporate-enterprise.com';
   git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
   expect(mockedShellRun.mock.calls).toHaveLength(1);
-  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://valid-token@github.corporate-enterprise.com/cdklabs/publib.git target']);
+  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://x-access-token:valid-token@github.corporate-enterprise.com/cdklabs/publib.git target']);
 });
 
 test('clone with provided ghe authentication for github enterprise repo and with non-public github api url', () => {
@@ -66,27 +66,27 @@ test('clone with provided ghe authentication for github enterprise repo and with
   process.env.GITHUB_API_URL = 'https://api.github.corporate-enterprise.com';
   git.clone('github.corporate-enterprise.com/cdklabs/publib', 'target');
   expect(mockedShellRun.mock.calls).toHaveLength(1);
-  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://valid-token@github.corporate-enterprise.com/cdklabs/publib.git target']);
+  expect(mockedShellRun.mock.calls[0]).toEqual(['git clone --depth 1 https://x-access-token:valid-token@github.corporate-enterprise.com/cdklabs/publib.git target']);
 });
 
 test('clone with depth option', () => {
   process.env.GITHUB_TOKEN = 'test-token';
   git.clone('github.com/owner/repo', 'target-dir', { depth: 5 });
-  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 5 https://test-token@github.com/owner/repo.git target-dir');
+  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 5 https://x-access-token:test-token@github.com/owner/repo.git target-dir');
   delete process.env.GITHUB_TOKEN;
 });
 
 test('clone with tags', () => {
   process.env.GITHUB_TOKEN = 'test-token';
   git.clone('github.com/owner/repo', 'target-dir', { tags: true });
-  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 1 --tags https://test-token@github.com/owner/repo.git target-dir');
+  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 1 --tags https://x-access-token:test-token@github.com/owner/repo.git target-dir');
   delete process.env.GITHUB_TOKEN;
 });
 
 test('clone with branch', () => {
   process.env.GITHUB_TOKEN = 'test-token';
   git.clone('github.com/owner/repo', 'target-dir', { branch: 'foobar' });
-  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 1 --branch foobar https://test-token@github.com/owner/repo.git target-dir');
+  expect(mockedShellRun).toHaveBeenCalledWith('git clone --depth 1 --branch foobar https://x-access-token:test-token@github.com/owner/repo.git target-dir');
   delete process.env.GITHUB_TOKEN;
 });
 

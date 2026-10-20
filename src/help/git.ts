@@ -55,7 +55,7 @@ function tryDetectRepositoryUrl(repositoryUrl: string): string {
   if (!gitHubToken) {
     throw new Error('GITHUB_TOKEN env variable is required when GITHUB_USE_SSH env variable is not used');
   }
-  return `https://${gitHubToken}@${repositoryUrl}.git`;
+  return `https://x-access-token:${gitHubToken}@${repositoryUrl}.git`;
 }
 
 /**
