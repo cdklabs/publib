@@ -16,6 +16,8 @@ set -eu
 # AWS_SECRET_ACCESS_KEY (optional): Secret access key that belongs to the AWS access key.
 # AWS_ROLE_TO_ASSUME (optional): If AWS CodeArtifact is used as registry and need to assume role.
 # DISABLE_HTTPS (optional): connect to the registry with HTTP instead of HTTPS (defaults to false)
+# VERIFY_PUBLISHED (optional): if "true", wait until every published version is available from the registry
+# VERIFY_PUBLISHED_TIMEOUT_SECONDS (optional): seconds to wait for the published versions to be available (defaults to 3600)
 #
 ###
 
@@ -81,6 +83,13 @@ if [ -n "${NPM_ACCESS_LEVEL:-}" ]; then
   echo "Publishing package with access level: ${NPM_ACCESS_LEVEL}"
 fi
 
+# verification timeout
+verify_timeout_seconds="${VERIFY_PUBLISHED_TIMEOUT_SECONDS:-3600}"
+if ! [[ "${verify_timeout_seconds}" =~ ^[0-9]+$ ]]; then
+  echo "Invalid VERIFY_PUBLISHED_TIMEOUT_SECONDS: ${verify_timeout_seconds}. Must be a number of seconds"
+  exit 1
+fi
+
 log=$(mktemp -d)/npmlog.txt
 
 # Check for dry run
@@ -115,5 +124,26 @@ for file in ${dir}/**.tgz; do
     exit 1
   fi
 done
+
+# The registry may not serve a version right after it was published (npmjs scans packages first,
+# and larger packages take longer). Wait until it does, so that packages depending on it can be installed.
+if [ "${VERIFY_PUBLISHED:-}" = "true" ]; then
+  deadline_seconds=$((SECONDS + verify_timeout_seconds))
+
+  for file in ${dir}/**.tgz; do
+    pkgdir=$(mktemp -d)
+    tar -xzf ${file} -C ${pkgdir} package/package.json
+    spec=$(node -p 'const p = require(process.argv[1]); `${p.name}@${p.version}`' ${pkgdir}/package/package.json)
+    until npm view ${spec} version --prefer-online > /dev/null 2>&1; do
+      if [ ${SECONDS} -ge ${deadline_seconds} ]; then
+        echo "ERROR: ${spec} is not available after ${verify_timeout_seconds} seconds"
+        exit 1
+      fi
+      echo "Waiting for ${spec} to be available..."
+      sleep 20
+    done
+    echo "${spec} is available"
+  done
+fi
 
 echo "SUCCESS"
