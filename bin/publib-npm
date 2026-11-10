@@ -103,7 +103,9 @@ if [ "${PUBLIB_DRYRUN:-}" = "true" ]; then
 fi
 
 for file in ${dir}/**.tgz; do
-  npm publish ${tag} ${access} ${file} 2>&1 | tee ${log}
+  # disable workspaces, otherwise npm 8 and 9 publish the current workspace instead of the tarball
+  # when run from inside a workspace package
+  npm publish --workspaces=false ${tag} ${access} ${file} 2>&1 | tee ${log}
   exit_code="${PIPESTATUS[0]}"
 
   if [ ${exit_code} -ne 0 ]; then
