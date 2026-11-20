@@ -52,8 +52,10 @@ if [ "$use_trusted_publisher" = "true" ]; then
 fi
 
 NPM_REGISTRY=${NPM_REGISTRY:-"registry.npmjs.org"}
+# npm only matches the credentials to the registry URL if it ends with a slash
+NPM_REGISTRY="$(echo "${NPM_REGISTRY}" | sed 's:/*$::')/"
 if ! [ -z "${NPM_TOKEN:-}" ]; then
-  echo "//${NPM_REGISTRY%%/}/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+  echo "//${NPM_REGISTRY}:_authToken=${NPM_TOKEN}" > ~/.npmrc
 fi
 
 # this overrides any registry configuration defined externally. For example, yarn sets the registry to the yarn proxy
